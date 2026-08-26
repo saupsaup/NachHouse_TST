@@ -1,0 +1,2498 @@
+(*` {CSY}Knihovna vývojového systému Mosaic{ENU}Mosaic IDE library *)
+(*` {CSY}Jméno souboru{ENU}File name{} : D:\TecoUserLibs\SfcLib_V15_20190605.mlb *)
+(*` {CSY}Knihovna : SfcLib{ENU}Library : SfcLib{} 1.5 *)
+(*` {CSY}Autor{ENU}Author{} : mxSOFT *)
+(*` {CSY}Autorská práva{ENU}Copyright{} : 2018-2019 by mxSOFT *)
+(*` {CSY}Verze IEC pøekladaèe{ENU}IEC compiler version{} :  *)
+(*` {CSY}Verze assembleru{ENU}Assembler version{} : 4.3.00 *)
+
+//{Knihovna : SfcLib 1.5  }
+(*----------------------------------------------------------------------------*)
+
+__DECL FUNCTION GetSfcInstanceName : bool
+  VAR_INPUT
+    offsR            : udint;
+    destPtr          : udint;
+    maxLen           : dint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION GetSfcInstancesCount : dint
+END_FUNCTION
+
+__DECL FUNCTION GetSfcInstanceOffsetR : dint
+  VAR_INPUT
+    itemIndex        : dint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION GetSfcInstanceOffsetD : dint
+  VAR_INPUT
+    itemIndex        : dint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION GetSfcInstanceNameByIndex : bool
+  VAR_INPUT
+    itemIndex        : dint;
+    destPtr          : udint;
+    maxLen           : dint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION SetSfcRuntimeError : bool
+  VAR_INPUT
+    stepBack         : int;  (*`relativni posun ve stacku navratovych adres*)
+  END_VAR
+  VAR_IN_OUT
+    desc             : string [80];  (*`popis chyby*)
+  END_VAR
+END_FUNCTION
+
+VAR_GLOBAL CONSTANT
+ SFC_ZERO_T : time :=  T#0:0:0;;
+ SFC_DWMAX_T : dword :=  16#7FFF_FFFF;
+ SFC_POU_NAME_LEN : int :=  64;  (*`length of SFC POU type name*)
+ CHART_CTRL_VERSION : byte :=  16#01;
+ ID_SfcException_ActionConcurrentT : uint :=  13;
+ ID_SfcException_ActionSD_SLQ1 : uint :=  14;
+ ID_SfcException_ActionSL_SDQ1 : uint :=  15;
+
+END_VAR
+
+VAR_GLOBAL
+ _GSfcForcesActive AT %S75.0 : bool;  (*`some SFC POU has active SFC forces (has both installed & enabled)*)
+ _GSfcForcesEnabled AT %S75.1 : bool;  (*`some SFC POU has enabled SFC forces*)
+ _GSfcForcesInstalled AT %S75.2 : bool;  (*`some SFC forces are installed*)
+ _GSfcEvolutionDisabled AT %S75.3 : bool;  (*`some SFC POU has disabled evolution*)
+ _GSfcStepAlarm AT %S75.4 : bool;  (*`some step has any alarm*)
+ _GSfcInfoValid AT %S75.7 : bool;  (*`program contains at least one SFC POU*)
+ _SfcTempBool AT %S1.1 : bool;  (*`this is used by SFC progs/fbs as temporary boolean result*)
+ _SfcTempTonQ AT %S1.2 : bool;  (*`this is used by SFC progs/fbs as temporary boolean result*)
+ _SfcTempIf AT %S1.3 : bool;  (*`'_SfcTempIf' nabyde hodnoty FALSE, pokud je nejaka predchozi podminka splnena*)
+ _SfcTempIsMacroStep AT %S1.4 : bool;  (*`used by 'T_SFC_fbStep'*)
+ _SfcHotRestart AT %S2.3 : bool;  (*`used by SFC POU instances*)
+ _SfcMilisecCnt AT %S52 : dint;  (*`system milisec counter*)
+
+END_VAR
+
+__DECL FUNCTION_BLOCK T_SFC_ExtControl {HIDDEN}
+  VAR_INPUT
+    Restart          : bool;
+    ClearAlarms      : bool;
+    AlarmsDisabled   : bool;
+    SfcForcesEnabled : bool;
+    SetSituation     : bool;
+    ReserveI5 {HIDDEN} : bool;
+    ReserveI6 {HIDDEN} : bool;
+    DisableLocalCtrl : bool;
+  END_VAR
+  VAR_OUTPUT
+    ReserveO {HIDDEN} : byte;
+  END_VAR
+  VAR_INPUT
+    Ptr {HIDDEN}     : PTR_TO T_SFC_ExtControl;
+  END_VAR
+END_FUNCTION_BLOCK
+
+TYPE T_SFC_ChartControl {HIDDEN} :
+  STRUCT  (*`instance pro ladeni SFC schematu*)
+    SfcForcesInstalled : bool;  (*`je TRUE, pokud nejaky trans/step schematu ma nastavenou SFC force*)
+    StepAlarmLo      : bool;  (*`je TRUE, pokud nejaky step ma LoAlarm*)
+    StepAlarmHi      : bool;  (*`je TRUE, pokud nejaky step ma HiAlarm*)
+    RuntimeError     : bool;  (*`je TRUE, pokud ma POU runtimovou chybu*)
+    SfcForcesActive  : bool;  (*`je TRUE, pokud ma POU aktivni SFC forces (enabled & installed)*)
+    ExtControled     : bool;  (*`je TRUE, pokud ma POU prirazen pointer na externi rizeni*)
+    StepAlarmDisabled : bool;  (*`je TRUE, pokud nejaky step ma nastaveno 'AlarmDisabled'*)
+    _Unused07        : bool;
+    SfcForcesEnabled : bool;  (*`state of scheme SFC forces enabled*)
+    AlarmsDisabled   : bool;  (*`state of scheme AlarmsDisabled, zakazuje generovani alarmu stepu*)
+    EvolutionDisabled : bool;  (*`state of scheme EvolutionDisabled, zakazuje provadeni stavovych zmen ve schematu*)
+    Restarted        : bool;  (*`je TRUE po dobu, kdy je system ve stavu restartovani*)
+    RestartedP       : bool;  (*`je TRUE po dobu jedne otocky, kdy je system ve stavu restartovani*)
+    RestartedF       : bool;  (*`je TRUE po dobu jedne otocky, kdy je system ukoncil restartovani*)
+    ClearAlarms      : bool;  (*`je TRUE, pokud je pozadovano resetovani alarmu*)
+    SetSituation     : bool;  (*`je TRUE, pokud je pozadovano nastaveni situace*)
+    SfcForcesEnabledFF : bool;  (*`povoluje SFC forces pro schema*)
+    AlarmsDisabledFF : bool;  (*`zakazuje nastavovani step alarmu pro schema*)
+    RestartFF        : bool;  (*`vnuceni restartu POU, dokud je TRUE tak schme je ve stavu Restarted*)
+    EvolutionDisabledFF : bool;  (*`zakazuje provadeni stavovych zmen ve schematu*)
+    SetSituationFF   : bool;  (*`nastavit situaci ve schematu podle 'step.Situ' bitu, auto reset*)
+    _Unused25        : bool;
+    _Unused26        : bool;
+    _Unused27        : bool;
+    ClearAlarmsRq    : bool;  (*`clear all scheme step alarms, nastavuje globalne system, schema po vykonani priznak vynuluje*)
+    EvoTickRq        : bool;  (*`pozaduje provedeni vsech 'transition dependent' prechodu mezi stavy (provede se pouze ve stavu 'EvolutionDisabled==TRUE')*)
+    RecordSituRq     : bool;  (*`nahrat soucasnou situaci schematu do 'step.Situ', auto reset*)
+    _Unused33        : bool;
+    _Unused34        : bool;
+    _Unused35        : bool;
+    _Unused36        : bool;
+    _Unused37        : bool;
+    ExtControl {HIDDEN} : T_SFC_ExtControl;  (*`external control*)
+    VersionR         : byte :=  CHART_CTRL_VERSION;  (*`verze 'T_SFC_ChartControl'*)
+    FirstPass        : bool :=  TRUE;  (*`priznak prvni otocky schematu*)
+    LocalPrevTime    : time;
+    LocalTick        : time;  (*`tick instance*)
+    AliveCounter     : udint;
+    SfcException     : uint;
+  END_STRUCT;
+END_TYPE
+
+TYPE T_SFC_DPouDescr {HIDDEN} :
+  STRUCT  (*`this descriptor is created for every SFC POU type and placed to 'D' area*)
+    StateGatherLabel : udint;  (*`(offset 0) = index of execution point for gathering SFC POU state*)
+    HotRestartLabel  : udint;  (*`(offset 4) = index of execution point for hot restart*)
+    ChartCtrlOffs    : udint;  (*`(offset 8) = offset of '__ChartCtrl' from the start of the POU*)
+    PouName          : string [64];  (*`(offset 12) = SFC POU data type name*)
+  END_STRUCT;
+END_TYPE
+
+__DECL FUNCTION fnSfcCollectGlobals {HIDDEN} : bool
+  VAR
+    SfcInstancesCount : dint;
+    SfcInstanceOffsetR : dint;
+    SfcInstanceOffsetD : dint;
+    i                : dint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION fnSfcSpreadHotRestart {HIDDEN} : bool
+  VAR
+    SfcInstancesCount : dint;
+    SfcInstanceOffsetR : dint;
+    SfcInstanceOffsetD : dint;
+    i                : dint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION fnSfcGetLocalTick {HIDDEN} : time
+  VAR_IN_OUT
+    LocalPrevTime    : time;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION fnSfcRuntimeError : bool
+  VAR_INPUT
+    PouOffs          : udint;  (*`offset v zapisniku na zacatek volajici POU*)
+    PouName          : string [80];  (*`'prgDinoPark'*)
+    StepName         : string [80];  (*`'Att2'*)
+    ActionName       : string [80];  (*`'Scream'*)
+    Qualifier        : string [80];  (*`'D'*)
+    ErrorCode        : uint;  (*`ID_SfcException_ActionConcurrentT*)
+  END_VAR
+  VAR
+    PouInstanceName  : string [200];
+    ErrorMessage     : string [250];
+  END_VAR
+END_FUNCTION
+
+TYPE T_SFC_ActCtrlInput {HIDDEN} :
+  STRUCT
+    N                : bool;
+    R                : bool;
+    S                : bool;
+    P                : bool;
+    P1               : bool;
+    P0               : bool;
+  END_STRUCT;
+END_TYPE
+
+__DECL FUNCTION_BLOCK T_SFC_fbSfcActionControl
+  VAR_INPUT
+    InCtrl           : T_SFC_ActCtrlInput;
+  END_VAR
+  VAR_OUTPUT
+    Q                : bool;
+    A                : bool;
+    FS               : bool;  (*`rozsireni mxSOFT, je TRUE, pokud akce startuje poprve (First Scan)*)
+  END_VAR
+  VAR
+    _S_FF_Q1 {HIDDEN} : bool;  (*`vystup R1S pro 'S' a 'R'*)
+    _P_TRIG_Q {HIDDEN} : bool;  (*`vystup R_TRIG pro 'P'*)
+    _P1_TRIG_Q {HIDDEN} : bool;  (*`vystup R_TRIG pro 'P1'*)
+    _P0_TRIG_Q {HIDDEN} : bool;  (*`vystup F_TRIG pro 'P0'*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+TYPE T_SFC_ActCtrlInputT {HIDDEN} :
+  STRUCT
+    N                : bool;
+    R                : bool;
+    S                : bool;
+    P                : bool;
+    P1               : bool;
+    P0               : bool;
+    L                : bool;
+    D                : bool;
+    DS               : bool;
+    T_Done           : bool;  (*`je TRUE, pokud casovac ridiciho kroku >= PT*)
+    T_Used           : bool;  (*`je TRUE, pokud nejaky krok jiz aktivoval input s casovym kvalifikatorem L/D/DS*)
+    PT               : time;  (*`vstup PT casovacu - je tu jen z duvodu hodnoty pro zobrazeni v debug*)
+  END_STRUCT;
+END_TYPE
+
+__DECL FUNCTION_BLOCK T_SFC_fbSfcActionControlT
+  VAR_INPUT
+    InCtrl           : T_SFC_ActCtrlInputT;
+    T_ConcurrentErr  : bool;  (*`je true, pokud jsou nejake soubezne pozadavky na L/D/DS, neni nulovano pri kazdem provedeni POU*)
+  END_VAR
+  VAR_OUTPUT
+    Q                : bool;
+    A                : bool;
+    FS               : bool;  (*`rozsireni mxSOFT, je TRUE, pokud akce startuje poprve (First Scan)*)
+  END_VAR
+  VAR
+    _S_FF_Q1 {HIDDEN} : bool;  (*`vystup R1S pro 'S' a 'R'*)
+    _P_TRIG_Q {HIDDEN} : bool;  (*`vystup R_TRIG pro 'P'*)
+    _P1_TRIG_Q {HIDDEN} : bool;  (*`vystup R_TRIG pro 'P1'*)
+    _P0_TRIG_Q {HIDDEN} : bool;  (*`vystup F_TRIG pro 'P0'*)
+    _DS_FF_Q1 {HIDDEN} : bool;  (*`vystup RS pro 'DS'*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+TYPE T_SFC_ActCtrlInputTS {HIDDEN} :
+  STRUCT
+    N                : bool;
+    R                : bool;
+    S                : bool;
+    P                : bool;
+    P1               : bool;
+    P0               : bool;
+    L                : bool;
+    D                : bool;
+    DS               : bool;
+    SD               : bool;
+    SL               : bool;
+    T_Done           : bool;  (*`je TRUE, pokud casovac ridiciho kroku >= PT*)
+    T_Used           : bool;  (*`je TRUE, pokud nejaky krok jiz aktivoval input s casovym kvalifikatorem L/D/DS/SL/SD*)
+    PT               : time;  (*`vstup PT casovacu - je tu jen z duvodu hodnoty pro zobrazeni v debug*)
+  END_STRUCT;
+END_TYPE
+
+TYPE TSfcActionCtrlStored {HIDDEN} :
+  STRUCT
+    SD_FF_Q1         : bool;  (*`vystup RS pro 'SD'*)
+    SL_FF_Q1         : bool;  (*`vystup RS pro 'SL'*)
+    TON_T            : time;  (*`pocitadlo casovace SD/SL*)
+    TON_PT           : time;  (*`predvolba casovace SD/SL*)
+  END_STRUCT;
+END_TYPE
+
+__DECL FUNCTION_BLOCK T_SFC_fbSfcActionControlTS
+  VAR_INPUT
+    InCtrl           : T_SFC_ActCtrlInputTS;
+    T_ConcurrentErr  : bool;  (*`je true, pokud jsou nejake soubezne pozadavky na L/D/DS, neni nulovano pri kazdem provedeni POU*)
+    T_ConcurrentStoredErr : bool;  (*`je true, pokud bezi SD a chci SL nebo bezi SL a chci SD, neni nulovano pri kazdem provedeni POU*)
+    LocalTick        : time;  (*`tick instance*)
+  END_VAR
+  VAR_OUTPUT
+    Q                : bool;
+    A                : bool;
+    FS               : bool;  (*`rozsireni mxSOFT, je TRUE, pokud akce startuje poprve (First Scan)*)
+    _SD_Running {HIDDEN} : bool;  (*`for external read only*)
+    _SL_Running {HIDDEN} : bool;  (*`for external read only*)
+  END_VAR
+  VAR
+    _S_FF_Q1 {HIDDEN} : bool;  (*`vystup R1S pro 'S' a 'R'*)
+    _P_TRIG_Q {HIDDEN} : bool;  (*`vystup R_TRIG pro 'P'*)
+    _P1_TRIG_Q {HIDDEN} : bool;  (*`vystup R_TRIG pro 'P1'*)
+    _P0_TRIG_Q {HIDDEN} : bool;  (*`vystup F_TRIG pro 'P0'*)
+    _DS_FF_Q1 {HIDDEN} : bool;  (*`vystup RS pro 'DS'*)
+    _Stored          : TSfcActionCtrlStored;  (*`casovac a R1S pro SD a SL*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK T_SFC_fbStep
+(*`instance je definovana pro kazdy step,
+  vsechny promenne zacinajici podtrzitkem jsou user read-only*)
+  VAR_OUTPUT
+    X                : bool;  (*`step activity*)
+    Ovf              : bool;  (*`timer overflow*)
+    Done             : bool;  (*`step Preset time reached*)
+    AlarmLo          : bool;  (*`step active shorter then LimitLo time*)
+    AlarmHi          : bool;  (*`step active longer then LimitHi time*)
+    Enter            : bool;  (*`step first scan*)
+    Leave            : bool;  (*`step last scan*)
+  END_VAR
+  VAR_INPUT
+    AlarmDisabled    : bool;  (*`non-reset variable, disables alarm for step, user can Read/Write*)
+  END_VAR
+  VAR_OUTPUT
+    T                : time;  (*`step timer, holds value until next step activations*)
+    TSum             : time;  (*`total step activity time, holds value until PLC cold restart*)
+    Count            : udint;  (*`number of step activations, holds value until PLC cold restart*)
+  END_VAR
+  VAR_INPUT
+    Situ             : bool;  (*`non-reset variable, preset for SetSituation*)
+    _Reset {HIDDEN}  : bool;  (*`step reset request*)
+    _FalseForced {HIDDEN} : bool;  (*`non-reset variable, step is FALSE-forced by user request*)
+    _EnterStep {HIDDEN} : bool;  (*`pozadavek na vstup do stepu*)
+    _LeaveStep {HIDDEN} : bool;  (*`pozadavek na opusteni stepu*)
+    _Preg {HIDDEN}   : bool;  (*`first step (shora pripojen k paralelni divergenci) in simultaneous branch has '_FalseForced==TRUE' and the branch was activated*)
+    _PassThru {HIDDEN} : bool;  (*`request to enter _MayForceFalse or _MayForceStep step*)
+    Preset           : time;  (*`non-reset variable, minimal step activity duration time*)
+    LimitLo          : time;  (*`non-reset variable, step LO alarm time limit*)
+    LimitHi          : time;  (*`non-reset variable, step HI alarm time limit*)
+    ChartCtrl {HIDDEN} : PTR_TO T_SFC_ChartControl;  (*`instance control structure*)
+  END_VAR
+  VAR
+    _MayForceFalse {HIDDEN} : bool;  (*`initialised, tento step muze byt FALSE-forced (shora pripojen k paralelni divergenci)*)
+    _MayForceStep {HIDDEN} : bool;  (*`initialised, tento step muze byt TRUE-forced (shora pripojen pres transition k selektivni divergenci)*)
+    _Macro {HIDDEN}  : bool;  (*`initializaed, tento krok nepatri do hlavniho schematu (je tedy soucasti nejakehp makra)*)
+    _MacroBeginPtr {HIDDEN} : PTR_TO T_SFC_fbStep;  (*`initialised, pointer na pripadny MacroStepBegin*)
+    _MacroEndPtr {HIDDEN} : PTR_TO T_SFC_fbStep;  (*`initialised, pointer na pripadny MacroStepEnd*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+
+
+{USES=fnSfcCollectGlobals:GetSfcInstancesCount,GetSfcInstanceOffsetR,GetSfcInstanceOffsetD}
+{USES=fnSfcSpreadHotRestart:GetSfcInstancesCount,GetSfcInstanceOffsetR,GetSfcInstanceOffsetD}
+{USES=fnSfcGetLocalTick:fnSfcCollectGlobals,fnSfcSpreadHotRestart}
+{USES=fnSfcRuntimeError:GetSfcInstanceName,SetSfcRuntimeError}
+#srcfile 'D:\TECOAPP\SFC-LIB\SFCLIB_V1_51\SFCSUPPORT.ST'
+#pou GetSfcInstanceName
+#srcline 10 ;FUNCTION GetSfcInstanceName : BOOL
+
+#struct GetSfcInstanceName__temp__
+  bool tmp
+P     61
+GetSfcInstanceName_L0:
+ LINK __SizeOf(GetSfcInstanceName__temp__)
+ NXT
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 20 ;begin
+#srcline 21 ;  {asm}
+#srcline 22
+    LDX   maxLen
+#srcline 23
+    LDX   destPtr
+#srcline 24
+    LDX   offsR
+#srcline 25
+    LD    1
+#srcline 26
+    SYS   90       ; SYS 90 - subkod 1 ... GetSfcInstanceName
+#srcline 27
+    WRY   tmp
+#srcline 28 ;  {end_asm}
+#srcline 29 ;  GetSfcInstanceName := tmp;
+ LDY  tmp
+#debug bool tmp
+ WRX  __fc__GetSfcInstanceName
+#debug_left bool GetSfcInstanceName
+#srcline 30 ;END_FUNCTION
+ PRV  
+ LDX  __fc__GetSfcInstanceName
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou GetSfcInstancesCount
+#srcline 32 ;FUNCTION GetSfcInstancesCount : DINT
+
+#struct GetSfcInstancesCount__temp__
+  dint tmp
+P     61
+GetSfcInstancesCount_L0:
+ LINK __SizeOf(GetSfcInstancesCount__temp__)
+ NXT
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 37 ;begin
+#srcline 38 ;  {asm}
+#srcline 39
+    LD    2
+#srcline 40
+    SYS   90       ; SYS 90 - subkod 2 ... GetSfcInstancesCount
+#srcline 41
+    WRY   tmp
+#srcline 42 ;  {end_asm}
+#srcline 43 ;  GetSfcInstancesCount := tmp;
+ LDY  tmp
+#debug dint tmp
+ WRX  __fc__GetSfcInstancesCount
+#debug_left dint GetSfcInstancesCount
+#srcline 44 ;END_FUNCTION
+ PRV  
+ LDX  __fc__GetSfcInstancesCount
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou GetSfcInstanceOffsetR
+#srcline 46 ;FUNCTION GetSfcInstanceOffsetR : DINT
+
+#struct GetSfcInstanceOffsetR__temp__
+  dint tmp
+P     61
+GetSfcInstanceOffsetR_L0:
+ LINK __SizeOf(GetSfcInstanceOffsetR__temp__)
+ NXT
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 54 ;begin
+#srcline 55 ;  {asm}
+#srcline 56
+    LDX   itemIndex
+#srcline 57
+    LD    3
+#srcline 58
+    SYS   90       ; SYS 90 - subkod 3 ... GetSfcInstanceOffsetR
+#srcline 59
+    WRY   tmp
+#srcline 60 ;  {end_asm}
+#srcline 61 ;  GetSfcInstanceOffsetR := tmp;
+ LDY  tmp
+#debug dint tmp
+ WRX  __fc__GetSfcInstanceOffsetR
+#debug_left dint GetSfcInstanceOffsetR
+#srcline 62 ;END_FUNCTION
+ PRV  
+ LDX  __fc__GetSfcInstanceOffsetR
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou GetSfcInstanceOffsetD
+#srcline 64 ;FUNCTION GetSfcInstanceOffsetD : DINT
+
+#struct GetSfcInstanceOffsetD__temp__
+  dint tmp
+P     61
+GetSfcInstanceOffsetD_L0:
+ LINK __SizeOf(GetSfcInstanceOffsetD__temp__)
+ NXT
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 72 ;begin
+#srcline 73 ;  {asm}
+#srcline 74
+    LDX   itemIndex
+#srcline 75
+    LD    4
+#srcline 76
+    SYS   90       ; SYS 90 - subkod 4 ... GetSfcInstanceOffsetD
+#srcline 77
+    WRY   tmp
+#srcline 78 ;  {end_asm}
+#srcline 79 ;  GetSfcInstanceOffsetD := tmp;
+ LDY  tmp
+#debug dint tmp
+ WRX  __fc__GetSfcInstanceOffsetD
+#debug_left dint GetSfcInstanceOffsetD
+#srcline 80 ;END_FUNCTION
+ PRV  
+ LDX  __fc__GetSfcInstanceOffsetD
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou GetSfcInstanceNameByIndex
+#srcline 82 ;FUNCTION GetSfcInstanceNameByIndex : BOOL
+
+#struct GetSfcInstanceNameByIndex__temp__
+  bool tmp
+P     61
+GetSfcInstanceNameByIndex_L0:
+ LINK __SizeOf(GetSfcInstanceNameByIndex__temp__)
+ NXT
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 92 ;begin
+#srcline 93 ;  {asm}
+#srcline 94
+    LDX   maxLen
+#srcline 95
+    LDX   destPtr
+#srcline 96
+    LDX   itemIndex
+#srcline 97
+    LD    5
+#srcline 98
+    SYS   90       ; SYS 90 - subkod 5 ... GetSfcInstanceNameByIndex
+#srcline 99
+    WRY   tmp
+#srcline 100 ;  {end_asm}
+#srcline 101 ;  GetSfcInstanceNameByIndex := tmp;
+ LDY  tmp
+#debug bool tmp
+ WRX  __fc__GetSfcInstanceNameByIndex
+#debug_left bool GetSfcInstanceNameByIndex
+#srcline 102 ;END_FUNCTION
+ PRV  
+ LDX  __fc__GetSfcInstanceNameByIndex
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou SetSfcRuntimeError
+#srcline 104 ;FUNCTION SetSfcRuntimeError : BOOL
+P     61
+SetSfcRuntimeError_L0:
+ LINK 0
+ NXT
+#srcline 112 ;begin
+#srcline 113 ;  {asm}
+#srcline 114
+    LDX   desc       ; ptr na popis chyby
+#srcline 115
+    LDX   stepBack   ; uroven stacku v okamziku vzniku chyby
+#srcline 116
+    LD    6          ; sub kod operace SetSfcError()
+#srcline 117
+    SYS   90
+#srcline 118 ;  {end_asm}
+#srcline 119 ;  SetSfcRunTimeError := TRUE;
+ LD   bool -1       ; true
+ WRX  __fc__SetSfcRunTimeError
+#debug_left bool SetSfcRunTimeError
+#srcline 120 ;END_FUNCTION
+ PRV  
+ LDX  __fc__SetSfcRuntimeError
+ ULNK
+RET
+E     61
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOAPP\SFC-LIB\SFCLIB_V1_51\SFCTYPES.ST'
+#pou T_SFC_ExtControl
+#srcline 36 ;FUNCTION_BLOCK T_SFC_ExtControl
+P     61
+T_SFC_ExtControl_L0:
+ LINK 0
+#srcline 55 ;  begin
+#srcline 56 ;  {asm}
+#srcline 57
+    leax   %x0
+#srcline 58
+    ldx    Ptr
+#srcline 59
+    wril
+#srcline 60
+    ld     -1
+#srcline 61
+    wrx    Ptr
+#srcline 62 ;  {end_asm}
+#srcline 63 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou fnSfcCollectGlobals
+#srcline 134 ;FUNCTION fnSfcCollectGlobals {HIDDEN} : BOOL
+
+#struct fnSfcCollectGlobals__temp__
+  dint P0__st__
+P     61
+fnSfcCollectGlobals_L0:
+ LINK __SizeOf(fnSfcCollectGlobals__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__fnSfcCollectGlobals
+ WRX  SfcInstancesCount
+ WRX  SfcInstanceOffsetR
+ WRX  SfcInstanceOffsetD
+ WRX  i
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 146 ;  _GSfcForcesActive := false;             // global indicator - some SFC POU has active SFC forces
+ LD   bool 0       ; false
+ WR   _GSfcForcesActive
+#debug_left bool _GSfcForcesActive
+#srcline 147 ;  _GSfcForcesEnabled := false;            // global indicator - some SFC POU has enabled SFC forces
+ LD   bool 0       ; false
+ WR   _GSfcForcesEnabled
+#debug_left bool _GSfcForcesEnabled
+#srcline 148 ;  _GSfcForcesInstalled := false;          // global indicator - some SFC forces are installed
+ LD   bool 0       ; false
+ WR   _GSfcForcesInstalled
+#debug_left bool _GSfcForcesInstalled
+#srcline 149 ;  _GSfcEvolutionDisabled := false;        // global indicator - some SFC POU has disabled evolution
+ LD   bool 0       ; false
+ WR   _GSfcEvolutionDisabled
+#debug_left bool _GSfcEvolutionDisabled
+#srcline 150 ;  _GSfcStepAlarm := false;                // global indicator - some step has any alarm
+ LD   bool 0       ; false
+ WR   _GSfcStepAlarm
+#debug_left bool _GSfcStepAlarm
+#srcline 151 ;  _GSfcInfoValid := false;                // program contains at least one SFC POU
+ LD   bool 0       ; false
+ WR   _GSfcInfoValid
+#debug_left bool _GSfcInfoValid
+#srcline 153 ;  SfcInstancesCount := GetSfcInstancesCount();   // number of SFC instancies
+ LEA  __Instance__GetSfcInstancesCount
+ CAL  GetSfcInstancesCount_L0
+ WRX  SfcInstancesCount
+#debug_left dint SfcInstancesCount
+#srcline 154 ;  if SfcInstancesCount <= 0 then
+ LDX  SfcInstancesCount
+#debug dint SfcInstancesCount
+ LD   dint 0
+ GTS
+ NEG
+ JMC  fnSfcCollectGlobals_L1
+#srcline 155 ;    fnSfcCollectGlobals := false;
+ LD   bool 0       ; false
+ WRX  __fc__fnSfcCollectGlobals
+#debug_left bool fnSfcCollectGlobals
+#srcline 156 ;    return;
+ JMP  fnSfcCollectGlobals_RET
+#srcline 157 ;  end_if;
+fnSfcCollectGlobals_L1:
+#srcline 158 ;  SfcInstancesCount := SfcInstancesCount - 1;    // ted to bude max index
+ LDX  SfcInstancesCount
+#debug dint SfcInstancesCount
+ LD   dint 1
+ SUB
+ WRX  SfcInstancesCount
+#debug_left dint SfcInstancesCount
+#srcline 159 ;  // pres vsechny instance
+#srcline 160 ;  for i := 0 to SfcInstancesCount do
+ LD   dint 0
+ WRX  i
+ LDX  SfcInstancesCount
+#debug dint SfcInstancesCount
+ WRY  P0__st__
+fnSfcCollectGlobals_L3:
+ LDX  i
+ LDY  P0__st__
+ GTS  
+ JMD  fnSfcCollectGlobals_L4
+ DBG  
+#srcline 161 ;    SfcInstanceOffsetR := GetSfcInstanceOffsetR(i);
+ NXT
+ LDX  i
+#debug dint i
+ WR   __Instance__GetSfcInstanceOffsetR~itemIndex
+#debug_left dint __Instance__GetSfcInstanceOffsetR~itemIndex
+ PRV
+ LEA  __Instance__GetSfcInstanceOffsetR
+ CAL  GetSfcInstanceOffsetR_L0
+ WRX  SfcInstanceOffsetR
+#debug_left dint SfcInstanceOffsetR
+#srcline 162 ;    SfcInstanceOffsetD := GetSfcInstanceOffsetD(i);
+ NXT
+ LDX  i
+#debug dint i
+ WR   __Instance__GetSfcInstanceOffsetD~itemIndex
+#debug_left dint __Instance__GetSfcInstanceOffsetD~itemIndex
+ PRV
+ LEA  __Instance__GetSfcInstanceOffsetD
+ CAL  GetSfcInstanceOffsetD_L0
+ WRX  SfcInstanceOffsetD
+#debug_left dint SfcInstanceOffsetD
+#srcline 163 ;    {asm}
+#srcline 164
+      ldx  SfcInstanceOffsetR
+#srcline 165
+      ldx  SfcInstanceOffsetD ; A0 je soucasne offset na StateGatherLabel vuci zacatku struktury (ten je 0)
+#srcline 166
+      ldil                    ; A0 = cislo navesti, kde ma dana POU kod pro sber informaci o sobe
+#srcline 167
+      cai                     ; call using A0
+#srcline 168 ;    {end_asm}
+#srcline 169 ;  end_for;
+ LDX  i
+ LD   1
+ ADD  
+ WRX  i
+ JMP  fnSfcCollectGlobals_L3
+fnSfcCollectGlobals_L4:
+ NOP  -1
+#srcline 170 ;  _GSfcInfoValid := true;                        // program contains at least one SFC POU
+ LD   bool -1       ; true
+ WR   _GSfcInfoValid
+#debug_left bool _GSfcInfoValid
+#srcline 171 ;  fnSfcCollectGlobals := true;
+ LD   bool -1       ; true
+ WRX  __fc__fnSfcCollectGlobals
+#debug_left bool fnSfcCollectGlobals
+#srcline 173 ;END_FUNCTION
+fnSfcCollectGlobals_RET:
+ PRV  
+ LDX  __fc__fnSfcCollectGlobals
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou fnSfcSpreadHotRestart
+#srcline 176 ;FUNCTION fnSfcSpreadHotRestart {HIDDEN} : BOOL
+
+#struct fnSfcSpreadHotRestart__temp__
+  dint P0__st__
+P     61
+fnSfcSpreadHotRestart_L0:
+ LINK __SizeOf(fnSfcSpreadHotRestart__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__fnSfcSpreadHotRestart
+ WRX  SfcInstancesCount
+ WRX  SfcInstanceOffsetR
+ WRX  SfcInstanceOffsetD
+ WRX  i
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 187 ;  SfcInstancesCount := GetSfcInstancesCount();   // number of SFC instancies
+ LEA  __Instance__GetSfcInstancesCount
+ CAL  GetSfcInstancesCount_L0
+ WRX  SfcInstancesCount
+#debug_left dint SfcInstancesCount
+#srcline 188 ;  if SfcInstancesCount <= 0 then
+ LDX  SfcInstancesCount
+#debug dint SfcInstancesCount
+ LD   dint 0
+ GTS
+ NEG
+ JMC  fnSfcSpreadHotRestart_L1
+#srcline 189 ;    fnSfcSpreadHotRestart := false;
+ LD   bool 0       ; false
+ WRX  __fc__fnSfcSpreadHotRestart
+#debug_left bool fnSfcSpreadHotRestart
+#srcline 190 ;    return;
+ JMP  fnSfcSpreadHotRestart_RET
+#srcline 191 ;  end_if;
+fnSfcSpreadHotRestart_L1:
+#srcline 192 ;  SfcInstancesCount := SfcInstancesCount - 1;    // ted to bude max index
+ LDX  SfcInstancesCount
+#debug dint SfcInstancesCount
+ LD   dint 1
+ SUB
+ WRX  SfcInstancesCount
+#debug_left dint SfcInstancesCount
+#srcline 193 ;  // pres vsechny instance
+#srcline 194 ;  for i := 0 to SfcInstancesCount do
+ LD   dint 0
+ WRX  i
+ LDX  SfcInstancesCount
+#debug dint SfcInstancesCount
+ WRY  P0__st__
+fnSfcSpreadHotRestart_L3:
+ LDX  i
+ LDY  P0__st__
+ GTS  
+ JMD  fnSfcSpreadHotRestart_L4
+ DBG  
+#srcline 195 ;    SfcInstanceOffsetR := GetSfcInstanceOffsetR(i);
+ NXT
+ LDX  i
+#debug dint i
+ WR   __Instance__GetSfcInstanceOffsetR~itemIndex
+#debug_left dint __Instance__GetSfcInstanceOffsetR~itemIndex
+ PRV
+ LEA  __Instance__GetSfcInstanceOffsetR
+ CAL  GetSfcInstanceOffsetR_L0
+ WRX  SfcInstanceOffsetR
+#debug_left dint SfcInstanceOffsetR
+#srcline 196 ;    SfcInstanceOffsetD := GetSfcInstanceOffsetD(i);
+ NXT
+ LDX  i
+#debug dint i
+ WR   __Instance__GetSfcInstanceOffsetD~itemIndex
+#debug_left dint __Instance__GetSfcInstanceOffsetD~itemIndex
+ PRV
+ LEA  __Instance__GetSfcInstanceOffsetD
+ CAL  GetSfcInstanceOffsetD_L0
+ WRX  SfcInstanceOffsetD
+#debug_left dint SfcInstanceOffsetD
+#srcline 197 ;    {asm}
+#srcline 198
+      ldx  SfcInstanceOffsetR
+#srcline 199
+      ldx  SfcInstanceOffsetD ; A0 je nyni offset na StateGatherLabel vuci zacatku struktury (ten je 0)
+#srcline 200
+      add  4                  ; A0 je nyni offset na HotRestartLabel
+#srcline 201
+      ldil                    ; A0 = cislo navesti, kde ma dana POU kod pro hot restart
+#srcline 202
+      cai                     ; call using A0
+#srcline 203 ;    {end_asm}
+#srcline 204 ;  end_for;
+ LDX  i
+ LD   1
+ ADD  
+ WRX  i
+ JMP  fnSfcSpreadHotRestart_L3
+fnSfcSpreadHotRestart_L4:
+ NOP  -1
+#srcline 205 ;  fnSfcSpreadHotRestart := true;
+ LD   bool -1       ; true
+ WRX  __fc__fnSfcSpreadHotRestart
+#debug_left bool fnSfcSpreadHotRestart
+#srcline 207 ;END_FUNCTION
+fnSfcSpreadHotRestart_RET:
+ PRV  
+ LDX  __fc__fnSfcSpreadHotRestart
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou fnSfcGetLocalTick
+#srcline 210 ;FUNCTION fnSfcGetLocalTick {HIDDEN} : TIME
+
+#struct fnSfcGetLocalTick__temp__
+  time CurTime
+P     61
+fnSfcGetLocalTick_L0:
+ LINK __SizeOf(fnSfcGetLocalTick__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__fnSfcGetLocalTick
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 221 ;  CurTime := DINT_TO_TIME(_SfcMilisecCnt);
+ LD   _SfcMilisecCnt
+#debug dint _SfcMilisecCnt
+ WRY  CurTime
+#debug_left time CurTime
+#srcline 222 ;  fnSfcGetLocalTick := CurTime - LocalPrevTime;
+ LDY  CurTime
+#debug time CurTime
+ LDX  LocalPrevTime
+ LDIL 
+#debug time LocalPrevTime
+ SUB
+ WRX  __fc__fnSfcGetLocalTick
+#debug_left time fnSfcGetLocalTick
+#srcline 223 ;  LocalPrevTime := CurTime;
+ LDY  CurTime
+#debug time CurTime
+ LDX  LocalPrevTime
+ WRIL 
+#debug_left time LocalPrevTime
+#srcline 224 ;  {asm}
+#srcline 225
+  jmp   fnSfcGetLocalTick__SkipOtherProcessesStuff
+#srcline 226
+  E 61
+#srcline 228
+  ; tento kus kodu se prolozi do jineho procesu - P 64 - spoustenem na konci kazde otocky
+#srcline 229
+  P 64
+#srcline 230
+        ; gather states of all SFC instancies
+#srcline 231
+        lea     __Instance__fnSfcCollectGlobals
+#srcline 232
+        cal     fnSfcCollectGlobals_L0
+#srcline 233
+        ; v promenne __Instance__fnSfcCollectGlobals~__fc__fnSfcCollectGlobals je nyni:
+#srcline 234
+        ;   FALSE => neni zadna SFC instance
+#srcline 235
+        ;   TRUE  => je nejaka SFC instance
+#srcline 236
+  E 64
+#srcline 237
+  ; konec
+#srcline 239
+  ; tento kus kodu se prolozi do jineho procesu - P 62 - hot restart
+#srcline 240
+  P 62
+#srcline 241
+        ; restore retain variable during hot restart
+#srcline 242
+        lea     __Instance__fnSfcSpreadHotRestart
+#srcline 243
+        cal     fnSfcSpreadHotRestart_L0
+#srcline 244
+        ; v promenne __Instance__fnSfcSpreadHotRestart~__fc__fnSfcSpreadHotRestart je nyni:
+#srcline 245
+        ;   FALSE => neni zadna SFC instance
+#srcline 246
+        ;   TRUE  => je nejaka SFC instance
+#srcline 247
+  E 62
+#srcline 248
+  ; konec
+#srcline 250
+  P 61
+#srcline 251
+  fnSfcGetLocalTick__SkipOtherProcessesStuff:
+#srcline 252 ;  {end_asm}
+#srcline 253 ;END_FUNCTION
+ PRV  
+ LDX  __fc__fnSfcGetLocalTick
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou fnSfcRuntimeError
+#srcline 256 ;FUNCTION fnSfcRuntimeError : BOOL
+
+#struct fnSfcRuntimeError__temp__
+  bool result,
+  udint P0__st__,
+  string[252] PS0__st__
+#data byte _str_fnSfcRuntimeError_0 = 
+  'S','F','C',' ','-',' ','s','i','m','u','l','t','a','n','e','o','u','s',' ','a',
+  's','s','o','c','i','a','t','i','o','n',0
+#data byte _str_fnSfcRuntimeError_1 = 
+  'S','F','C',' ','-',' ','S','L',' ','t','i','m','e','r',' ','r','u','n','n','i',
+  'n','g',0
+#data byte _str_fnSfcRuntimeError_2 = 
+  'S','F','C',' ','-',' ','S','D',' ','t','i','m','e','r',' ','r','u','n','n','i',
+  'n','g',0
+#data byte _str_fnSfcRuntimeError_3 = 
+  'S','F','C',' ','-',' ','u','n','s','p','e','c','i','f','i','e','d',' ','e','r',
+  'r','o','r',0
+#data byte _str_fnSfcRuntimeError_4 = 
+  ' ','a','t',' ',0
+#data byte _str_fnSfcRuntimeError_5 = 
+  '.',0
+#data byte _str_fnSfcRuntimeError_6 = 
+  '-',0
+#data byte _str_fnSfcRuntimeError_7 = 
+  '(',0
+#data byte _str_fnSfcRuntimeError_8 = 
+  ')',0
+P     61
+fnSfcRuntimeError_L0:
+ LINK __SizeOf(fnSfcRuntimeError__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__fnSfcRuntimeError
+ WRX  PouInstanceName
+ WRX  ErrorMessage
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 274 ;  case ErrorCode of
+ LDX  ErrorCode
+#debug uint ErrorCode
+ WRY  P0__st__
+ LD   13
+ LDY  P0__st__
+ EQ  
+ JMC  fnSfcRuntimeError_L2
+#srcline 275 ;    ID_SfcException_ActionConcurrentT : ErrorMessage := 'SFC - simultaneous association';
+ LD   0   ; null string
+ LEAX ErrorMessage
+ WRI  
+ LEAX ErrorMessage
+ LD   250
+ DST    ; Level 1
+ LEA  _str_fnSfcRuntimeError_0
+ SCON 
+#debug_left string ErrorMessage
+ PDST   ; Level 1
+ JMP  fnSfcRuntimeError_L1
+fnSfcRuntimeError_L2:
+ LD   14
+ LDY  P0__st__
+ EQ  
+ JMC  fnSfcRuntimeError_L3
+#srcline 276 ;    ID_SfcException_ActionSD_SLQ1     : ErrorMessage := 'SFC - SL timer running';
+ LD   0   ; null string
+ LEAX ErrorMessage
+ WRI  
+ LEAX ErrorMessage
+ LD   250
+ DST    ; Level 1
+ LEA  _str_fnSfcRuntimeError_1
+ SCON 
+#debug_left string ErrorMessage
+ PDST   ; Level 1
+ JMP  fnSfcRuntimeError_L1
+fnSfcRuntimeError_L3:
+ LD   15
+ LDY  P0__st__
+ EQ  
+ JMC  fnSfcRuntimeError_L4
+#srcline 277 ;    ID_SfcException_ActionSL_SDQ1     : ErrorMessage := 'SFC - SD timer running';
+ LD   0   ; null string
+ LEAX ErrorMessage
+ WRI  
+ LEAX ErrorMessage
+ LD   250
+ DST    ; Level 1
+ LEA  _str_fnSfcRuntimeError_2
+ SCON 
+#debug_left string ErrorMessage
+ PDST   ; Level 1
+ JMP  fnSfcRuntimeError_L1
+fnSfcRuntimeError_L4:
+#srcline 278 ;    else                                ErrorMessage := 'SFC - unspecified error';
+ LD   0   ; null string
+ LEAX ErrorMessage
+ WRI  
+ LEAX ErrorMessage
+ LD   250
+ DST    ; Level 1
+ LEA  _str_fnSfcRuntimeError_3
+ SCON 
+#debug_left string ErrorMessage
+ PDST   ; Level 1
+#srcline 279 ;  end_case;
+fnSfcRuntimeError_L1:
+#srcline 280 ;  ErrorMessage := CONCAT(ErrorMessage, ' at ');
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   250
+ DST    ; Level 1
+ LEAX ErrorMessage
+#debug string ErrorMessage
+ SCON
+ LEA  _str_fnSfcRuntimeError_4
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX ErrorMessage
+ WRI  
+ LEAX ErrorMessage
+ LD   250
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string ErrorMessage
+ PDST   ; Level 1
+#srcline 282 ;  // get POU instance name
+#srcline 283 ;  result := GetSfcInstanceName(offsR:=PouOffs, destPtr:=PTR_TO_UDINT(adr(PouInstanceName)), maxLen:=200);
+ NXT
+ LDX  PouOffs
+#debug udint PouOffs
+ WR   __Instance__GetSfcInstanceName~offsR
+#debug_left udint __Instance__GetSfcInstanceName~offsR
+ LEAX PouInstanceName
+#debug pointer PouInstanceName
+ WR   __Instance__GetSfcInstanceName~destPtr
+#debug_left udint __Instance__GetSfcInstanceName~destPtr
+ LD   dint 200
+ WR   __Instance__GetSfcInstanceName~maxLen
+#debug_left dint __Instance__GetSfcInstanceName~maxLen
+ PRV
+ LEA  __Instance__GetSfcInstanceName
+ CAL  GetSfcInstanceName_L0
+ WRY  result
+#debug_left bool result
+#srcline 284 ;  // now I know everything, what to do with it? Put it to the system error system.
+#srcline 285 ;  if result then
+ LDY  result
+#debug bool result
+ JMC  fnSfcRuntimeError_L5
+#srcline 286 ;    ErrorMessage := CONCAT(ErrorMessage, PouInstanceName);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   250
+ DST    ; Level 1
+ LEAX ErrorMessage
+#debug string ErrorMessage
+ SCON
+ LEAX PouInstanceName
+#debug string PouInstanceName
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX ErrorMessage
+ WRI  
+ LEAX ErrorMessage
+ LD   250
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string ErrorMessage
+ PDST   ; Level 1
+#srcline 287 ;  else
+ JMP  fnSfcRuntimeError_L6
+fnSfcRuntimeError_L5:
+#srcline 288 ;    ErrorMessage := CONCAT(ErrorMessage, PouName);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   250
+ DST    ; Level 1
+ LEAX ErrorMessage
+#debug string ErrorMessage
+ SCON
+ LEAX PouName
+#debug string PouName
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX ErrorMessage
+ WRI  
+ LEAX ErrorMessage
+ LD   250
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string ErrorMessage
+ PDST   ; Level 1
+#srcline 289 ;  end_if;
+fnSfcRuntimeError_L6:
+#srcline 290 ;  ErrorMessage := CONCAT(ErrorMessage, '.', StepName, '-', ActionName, '(', Qualifier, ')');
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   250
+ DST    ; Level 1
+ LEAX ErrorMessage
+#debug string ErrorMessage
+ SCON
+ LEA  _str_fnSfcRuntimeError_5
+ SCON
+ LEAX StepName
+#debug string StepName
+ SCON
+ LEA  _str_fnSfcRuntimeError_6
+ SCON
+ LEAX ActionName
+#debug string ActionName
+ SCON
+ LEA  _str_fnSfcRuntimeError_7
+ SCON
+ LEAX Qualifier
+#debug string Qualifier
+ SCON
+ LEA  _str_fnSfcRuntimeError_8
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX ErrorMessage
+ WRI  
+ LEAX ErrorMessage
+ LD   250
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string ErrorMessage
+ PDST   ; Level 1
+#srcline 291 ;  SetSfcRuntimeError(2, ErrorMessage);
+ NXT
+ LD   int 2
+ WR   __Instance__SetSfcRuntimeError~stepBack
+#debug_left int __Instance__SetSfcRuntimeError~stepBack
+ LEAX ErrorMessage
+ WR   __Instance__SetSfcRuntimeError~desc
+#debug_left pointer __Instance__SetSfcRuntimeError.desc
+ PRV
+ LEA  __Instance__SetSfcRuntimeError
+ CAL  SetSfcRuntimeError_L0
+#srcline 292 ;  fnSfcRuntimeError := result;
+ LDY  result
+#debug bool result
+ WRX  __fc__fnSfcRuntimeError
+#debug_left bool fnSfcRuntimeError
+#srcline 293 ;END_FUNCTION
+ PRV  
+ LDX  __fc__fnSfcRuntimeError
+ ULNK
+RET
+E     61
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOAPP\SFC-LIB\SFCLIB_V1_51\FBSFCACTIONCONTROL.ST'
+#pou T_SFC_fbSfcActionControl
+#srcline 17 ;FUNCTION_BLOCK T_SFC_fbSfcActionControl
+P     61
+T_SFC_fbSfcActionControl_L0:
+ LINK 0
+#srcline 34 ;  if InCtrl.R then
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ JMC  T_SFC_fbSfcActionControl_L1
+#srcline 35 ;	  _S_FF_Q1 := false;
+ LD   bool 0       ; false
+ WRX  _S_FF_Q1
+#debug_left bool _S_FF_Q1
+#srcline 36 ;	else
+ JMP  T_SFC_fbSfcActionControl_L2
+T_SFC_fbSfcActionControl_L1:
+#srcline 37 ;    if InCtrl.S then
+ LDX  InCtrl~S
+#debug bool InCtrl.S
+ JMC  T_SFC_fbSfcActionControl_L3
+#srcline 38 ;	    _S_FF_Q1 := true;
+ LD   bool -1       ; true
+ WRX  _S_FF_Q1
+#debug_left bool _S_FF_Q1
+#srcline 39 ;	  end_if;
+T_SFC_fbSfcActionControl_L3:
+#srcline 40 ;	end_if;
+T_SFC_fbSfcActionControl_L2:
+#srcline 41 ;	// dale se provadi vse nezavisle na stavu 'R' (ale neni ThrowException) exit
+#srcline 43 ;	// N
+#srcline 44 ;	_SfcTempBool := InCtrl.N;
+ LDX  InCtrl~N
+#debug bool InCtrl.N
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 45 ;	// S
+#srcline 46 ;	_SfcTempBool := _SfcTempBool OR _S_FF_Q1;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  _S_FF_Q1
+#debug bool _S_FF_Q1
+ OR  
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 47 ;  // P
+#srcline 48 ;	_SfcTempBool := _SfcTempBool OR (InCtrl.P AND NOT _P_TRIG_Q);
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~P
+#debug bool InCtrl.P
+ LDX  _P_TRIG_Q
+#debug bool _P_TRIG_Q
+ NEG
+ AND
+ OR  
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 49 ;	_P_TRIG_Q := InCtrl.P;
+ LDX  InCtrl~P
+#debug bool InCtrl.P
+ WRX  _P_TRIG_Q
+#debug_left bool _P_TRIG_Q
+#srcline 50 ;	
+#srcline 51 ;  // FS, A and Q evaluation: '_SfcTempBool' is current 'Q'
+#srcline 52 ;  FS := NOT Q AND _SfcTempBool AND NOT InCtrl.R;
+ LDX  Q
+#debug bool Q
+ NEG
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ AND
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ NEG
+ AND
+ WRX  FS
+#debug_left bool FS
+#srcline 53 ;	A := _SfcTempBool AND NOT InCtrl.R;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ NEG
+ AND
+ WRX  A
+#debug_left bool A
+#srcline 54 ;  A := A OR (NOT A AND Q);    // OR Q-F_Trig
+ LDX  A
+#debug bool A
+ LDX  A
+#debug bool A
+ NEG
+ LDX  Q
+#debug bool Q
+ AND
+ OR  
+ WRX  A
+#debug_left bool A
+#srcline 55 ;	Q := _SfcTempBool AND NOT InCtrl.R;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ NEG
+ AND
+ WRX  Q
+#debug_left bool Q
+#srcline 56 ;	// P1
+#srcline 57 ;	A := A OR (InCtrl.P1 AND NOT _P1_TRIG_Q);
+ LDX  A
+#debug bool A
+ LDX  InCtrl~P1
+#debug bool InCtrl.P1
+ LDX  _P1_TRIG_Q
+#debug bool _P1_TRIG_Q
+ NEG
+ AND
+ OR  
+ WRX  A
+#debug_left bool A
+#srcline 58 ;  FS := FS OR (InCtrl.P1 AND NOT _P1_TRIG_Q);
+ LDX  FS
+#debug bool FS
+ LDX  InCtrl~P1
+#debug bool InCtrl.P1
+ LDX  _P1_TRIG_Q
+#debug bool _P1_TRIG_Q
+ NEG
+ AND
+ OR  
+ WRX  FS
+#debug_left bool FS
+#srcline 59 ;	_P1_TRIG_Q := InCtrl.P1;
+ LDX  InCtrl~P1
+#debug bool InCtrl.P1
+ WRX  _P1_TRIG_Q
+#debug_left bool _P1_TRIG_Q
+#srcline 60 ;	// P0
+#srcline 61 ;	A := A OR (NOT InCtrl.P0 AND _P0_TRIG_Q);
+ LDX  A
+#debug bool A
+ LDX  InCtrl~P0
+#debug bool InCtrl.P0
+ NEG
+ LDX  _P0_TRIG_Q
+#debug bool _P0_TRIG_Q
+ AND
+ OR  
+ WRX  A
+#debug_left bool A
+#srcline 62 ;	_P0_TRIG_Q := InCtrl.P0;
+ LDX  InCtrl~P0
+#debug bool InCtrl.P0
+ WRX  _P0_TRIG_Q
+#debug_left bool _P0_TRIG_Q
+#srcline 64 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou T_SFC_fbSfcActionControlT
+#srcline 89 ;FUNCTION_BLOCK T_SFC_fbSfcActionControlT
+P     61
+T_SFC_fbSfcActionControlT_L0:
+ LINK 0
+#srcline 110 ;  if InCtrl.R then
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ JMC  T_SFC_fbSfcActionControlT_L1
+#srcline 111 ;	  _S_FF_Q1 := false;
+ LD   bool 0       ; false
+ WRX  _S_FF_Q1
+#debug_left bool _S_FF_Q1
+#srcline 112 ;	  _DS_FF_Q1 := false;
+ LD   bool 0       ; false
+ WRX  _DS_FF_Q1
+#debug_left bool _DS_FF_Q1
+#srcline 113 ;	else
+ JMP  T_SFC_fbSfcActionControlT_L2
+T_SFC_fbSfcActionControlT_L1:
+#srcline 114 ;    if InCtrl.S then
+ LDX  InCtrl~S
+#debug bool InCtrl.S
+ JMC  T_SFC_fbSfcActionControlT_L3
+#srcline 115 ;	    _S_FF_Q1 := true;
+ LD   bool -1       ; true
+ WRX  _S_FF_Q1
+#debug_left bool _S_FF_Q1
+#srcline 116 ;	  end_if;
+T_SFC_fbSfcActionControlT_L3:
+#srcline 117 ;	end_if;
+T_SFC_fbSfcActionControlT_L2:
+#srcline 118 ;	// dale se provadi vse nezavisle na stavu 'R' (ale neni ThrowException) exit
+#srcline 120 ;	// N
+#srcline 121 ;	_SfcTempBool := InCtrl.N;
+ LDX  InCtrl~N
+#debug bool InCtrl.N
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 122 ;	// S
+#srcline 123 ;	_SfcTempBool := _SfcTempBool OR _S_FF_Q1;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  _S_FF_Q1
+#debug bool _S_FF_Q1
+ OR  
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 124 ;  // P
+#srcline 125 ;	_SfcTempBool := _SfcTempBool OR (InCtrl.P AND NOT _P_TRIG_Q);
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~P
+#debug bool InCtrl.P
+ LDX  _P_TRIG_Q
+#debug bool _P_TRIG_Q
+ NEG
+ AND
+ OR  
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 126 ;	_P_TRIG_Q := InCtrl.P;
+ LDX  InCtrl~P
+#debug bool InCtrl.P
+ WRX  _P_TRIG_Q
+#debug_left bool _P_TRIG_Q
+#srcline 127 ;	
+#srcline 128 ;	// L/D/DS
+#srcline 129 ;  if InCtrl.DS AND InCtrl.T_Done then
+ LDX  InCtrl~DS
+#debug bool InCtrl.DS
+ LDX  InCtrl~T_Done
+#debug bool InCtrl.T_Done
+ AND
+ JMC  T_SFC_fbSfcActionControlT_L5
+#srcline 130 ;    _DS_FF_Q1 := true;
+ LD   bool -1       ; true
+ WRX  _DS_FF_Q1
+#debug_left bool _DS_FF_Q1
+#srcline 131 ;  end_if;
+T_SFC_fbSfcActionControlT_L5:
+#srcline 132 ;  _SfcTempBool := _SfcTempBool or (InCtrl.L AND NOT InCtrl.T_Done) or (InCtrl.D AND InCtrl.T_Done) or _DS_FF_Q1;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~L
+#debug bool InCtrl.L
+ LDX  InCtrl~T_Done
+#debug bool InCtrl.T_Done
+ NEG
+ AND
+ OR  
+ LDX  InCtrl~D
+#debug bool InCtrl.D
+ LDX  InCtrl~T_Done
+#debug bool InCtrl.T_Done
+ AND
+ OR  
+ LDX  _DS_FF_Q1
+#debug bool _DS_FF_Q1
+ OR  
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 134 ;  // FS, A and Q evaluation: '_SfcTempBool' is current 'Q'
+#srcline 135 ;  FS := NOT Q AND _SfcTempBool AND NOT InCtrl.R;
+ LDX  Q
+#debug bool Q
+ NEG
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ AND
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ NEG
+ AND
+ WRX  FS
+#debug_left bool FS
+#srcline 136 ;	A := _SfcTempBool AND NOT InCtrl.R;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ NEG
+ AND
+ WRX  A
+#debug_left bool A
+#srcline 137 ;  A := A OR (NOT A AND Q);    // OR Q-F_Trig
+ LDX  A
+#debug bool A
+ LDX  A
+#debug bool A
+ NEG
+ LDX  Q
+#debug bool Q
+ AND
+ OR  
+ WRX  A
+#debug_left bool A
+#srcline 138 ;	Q := _SfcTempBool AND NOT InCtrl.R;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ NEG
+ AND
+ WRX  Q
+#debug_left bool Q
+#srcline 139 ;	// P1
+#srcline 140 ;	A := A OR (InCtrl.P1 AND NOT _P1_TRIG_Q);
+ LDX  A
+#debug bool A
+ LDX  InCtrl~P1
+#debug bool InCtrl.P1
+ LDX  _P1_TRIG_Q
+#debug bool _P1_TRIG_Q
+ NEG
+ AND
+ OR  
+ WRX  A
+#debug_left bool A
+#srcline 141 ;  FS := FS OR (InCtrl.P1 AND NOT _P1_TRIG_Q);
+ LDX  FS
+#debug bool FS
+ LDX  InCtrl~P1
+#debug bool InCtrl.P1
+ LDX  _P1_TRIG_Q
+#debug bool _P1_TRIG_Q
+ NEG
+ AND
+ OR  
+ WRX  FS
+#debug_left bool FS
+#srcline 142 ;	_P1_TRIG_Q := InCtrl.P1;
+ LDX  InCtrl~P1
+#debug bool InCtrl.P1
+ WRX  _P1_TRIG_Q
+#debug_left bool _P1_TRIG_Q
+#srcline 143 ;	// P0
+#srcline 144 ;	A := A OR (NOT InCtrl.P0 AND _P0_TRIG_Q);
+ LDX  A
+#debug bool A
+ LDX  InCtrl~P0
+#debug bool InCtrl.P0
+ NEG
+ LDX  _P0_TRIG_Q
+#debug bool _P0_TRIG_Q
+ AND
+ OR  
+ WRX  A
+#debug_left bool A
+#srcline 145 ;	_P0_TRIG_Q := InCtrl.P0;
+ LDX  InCtrl~P0
+#debug bool InCtrl.P0
+ WRX  _P0_TRIG_Q
+#debug_left bool _P0_TRIG_Q
+#srcline 147 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou T_SFC_fbSfcActionControlTS
+#srcline 182 ;FUNCTION_BLOCK T_SFC_fbSfcActionControlTS
+P     61
+T_SFC_fbSfcActionControlTS_L0:
+ LINK 0
+#srcline 210 ;  if InCtrl.R then
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ JMC  T_SFC_fbSfcActionControlTS_L1
+#srcline 211 ;	  _S_FF_Q1 := false;
+ LD   bool 0       ; false
+ WRX  _S_FF_Q1
+#debug_left bool _S_FF_Q1
+#srcline 212 ;	  _DS_FF_Q1 := false;
+ LD   bool 0       ; false
+ WRX  _DS_FF_Q1
+#debug_left bool _DS_FF_Q1
+#srcline 213 ;	  _Stored.SD_FF_Q1 := false; _SD_Running := false;
+ LD   bool 0       ; false
+ WRX  _Stored~SD_FF_Q1
+#debug_left bool _Stored.SD_FF_Q1
+ LD   bool 0       ; false
+ WRX  _SD_Running
+#debug_left bool _SD_Running
+#srcline 214 ;	  _Stored.SL_FF_Q1 := false; _SL_Running := false;
+ LD   bool 0       ; false
+ WRX  _Stored~SL_FF_Q1
+#debug_left bool _Stored.SL_FF_Q1
+ LD   bool 0       ; false
+ WRX  _SL_Running
+#debug_left bool _SL_Running
+#srcline 215 ;	else
+ JMP  T_SFC_fbSfcActionControlTS_L2
+T_SFC_fbSfcActionControlTS_L1:
+#srcline 216 ;    if InCtrl.S then
+ LDX  InCtrl~S
+#debug bool InCtrl.S
+ JMC  T_SFC_fbSfcActionControlTS_L3
+#srcline 217 ;	    _S_FF_Q1 := true;
+ LD   bool -1       ; true
+ WRX  _S_FF_Q1
+#debug_left bool _S_FF_Q1
+#srcline 218 ;	  end_if;
+T_SFC_fbSfcActionControlTS_L3:
+#srcline 220 ;	  // SD
+#srcline 221 ;	  if InCtrl.SD then
+ LDX  InCtrl~SD
+#debug bool InCtrl.SD
+ JMC  T_SFC_fbSfcActionControlTS_L5
+#srcline 222 ;	    if NOT _Stored.SD_FF_Q1 then  // SD or SL just activated
+ LDX  _Stored~SD_FF_Q1
+#debug bool _Stored.SD_FF_Q1
+ NEG
+ JMC  T_SFC_fbSfcActionControlTS_L7
+#srcline 223 ; 	      _Stored.TON_T := -LocalTick;
+ LDX  LocalTick
+#debug time LocalTick
+ CSGL 
+ WRX  _Stored~TON_T
+#debug_left time _Stored.TON_T
+#srcline 224 ;      end_if;
+T_SFC_fbSfcActionControlTS_L7:
+#srcline 225 ;       _Stored.TON_PT := InCtrl.PT;
+ LDX  InCtrl~PT
+#debug time InCtrl.PT
+ WRX  _Stored~TON_PT
+#debug_left time _Stored.TON_PT
+#srcline 226 ;	    _Stored.SD_FF_Q1 := true; _SD_Running := true;
+ LD   bool -1       ; true
+ WRX  _Stored~SD_FF_Q1
+#debug_left bool _Stored.SD_FF_Q1
+ LD   bool -1       ; true
+ WRX  _SD_Running
+#debug_left bool _SD_Running
+#srcline 227 ;	  end_if;
+T_SFC_fbSfcActionControlTS_L5:
+#srcline 228 ;	  // SL
+#srcline 229 ;	  if InCtrl.SL then
+ LDX  InCtrl~SL
+#debug bool InCtrl.SL
+ JMC  T_SFC_fbSfcActionControlTS_L9
+#srcline 230 ;	    if NOT _Stored.SL_FF_Q1 then  // SD or SL just activated
+ LDX  _Stored~SL_FF_Q1
+#debug bool _Stored.SL_FF_Q1
+ NEG
+ JMC  T_SFC_fbSfcActionControlTS_L11
+#srcline 231 ; 	      _Stored.TON_T := -LocalTick;
+ LDX  LocalTick
+#debug time LocalTick
+ CSGL 
+ WRX  _Stored~TON_T
+#debug_left time _Stored.TON_T
+#srcline 232 ;      end_if;
+T_SFC_fbSfcActionControlTS_L11:
+#srcline 233 ;       _Stored.TON_PT := InCtrl.PT;
+ LDX  InCtrl~PT
+#debug time InCtrl.PT
+ WRX  _Stored~TON_PT
+#debug_left time _Stored.TON_PT
+#srcline 234 ;	    _Stored.SL_FF_Q1 := true; _SL_Running := true;
+ LD   bool -1       ; true
+ WRX  _Stored~SL_FF_Q1
+#debug_left bool _Stored.SL_FF_Q1
+ LD   bool -1       ; true
+ WRX  _SL_Running
+#debug_left bool _SL_Running
+#srcline 235 ;    end_if;
+T_SFC_fbSfcActionControlTS_L9:
+#srcline 236 ;	end_if;
+T_SFC_fbSfcActionControlTS_L2:
+#srcline 237 ;	// dale se provadi vse nezavisle na stavu 'R' (ale neni ThrowException) exit
+#srcline 239 ;	// N
+#srcline 240 ;	_SfcTempBool := InCtrl.N;
+ LDX  InCtrl~N
+#debug bool InCtrl.N
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 241 ;	// S
+#srcline 242 ;	_SfcTempBool := _SfcTempBool OR _S_FF_Q1;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  _S_FF_Q1
+#debug bool _S_FF_Q1
+ OR  
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 243 ;  // P
+#srcline 244 ;	_SfcTempBool := _SfcTempBool OR (InCtrl.P AND NOT _P_TRIG_Q);
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~P
+#debug bool InCtrl.P
+ LDX  _P_TRIG_Q
+#debug bool _P_TRIG_Q
+ NEG
+ AND
+ OR  
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 245 ;	_P_TRIG_Q := InCtrl.P;
+ LDX  InCtrl~P
+#debug bool InCtrl.P
+ WRX  _P_TRIG_Q
+#debug_left bool _P_TRIG_Q
+#srcline 246 ;	
+#srcline 247 ;	// SD/SL
+#srcline 248 ;	if _Stored.SD_FF_Q1 OR _Stored.SL_FF_Q1 then
+ LDX  _Stored~SD_FF_Q1
+#debug bool _Stored.SD_FF_Q1
+ LDX  _Stored~SL_FF_Q1
+#debug bool _Stored.SL_FF_Q1
+ OR  
+ JMC  T_SFC_fbSfcActionControlTS_L13
+#srcline 249 ;    _Stored.TON_T := _Stored.TON_T + LocalTick;
+ LDX  _Stored~TON_T
+#debug time _Stored.TON_T
+ LDX  LocalTick
+#debug time LocalTick
+ ADD
+ WRX  _Stored~TON_T
+#debug_left time _Stored.TON_T
+#srcline 250 ;    if TIME_TO_DWORD(_Stored.TON_T) > SFC_DWMAX_T then
+ LDX  _Stored~TON_T
+#debug time _Stored.TON_T
+ LD   dword 2147483647
+ GT
+ JMC  T_SFC_fbSfcActionControlTS_L15
+#srcline 251 ;      _Stored.TON_T := DWORD_TO_TIME(SFC_DWMAX_T);
+ LD   dword 2147483647
+ WRX  _Stored~TON_T
+#debug_left time _Stored.TON_T
+#srcline 252 ;    end_if;
+T_SFC_fbSfcActionControlTS_L15:
+#srcline 253 ;    _SfcTempTonQ := _Stored.TON_T >= _Stored.TON_PT;
+ LDX  _Stored~TON_T
+#debug time _Stored.TON_T
+ LDX  _Stored~TON_PT
+#debug time _Stored.TON_PT
+ LTS
+ NEG
+ WR   _SfcTempTonQ
+#debug_left bool _SfcTempTonQ
+#srcline 254 ;    _SfcTempBool := _SfcTempBool or (_Stored.SD_FF_Q1 AND _SfcTempTonQ) or (_Stored.SL_FF_Q1 AND NOT _SfcTempTonQ);
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  _Stored~SD_FF_Q1
+#debug bool _Stored.SD_FF_Q1
+ LD   _SfcTempTonQ
+#debug bool _SfcTempTonQ
+ AND
+ OR  
+ LDX  _Stored~SL_FF_Q1
+#debug bool _Stored.SL_FF_Q1
+ LD   _SfcTempTonQ
+#debug bool _SfcTempTonQ
+ NEG
+ AND
+ OR  
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 255 ;	end_if;
+T_SFC_fbSfcActionControlTS_L13:
+#srcline 257 ;	// L/D/DS
+#srcline 258 ;  if InCtrl.DS AND InCtrl.T_Done then
+ LDX  InCtrl~DS
+#debug bool InCtrl.DS
+ LDX  InCtrl~T_Done
+#debug bool InCtrl.T_Done
+ AND
+ JMC  T_SFC_fbSfcActionControlTS_L17
+#srcline 259 ;    _DS_FF_Q1 := true;
+ LD   bool -1       ; true
+ WRX  _DS_FF_Q1
+#debug_left bool _DS_FF_Q1
+#srcline 260 ;  end_if;
+T_SFC_fbSfcActionControlTS_L17:
+#srcline 261 ;  _SfcTempBool := _SfcTempBool or (InCtrl.L AND NOT InCtrl.T_Done) or (InCtrl.D AND InCtrl.T_Done) or _DS_FF_Q1;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~L
+#debug bool InCtrl.L
+ LDX  InCtrl~T_Done
+#debug bool InCtrl.T_Done
+ NEG
+ AND
+ OR  
+ LDX  InCtrl~D
+#debug bool InCtrl.D
+ LDX  InCtrl~T_Done
+#debug bool InCtrl.T_Done
+ AND
+ OR  
+ LDX  _DS_FF_Q1
+#debug bool _DS_FF_Q1
+ OR  
+ WR   _SfcTempBool
+#debug_left bool _SfcTempBool
+#srcline 263 ;  // FS, A and Q evaluation: '_SfcTempBool' is current 'Q'
+#srcline 264 ;  FS := NOT Q AND _SfcTempBool AND NOT InCtrl.R;
+ LDX  Q
+#debug bool Q
+ NEG
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ AND
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ NEG
+ AND
+ WRX  FS
+#debug_left bool FS
+#srcline 265 ;	A := _SfcTempBool AND NOT InCtrl.R;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ NEG
+ AND
+ WRX  A
+#debug_left bool A
+#srcline 266 ;  A := A OR (NOT A AND Q);    // OR Q-F_Trig
+ LDX  A
+#debug bool A
+ LDX  A
+#debug bool A
+ NEG
+ LDX  Q
+#debug bool Q
+ AND
+ OR  
+ WRX  A
+#debug_left bool A
+#srcline 267 ;	Q := _SfcTempBool AND NOT InCtrl.R;
+ LD   _SfcTempBool
+#debug bool _SfcTempBool
+ LDX  InCtrl~R
+#debug bool InCtrl.R
+ NEG
+ AND
+ WRX  Q
+#debug_left bool Q
+#srcline 268 ;	// P1
+#srcline 269 ;	A := A OR (InCtrl.P1 AND NOT _P1_TRIG_Q);
+ LDX  A
+#debug bool A
+ LDX  InCtrl~P1
+#debug bool InCtrl.P1
+ LDX  _P1_TRIG_Q
+#debug bool _P1_TRIG_Q
+ NEG
+ AND
+ OR  
+ WRX  A
+#debug_left bool A
+#srcline 270 ;  FS := FS OR (InCtrl.P1 AND NOT _P1_TRIG_Q);
+ LDX  FS
+#debug bool FS
+ LDX  InCtrl~P1
+#debug bool InCtrl.P1
+ LDX  _P1_TRIG_Q
+#debug bool _P1_TRIG_Q
+ NEG
+ AND
+ OR  
+ WRX  FS
+#debug_left bool FS
+#srcline 271 ;	_P1_TRIG_Q := InCtrl.P1;
+ LDX  InCtrl~P1
+#debug bool InCtrl.P1
+ WRX  _P1_TRIG_Q
+#debug_left bool _P1_TRIG_Q
+#srcline 272 ;	// P0
+#srcline 273 ;	A := A OR (NOT InCtrl.P0 AND _P0_TRIG_Q);
+ LDX  A
+#debug bool A
+ LDX  InCtrl~P0
+#debug bool InCtrl.P0
+ NEG
+ LDX  _P0_TRIG_Q
+#debug bool _P0_TRIG_Q
+ AND
+ OR  
+ WRX  A
+#debug_left bool A
+#srcline 274 ;	_P0_TRIG_Q := InCtrl.P0;
+ LDX  InCtrl~P0
+#debug bool InCtrl.P0
+ WRX  _P0_TRIG_Q
+#debug_left bool _P0_TRIG_Q
+#srcline 275 ;	
+#srcline 276 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOAPP\SFC-LIB\SFCLIB_V1_51\FBSFCSTEP.ST'
+#pou T_SFC_fbStep
+#srcline 1 ;FUNCTION_BLOCK T_SFC_fbStep
+P     61
+T_SFC_fbStep_L0:
+ LINK 0
+#srcline 55 ;  Leave := false; Enter := false;
+ LD   bool 0       ; false
+ WRX  Leave
+#debug_left bool Leave
+ LD   bool 0       ; false
+ WRX  Enter
+#debug_left bool Enter
+#srcline 57 ;  if not _MayForceFalse then  // tento step nemuze mit forced-FALSE
+ LDX  _MayForceFalse
+#debug bool _MayForceFalse
+ NEG
+ JMC  T_SFC_fbStep_L1
+#srcline 58 ;    _FalseForced := false;
+ LD   bool 0       ; false
+ WRX  _FalseForced
+#debug_left bool _FalseForced
+#srcline 59 ;  end_if;
+T_SFC_fbStep_L1:
+#srcline 60 ;  if _Macro then              // makrostep nemuze pouzivat Situ
+ LDX  _Macro
+#debug bool _Macro
+ JMC  T_SFC_fbStep_L3
+#srcline 61 ;    Situ := false;
+ LD   bool 0       ; false
+ WRX  Situ
+#debug_left bool Situ
+#srcline 62 ;  end_if;
+T_SFC_fbStep_L3:
+#srcline 63 ;  if ChartCtrl^.ClearAlarms then
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  1  ; + offset 
+ MUL  8   ; -> bool pointer 
+ ADD  6   ; Bool offset 
+ LDIB 
+#debug bool ChartCtrl^.ClearAlarms
+ JMC  T_SFC_fbStep_L5
+#srcline 64 ;    AlarmLo := false;
+ LD   bool 0       ; false
+ WRX  AlarmLo
+#debug_left bool AlarmLo
+#srcline 65 ;    AlarmHi := false;
+ LD   bool 0       ; false
+ WRX  AlarmHi
+#debug_left bool AlarmHi
+#srcline 66 ;  end_if;
+T_SFC_fbStep_L5:
+#srcline 67 ;  ChartCtrl^.StepAlarmDisabled := ChartCtrl^.StepAlarmDisabled or (AlarmDisabled and ((LimitLo <> SFC_ZERO_T) or (LimitHi <> SFC_ZERO_T)));
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ MUL  8   ; -> bool pointer 
+ ADD  6   ; Bool offset 
+ LDIB 
+#debug bool ChartCtrl^.StepAlarmDisabled
+ LDX  AlarmDisabled
+#debug bool AlarmDisabled
+ LDX  LimitLo
+#debug time LimitLo
+ LD   time 0
+ EQ
+ NEG
+ LDX  LimitHi
+#debug time LimitHi
+ LD   time 0
+ EQ
+ NEG
+ OR  
+ AND
+ OR  
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ MUL  8   ; -> bool pointer 
+ ADD  6   ; Bool offset 
+ WRIB 
+#debug_left bool ChartCtrl^.StepAlarmDisabled
+#srcline 69 ;  // je restartovaci puls
+#srcline 70 ;  if ChartCtrl^.RestartedP then
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  1  ; + offset 
+ MUL  8   ; -> bool pointer 
+ ADD  4   ; Bool offset 
+ LDIB 
+#debug bool ChartCtrl^.RestartedP
+ JMC  T_SFC_fbStep_L7
+#srcline 71 ;    // Zachovany: Preset, LimitLo, LimitHi, AlarmDisabled, Reset, AlarmLo, AlarmHi,
+#srcline 72 ;    //            Situ, _FalseForced, _MayForceFalse, _MayForceStep, _Macro,
+#srcline 73 ;    //            TSum, Count,
+#srcline 74 ;    //            _MacroBeginPtr, _MacroEndPtr
+#srcline 75 ;    _EnterStep := false; _LeaveStep := false;
+ LD   bool 0       ; false
+ WRX  _EnterStep
+#debug_left bool _EnterStep
+ LD   bool 0       ; false
+ WRX  _LeaveStep
+#debug_left bool _LeaveStep
+#srcline 76 ;    _Preg := false; X := false; Ovf := false; Done := false;
+ LD   bool 0       ; false
+ WRX  _Preg
+#debug_left bool _Preg
+ LD   bool 0       ; false
+ WRX  X
+#debug_left bool X
+ LD   bool 0       ; false
+ WRX  Ovf
+#debug_left bool Ovf
+ LD   bool 0       ; false
+ WRX  Done
+#debug_left bool Done
+#srcline 77 ;    T := SFC_ZERO_T;
+ LD   time 0
+ WRX  T
+#debug_left time T
+#srcline 78 ;    //TSum:= SFC_ZERO_T; Count:= 0;
+#srcline 79 ;    // _PassThru bude restartovano pozdeji a neprijdu o to
+#srcline 80 ;  end_if;
+T_SFC_fbStep_L7:
+#srcline 82 ;  // vyuziti globalnich bool hodnot pro urychleni
+#srcline 83 ;  // - pokud je makrostep (hodnota '_MacroBeginPtr' ruzna od -1 - same jednicky) =>> '_SfcTempIsMacroStep' je true
+#srcline 84 ;  {asm}
+#srcline 85
+  ldx   _MacroBeginPtr
+#srcline 86
+  neg
+#srcline 87
+  wr    _SfcTempIsMacroStep
+#srcline 88 ;  {end_asm}
+#srcline 89 ;  // - (2019-03-05) pokud je povoleno generovani alarmu =>> '_SfcTempIf' je true
+#srcline 90 ;  _SfcTempIf := not AlarmDisabled and not ChartCtrl^.AlarmsDisabled;
+ LDX  AlarmDisabled
+#debug bool AlarmDisabled
+ NEG
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  1  ; + offset 
+ MUL  8   ; -> bool pointer 
+ ADD  1   ; Bool offset 
+ LDIB 
+#debug bool ChartCtrl^.AlarmsDisabled
+ NEG
+ AND
+ WR   _SfcTempIf
+#debug_left bool _SfcTempIf
+#srcline 92 ;  // neprobiha restartovani ani restartovaci puls
+#srcline 93 ;  if not ChartCtrl^.Restarted and not ChartCtrl^.RestartedP then
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  1  ; + offset 
+ MUL  8   ; -> bool pointer 
+ ADD  3   ; Bool offset 
+ LDIB 
+#debug bool ChartCtrl^.Restarted
+ NEG
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  1  ; + offset 
+ MUL  8   ; -> bool pointer 
+ ADD  4   ; Bool offset 
+ LDIB 
+#debug bool ChartCtrl^.RestartedP
+ NEG
+ AND
+ JMC  T_SFC_fbStep_L9
+#srcline 94 ;    if X then
+ LDX  X
+#debug bool X
+ JMC  T_SFC_fbStep_L11
+#srcline 95 ;      T := T + ChartCtrl^.LocalTick;
+ LDX  T
+#debug time T
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  16  ; + offset 
+ LDIL 
+#debug time ChartCtrl^.LocalTick
+ ADD
+ WRX  T
+#debug_left time T
+#srcline 96 ;      Ovf := Ovf or (TIME_TO_DWORD(T) > SFC_DWMAX_T);
+ LDX  Ovf
+#debug bool Ovf
+ LDX  T
+#debug time T
+ LD   dword 2147483647
+ GT
+ OR  
+ WRX  Ovf
+#debug_left bool Ovf
+#srcline 97 ;      if not Ovf then
+ LDX  Ovf
+#debug bool Ovf
+ NEG
+ JMC  T_SFC_fbStep_L13
+#srcline 98 ;        Done := T >= Preset;
+ LDX  T
+#debug time T
+ LDX  Preset
+#debug time Preset
+ LTS
+ NEG
+ WRX  Done
+#debug_left bool Done
+#srcline 99 ;        AlarmHi := AlarmHi or (_SfcTempIf and (LimitHi <> SFC_ZERO_T) and (T >= LimitHi));
+ LDX  AlarmHi
+#debug bool AlarmHi
+ LD   _SfcTempIf
+#debug bool _SfcTempIf
+ LDX  LimitHi
+#debug time LimitHi
+ LD   time 0
+ EQ
+ NEG
+ AND
+ LDX  T
+#debug time T
+ LDX  LimitHi
+#debug time LimitHi
+ LTS
+ NEG
+ AND
+ OR  
+ WRX  AlarmHi
+#debug_left bool AlarmHi
+#srcline 100 ;        TSum := TSum + ChartCtrl^.LocalTick;
+ LDX  TSum
+#debug time TSum
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  16  ; + offset 
+ LDIL 
+#debug time ChartCtrl^.LocalTick
+ ADD
+ WRX  TSum
+#debug_left time TSum
+#srcline 101 ;      end_if;
+T_SFC_fbStep_L13:
+#srcline 102 ;    end_if;
+T_SFC_fbStep_L11:
+#srcline 104 ;    if _MayForceFalse then  // step je shora pripojen k paralelni divergenci
+ LDX  _MayForceFalse
+#debug bool _MayForceFalse
+ JMC  T_SFC_fbStep_L15
+#srcline 105 ;      if _EnterStep and ChartCtrl^.SfcForcesEnabled and _FalseForced then
+ LDX  _EnterStep
+#debug bool _EnterStep
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  1  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool ChartCtrl^.SfcForcesEnabled
+ AND
+ LDX  _FalseForced
+#debug bool _FalseForced
+ AND
+ JMC  T_SFC_fbStep_L17
+#srcline 106 ;        _Preg := true;
+ LD   bool -1       ; true
+ WRX  _Preg
+#debug_left bool _Preg
+#srcline 107 ;        _EnterStep := false;
+ LD   bool 0       ; false
+ WRX  _EnterStep
+#debug_left bool _EnterStep
+#srcline 108 ;        T := SFC_ZERO_T;
+ LD   time 0
+ WRX  T
+#debug_left time T
+#srcline 109 ;        Ovf := false;
+ LD   bool 0       ; false
+ WRX  Ovf
+#debug_left bool Ovf
+#srcline 110 ;        Done := false;
+ LD   bool 0       ; false
+ WRX  Done
+#debug_left bool Done
+#srcline 111 ;        if _SfcTempIsMacroStep then		        // krok je makrostep =>> udelat pro nej to same
+ LD   _SfcTempIsMacroStep
+#debug bool _SfcTempIsMacroStep
+ JMC  T_SFC_fbStep_L19
+#srcline 112 ;          _MacroBeginPtr^.T := SFC_ZERO_T;    // nektere hodnoty inicializovat
+ LD   time 0
+ LEAX _MacroBeginPtr
+ LDIL    ; dereference 
+ ADD  1  ; + offset 
+ WRIL 
+#debug_left time _MacroBeginPtr^.T
+#srcline 113 ;          _MacroBeginPtr^.Ovf := false;
+ LD   bool 0       ; false
+ LEAX _MacroBeginPtr
+ LDIL    ; dereference 
+ MUL  8   ; -> bool pointer 
+ ADD  1   ; Bool offset 
+ WRIB 
+#debug_left bool _MacroBeginPtr^.Ovf
+#srcline 114 ;          _MacroBeginPtr^.Done := false;
+ LD   bool 0       ; false
+ LEAX _MacroBeginPtr
+ LDIL    ; dereference 
+ MUL  8   ; -> bool pointer 
+ ADD  2   ; Bool offset 
+ WRIB 
+#debug_left bool _MacroBeginPtr^.Done
+#srcline 115 ;        end_if;
+T_SFC_fbStep_L19:
+#srcline 116 ;      end_if;
+T_SFC_fbStep_L17:
+#srcline 117 ;      if _Preg and (not ChartCtrl^.SfcForcesEnabled or not _FalseForced or _PassThru) then
+ LDX  _Preg
+#debug bool _Preg
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  1  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool ChartCtrl^.SfcForcesEnabled
+ NEG
+ LDX  _FalseForced
+#debug bool _FalseForced
+ NEG
+ OR  
+ LDX  _PassThru
+#debug bool _PassThru
+ OR  
+ AND
+ JMC  T_SFC_fbStep_L21
+#srcline 118 ;        _Preg := false;
+ LD   bool 0       ; false
+ WRX  _Preg
+#debug_left bool _Preg
+#srcline 119 ;        _EnterStep := true;
+ LD   bool -1       ; true
+ WRX  _EnterStep
+#debug_left bool _EnterStep
+#srcline 120 ;      end_if;
+T_SFC_fbStep_L21:
+#srcline 121 ;    elsif _MayForceStep and _PassThru then    // step je shora pripojen pres transition k selektivni divergenci
+ JMP  T_SFC_fbStep_L16
+T_SFC_fbStep_L15:
+ LDX  _MayForceStep
+#debug bool _MayForceStep
+ LDX  _PassThru
+#debug bool _PassThru
+ AND
+ JMC  T_SFC_fbStep_L23
+#srcline 122 ;      _EnterStep := true;
+ LD   bool -1       ; true
+ WRX  _EnterStep
+#debug_left bool _EnterStep
+#srcline 123 ;    end_if;
+ JMP  T_SFC_fbStep_L16
+T_SFC_fbStep_L23:
+T_SFC_fbStep_L16:
+#srcline 124 ;  end_if;
+T_SFC_fbStep_L9:
+#srcline 125 ;  _PassThru := false;
+ LD   bool 0       ; false
+ WRX  _PassThru
+#debug_left bool _PassThru
+#srcline 127 ;  // neni trvaly restart a je nejaka zmena stepu
+#srcline 128 ;  if not ChartCtrl^.Restarted then
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  1  ; + offset 
+ MUL  8   ; -> bool pointer 
+ ADD  3   ; Bool offset 
+ LDIB 
+#debug bool ChartCtrl^.Restarted
+ NEG
+ JMC  T_SFC_fbStep_L24
+#srcline 129 ;    if _Reset then
+ LDX  _Reset
+#debug bool _Reset
+ JMC  T_SFC_fbStep_L26
+#srcline 130 ;      _EnterStep := true;
+ LD   bool -1       ; true
+ WRX  _EnterStep
+#debug_left bool _EnterStep
+#srcline 131 ;      _LeaveStep := false;
+ LD   bool 0       ; false
+ WRX  _LeaveStep
+#debug_left bool _LeaveStep
+#srcline 132 ;      _Reset := false;
+ LD   bool 0       ; false
+ WRX  _Reset
+#debug_left bool _Reset
+#srcline 133 ;      if _SfcTempIsMacroStep then		        // krok je makrostep =>> udelat pro nej to same
+ LD   _SfcTempIsMacroStep
+#debug bool _SfcTempIsMacroStep
+ JMC  T_SFC_fbStep_L28
+#srcline 134 ;        _MacroBeginPtr^._Reset := true;
+ LD   bool -1       ; true
+ LEAX _MacroBeginPtr
+ LDIL    ; dereference 
+ ADD  13  ; + offset 
+ MUL  8   ; -> bool pointer 
+ ADD  1   ; Bool offset 
+ WRIB 
+#debug_left bool _MacroBeginPtr^._Reset
+#srcline 135 ;      end_if;
+T_SFC_fbStep_L28:
+#srcline 136 ;    end_if;
+T_SFC_fbStep_L26:
+#srcline 137 ;    if _EnterStep or _LeaveStep then
+ LDX  _EnterStep
+#debug bool _EnterStep
+ LDX  _LeaveStep
+#debug bool _LeaveStep
+ OR  
+ JMC  T_SFC_fbStep_L30
+#srcline 138 ;      Leave := X and _LeaveStep;
+ LDX  X
+#debug bool X
+ LDX  _LeaveStep
+#debug bool _LeaveStep
+ AND
+ WRX  Leave
+#debug_left bool Leave
+#srcline 139 ;      Enter := not X and _EnterStep;
+ LDX  X
+#debug bool X
+ NEG
+ LDX  _EnterStep
+#debug bool _EnterStep
+ AND
+ WRX  Enter
+#debug_left bool Enter
+#srcline 140 ;      X := _EnterStep;
+ LDX  _EnterStep
+#debug bool _EnterStep
+ WRX  X
+#debug_left bool X
+#srcline 141 ;      if X then
+ LDX  X
+#debug bool X
+ JMC  T_SFC_fbStep_L32
+#srcline 142 ;        T := SFC_ZERO_T;
+ LD   time 0
+ WRX  T
+#debug_left time T
+#srcline 143 ;        Ovf := false;
+ LD   bool 0       ; false
+ WRX  Ovf
+#debug_left bool Ovf
+#srcline 144 ;        Done := (Preset = SFC_ZERO_T);
+ LDX  Preset
+#debug time Preset
+ LD   time 0
+ EQ
+ WRX  Done
+#debug_left bool Done
+#srcline 145 ;        Count := Count + 1;
+ LDX  Count
+#debug udint Count
+ LD   udint 1
+ ADD
+ WRX  Count
+#debug_left udint Count
+#srcline 146 ;      end_if;
+T_SFC_fbStep_L32:
+#srcline 147 ;      AlarmLo := AlarmLo or (_SfcTempIf and Leave and not Ovf and (LimitLo <> SFC_ZERO_T) and (T < LimitLo));
+ LDX  AlarmLo
+#debug bool AlarmLo
+ LD   _SfcTempIf
+#debug bool _SfcTempIf
+ LDX  Leave
+#debug bool Leave
+ AND
+ LDX  Ovf
+#debug bool Ovf
+ NEG
+ AND
+ LDX  LimitLo
+#debug time LimitLo
+ LD   time 0
+ EQ
+ NEG
+ AND
+ LDX  T
+#debug time T
+ LDX  LimitLo
+#debug time LimitLo
+ LTS
+ AND
+ OR  
+ WRX  AlarmLo
+#debug_left bool AlarmLo
+#srcline 148 ;      if _SfcTempIsMacroStep then		        // krok je makrostep =>> udelat pro nej to same
+ LD   _SfcTempIsMacroStep
+#debug bool _SfcTempIsMacroStep
+ JMC  T_SFC_fbStep_L34
+#srcline 149 ;        _MacroBeginPtr^._EnterStep := _EnterStep;
+ LDX  _EnterStep
+#debug bool _EnterStep
+ LEAX _MacroBeginPtr
+ LDIL    ; dereference 
+ ADD  13  ; + offset 
+ MUL  8   ; -> bool pointer 
+ ADD  3   ; Bool offset 
+ WRIB 
+#debug_left bool _MacroBeginPtr^._EnterStep
+#srcline 150 ;        _MacroEndPtr^._LeaveStep := _LeaveStep;
+ LDX  _LeaveStep
+#debug bool _LeaveStep
+ LEAX _MacroEndPtr
+ LDIL    ; dereference 
+ ADD  13  ; + offset 
+ MUL  8   ; -> bool pointer 
+ ADD  4   ; Bool offset 
+ WRIB 
+#debug_left bool _MacroEndPtr^._LeaveStep
+#srcline 151 ;      end_if;
+T_SFC_fbStep_L34:
+#srcline 152 ;      _EnterStep := false;
+ LD   bool 0       ; false
+ WRX  _EnterStep
+#debug_left bool _EnterStep
+#srcline 153 ;      _LeaveStep := false;
+ LD   bool 0       ; false
+ WRX  _LeaveStep
+#debug_left bool _LeaveStep
+#srcline 154 ;    end_if;
+T_SFC_fbStep_L30:
+#srcline 155 ;  end_if;
+T_SFC_fbStep_L24:
+#srcline 157 ;  if ChartCtrl^.RecordSituRq and not _Macro then
+ LEAX ChartCtrl
+ LDIL    ; dereference 
+ ADD  3  ; + offset 
+ MUL  8   ; -> bool pointer 
+ ADD  2   ; Bool offset 
+ LDIB 
+#debug bool ChartCtrl^.RecordSituRq
+ LDX  _Macro
+#debug bool _Macro
+ NEG
+ AND
+ JMC  T_SFC_fbStep_L36
+#srcline 158 ;    Situ := X;
+ LDX  X
+#debug bool X
+ WRX  Situ
+#debug_left bool Situ
+#srcline 159 ;  end_if;
+T_SFC_fbStep_L36:
+#srcline 161 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+T_SFC_fbStep__InstanceInit__:
+ LINK 0
+ LD   udint $FFFFFFFF    ; nil
+ WRX  ChartCtrl
+ LD   udint $FFFFFFFF    ; nil
+ WRX  _MacroBeginPtr
+ LD   udint $FFFFFFFF    ; nil
+ WRX  _MacroEndPtr
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+ª;  •  ’

@@ -1,0 +1,7 @@
+<Variables>
+	<Item Name="testString" Pos="03000000" Tdi="5A826B0B" Type="48" />
+	<Item Name="PASSSET" Pos="03000067" Tdi="8B6278EF" Type="0" />
+	<Item Name="PASSCANCEL" Pos="03000067" Tdi="CECDF5F6" Type="1" />
+	<Item Name="webName" Pos="03000068" Tdi="88502E47" Type="48" />
+	<Item Name="webPass" Pos="03000073" Tdi="04A6AD81" Type="48" />
+</Variables>

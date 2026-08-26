@@ -1,0 +1,599 @@
+<?xml version="1.0" encoding="ISO-8859-2" standalone="yes"?>
+<MAP version="3" name="wrk" project="wrk" content="public" >
+ <TYPES>
+  <RECORD name="TStatC_DL_0012S" size="1" pou="struct" >
+    <ITEM name="dummy0" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="dummy1" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="RNDOK" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="SHS" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="RRE" type="BOOL" addr="0" bit="4" size="1" descr="odpověĄs chybou" />
+    <ITEM name="RRF" type="BOOL" addr="0" bit="5" size="1" descr="kladná odpověď" />
+    <ITEM name="Done" type="BOOL" addr="0" bit="6" size="1" descr="hotová odpověď ( kladná, záporná, s_chybou)" />
+    <ITEM name="ARC" type="BOOL" addr="0" bit="7" size="1" descr="alternace" />
+  </RECORD>
+  <RECORD name="TContC_DL_0012S" size="1" pou="struct" >
+    <ITEM name="LENM" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="DBL" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="RNDS" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="CHS" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="dummy4" type="BOOL" addr="0" bit="4" size="1" descr="pouit jako semafor busy vysílacího buferu C_DL_0012Sout" />
+    <ITEM name="dummy5" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="TRG" type="BOOL" addr="0" bit="6" size="1" descr="vyslat zprávu" />
+    <ITEM name="ACN" type="BOOL" addr="0" bit="7" size="1" descr="alternace" />
+  </RECORD>
+  <RECORD name="tC_DL_0012Sin" size="2" pou="struct" >
+    <ITEM name="stat" type="TStatC_DL_0012S" addr="0" size="1" />
+    <ITEM name="data" type="USINT" addr="1" size="1" />
+  </RECORD>
+  <RECORD name="tC_DL_0012Sout" size="4" pou="struct" >
+    <ITEM name="cont" type="TContC_DL_0012S" addr="0" size="1" />
+    <ITEM name="address" type="USINT" addr="1" size="1" />
+    <ITEM name="command" type="USINT" addr="2" size="1" />
+    <ITEM name="data" type="USINT" addr="3" size="1" />
+  </RECORD>
+  <RECORD name="TBIN_7DI" size="1" pou="struct" >
+    <ITEM name="DI0" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="DI1" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="DI2" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="DI3" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="IN230" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="HDO0" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="HDO1" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="dummy7" type="BOOL" addr="0" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TBIN_4DIP" size="1" pou="struct" >
+    <ITEM name="DIP0" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="DIP1" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="DIP2" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="DIP3" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="dummy4" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="dummy5" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="dummy6" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="dummy7" type="BOOL" addr="0" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TAIStat" size="2" pou="struct" >
+    <ITEM name="UNF" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="UNR" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="OVR" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="OVF" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="FLS" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="CJC" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="dummy6" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="dummy7" type="BOOL" addr="0" bit="7" size="1" />
+    <ITEM name="CHC" type="BOOL" addr="1" bit="0" size="1" />
+    <ITEM name="dummy9" type="BOOL" addr="1" bit="1" size="1" />
+    <ITEM name="dummy10" type="BOOL" addr="1" bit="2" size="1" />
+    <ITEM name="dummy11" type="BOOL" addr="1" bit="3" size="1" />
+    <ITEM name="dummy12" type="BOOL" addr="1" bit="4" size="1" />
+    <ITEM name="dummy13" type="BOOL" addr="1" bit="5" size="1" />
+    <ITEM name="dummy14" type="BOOL" addr="1" bit="6" size="1" />
+    <ITEM name="dummy15" type="BOOL" addr="1" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TAI" size="12" pou="struct" >
+    <ITEM name="STAT" type="TAIStat" addr="0" size="2" />
+    <ITEM name="FS" type="INT" addr="2" size="2" />
+    <ITEM name="ENG" type="REAL" addr="4" size="4" />
+    <ITEM name="PCT" type="REAL" addr="8" size="4" />
+  </RECORD>
+  <RECORD name="TSTPW2" size="2" pou="struct" >
+    <ITEM name="ACUC" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="PWRA" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="dummy2" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="dummy3" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="WSRC" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="ESRC" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="WACU" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="EACU" type="BOOL" addr="0" bit="7" size="1" />
+    <ITEM name="dummy8" type="BOOL" addr="1" bit="0" size="1" />
+    <ITEM name="dummy9" type="BOOL" addr="1" bit="1" size="1" />
+    <ITEM name="dummy10" type="BOOL" addr="1" bit="2" size="1" />
+    <ITEM name="dummy11" type="BOOL" addr="1" bit="3" size="1" />
+    <ITEM name="dummy12" type="BOOL" addr="1" bit="4" size="1" />
+    <ITEM name="dummy13" type="BOOL" addr="1" bit="5" size="1" />
+    <ITEM name="dummy14" type="BOOL" addr="1" bit="6" size="1" />
+    <ITEM name="dummy15" type="BOOL" addr="1" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="DT_IR2553_IN" size="64" pou="struct" >
+    <ITEM name="DIS" type="TBIN_7DI" addr="0" size="1" />
+    <ITEM name="DIP" type="TBIN_4DIP" addr="1" size="1" />
+    <ITEM name="AI0" type="TAI" addr="2" size="12" />
+    <ITEM name="AI1" type="TAI" addr="14" size="12" />
+    <ITEM name="AI2" type="TAI" addr="26" size="12" />
+    <ITEM name="AI3" type="TAI" addr="38" size="12" />
+    <ITEM name="STPW" type="TSTPW2" addr="50" size="2" />
+    <ITEM name="USRC" type="REAL" addr="52" size="4" />
+    <ITEM name="SACU" type="REAL" addr="56" size="4" />
+    <ITEM name="IACU" type="REAL" addr="60" size="4" />
+  </RECORD>
+  <RECORD name="TCIB_CKY0001R_DI" size="1" pou="struct" >
+    <ITEM name="DI1" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="DI2" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="CLICK_DI1" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="CLICK_DI2" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="PRESS_DI1" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="PRESS_DI2" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="TAMPER1" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="TAMPER2" type="BOOL" addr="0" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_CKY0001R_STAT" size="1" pou="struct" >
+    <ITEM name="OUFT" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="VLDT" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="OUF1" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="VLD1" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="OUF2" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="VLD2" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="dummy6" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="dummy7" type="BOOL" addr="0" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_C_KY_0001R_IN" size="23" pou="struct" >
+    <ITEM name="BUTTONS" type="BYTE" addr="0" size="1" />
+    <ARRAY size="8" lo="0" hi="7" > 
+      <ITEM name="RF_CODE" type="BYTE" addr="1" size="1" />
+      </ARRAY> 
+    <ITEM name="DI" type="TCIB_CKY0001R_DI" addr="9" size="1" />
+    <ITEM name="STAT" type="TCIB_CKY0001R_STAT" addr="10" size="1" />
+    <ITEM name="THERM" type="REAL" addr="11" size="4" />
+    <ITEM name="AI1" type="REAL" addr="15" size="4" />
+    <ITEM name="AI2" type="REAL" addr="19" size="4" />
+  </RECORD>
+  <RECORD name="TCIB_C_KY_0001R_OUT" size="38" pou="struct" >
+    <ITEM name="SETT" type="BYTE" addr="0" size="1" />
+    <ITEM name="ICONS" type="BYTE" addr="1" size="1" />
+    <ITEM name="TIM" type="INT" addr="2" size="2" />
+    <ITEM name="TEXT1" type="STRING" addr="4" size="17" />
+    <ITEM name="TEXT2" type="STRING" addr="21" size="17" />
+  </RECORD>
+  <RECORD name="TCIB_C_WS_0000R_PG_BTN" size="2" pou="struct" >
+    <ITEM name="BTN1" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="BTN2" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="BTN3" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="BTN4" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="BTN5" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="BTN6" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="BTN7" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="BTN8" type="BOOL" addr="0" bit="7" size="1" />
+    <ITEM name="BTN9" type="BOOL" addr="1" bit="0" size="1" />
+    <ITEM name="BTN10" type="BOOL" addr="1" bit="1" size="1" />
+    <ITEM name="BTN11" type="BOOL" addr="1" bit="2" size="1" />
+    <ITEM name="BTN12" type="BOOL" addr="1" bit="3" size="1" />
+    <ITEM name="dummy12" type="BOOL" addr="1" bit="4" size="1" />
+    <ITEM name="dummy13" type="BOOL" addr="1" bit="5" size="1" />
+    <ITEM name="dummy14" type="BOOL" addr="1" bit="6" size="1" />
+    <ITEM name="PR" type="BOOL" addr="1" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_C_WS_0000R_PG_CLICK" size="2" pou="struct" >
+    <ITEM name="CLICKB1" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="CLICKB2" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="CLICKB3" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="CLICKB4" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="CLICKB5" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="CLICKB6" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="CLICKB7" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="CLICKB8" type="BOOL" addr="0" bit="7" size="1" />
+    <ITEM name="CLICKB9" type="BOOL" addr="1" bit="0" size="1" />
+    <ITEM name="CLICKB10" type="BOOL" addr="1" bit="1" size="1" />
+    <ITEM name="CLICKB11" type="BOOL" addr="1" bit="2" size="1" />
+    <ITEM name="CLICKB12" type="BOOL" addr="1" bit="3" size="1" />
+    <ITEM name="dummy12" type="BOOL" addr="1" bit="4" size="1" />
+    <ITEM name="dummy13" type="BOOL" addr="1" bit="5" size="1" />
+    <ITEM name="dummy14" type="BOOL" addr="1" bit="6" size="1" />
+    <ITEM name="dummy15" type="BOOL" addr="1" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_C_WS_0000R_PG_PRESS" size="2" pou="struct" >
+    <ITEM name="PRESSB1" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="PRESSB2" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="PRESSB3" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="PRESSB4" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="PRESSB5" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="PRESSB6" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="PRESSB7" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="PRESSB8" type="BOOL" addr="0" bit="7" size="1" />
+    <ITEM name="PRESSB9" type="BOOL" addr="1" bit="0" size="1" />
+    <ITEM name="PRESSB10" type="BOOL" addr="1" bit="1" size="1" />
+    <ITEM name="PRESSB11" type="BOOL" addr="1" bit="2" size="1" />
+    <ITEM name="PRESSB12" type="BOOL" addr="1" bit="3" size="1" />
+    <ITEM name="dummy12" type="BOOL" addr="1" bit="4" size="1" />
+    <ITEM name="dummy13" type="BOOL" addr="1" bit="5" size="1" />
+    <ITEM name="dummy14" type="BOOL" addr="1" bit="6" size="1" />
+    <ITEM name="dummy15" type="BOOL" addr="1" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_C_WS_0000R_PG_BTNs" size="6" pou="struct" >
+    <ITEM name="BTN" type="TCIB_C_WS_0000R_PG_BTN" addr="0" size="2" />
+    <ITEM name="CLICK" type="TCIB_C_WS_0000R_PG_CLICK" addr="2" size="2" />
+    <ITEM name="PRESS" type="TCIB_C_WS_0000R_PG_PRESS" addr="4" size="2" />
+  </RECORD>
+  <RECORD name="TCIB_C_WS_0000R_PG_CONT" size="1" pou="struct" >
+    <ITEM name="DOT1A" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="DOT2A" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="DOT1B" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="DOT2B" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="DBA" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="DBB" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="BZ" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="PX" type="BOOL" addr="0" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_C_WS_0000R_PG_LED" size="4" pou="struct" >
+    <ITEM name="LED1" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="LED2" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="LED3" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="LED4" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="LED5" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="LED6" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="LED7" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="LED8" type="BOOL" addr="0" bit="7" size="1" />
+    <ITEM name="LED9" type="BOOL" addr="1" bit="0" size="1" />
+    <ITEM name="LED10" type="BOOL" addr="1" bit="1" size="1" />
+    <ITEM name="LED11" type="BOOL" addr="1" bit="2" size="1" />
+    <ITEM name="LED12" type="BOOL" addr="1" bit="3" size="1" />
+    <ITEM name="dummy12" type="BOOL" addr="1" bit="4" size="1" />
+    <ITEM name="dummy13" type="BOOL" addr="1" bit="5" size="1" />
+    <ITEM name="dummy14" type="BOOL" addr="1" bit="6" size="1" />
+    <ITEM name="dummy15" type="BOOL" addr="1" bit="7" size="1" />
+    <ITEM name="RED1" type="BOOL" addr="2" bit="0" size="1" />
+    <ITEM name="RED2" type="BOOL" addr="2" bit="1" size="1" />
+    <ITEM name="RED3" type="BOOL" addr="2" bit="2" size="1" />
+    <ITEM name="RED4" type="BOOL" addr="2" bit="3" size="1" />
+    <ITEM name="RED5" type="BOOL" addr="2" bit="4" size="1" />
+    <ITEM name="RED6" type="BOOL" addr="2" bit="5" size="1" />
+    <ITEM name="dummy22" type="BOOL" addr="2" bit="6" size="1" />
+    <ITEM name="dummy23" type="BOOL" addr="2" bit="7" size="1" />
+    <ITEM name="GREEN1" type="BOOL" addr="3" bit="0" size="1" />
+    <ITEM name="GREEN2" type="BOOL" addr="3" bit="1" size="1" />
+    <ITEM name="GREEN3" type="BOOL" addr="3" bit="2" size="1" />
+    <ITEM name="GREEN4" type="BOOL" addr="3" bit="3" size="1" />
+    <ITEM name="GREEN5" type="BOOL" addr="3" bit="4" size="1" />
+    <ITEM name="GREEN6" type="BOOL" addr="3" bit="5" size="1" />
+    <ITEM name="dummy30" type="BOOL" addr="3" bit="6" size="1" />
+    <ITEM name="dummy31" type="BOOL" addr="3" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_C_WS_0000R_PG_GLASSO" size="12" pou="struct" >
+    <ITEM name="CONT" type="TCIB_C_WS_0000R_PG_CONT" addr="0" size="1" />
+    <ITEM name="LED" type="TCIB_C_WS_0000R_PG_LED" addr="1" size="4" />
+    <ITEM name="BLIGHT" type="USINT" addr="5" size="1" />
+    <ITEM name="DISPA" type="INT" addr="6" size="2" />
+    <ITEM name="DISPB" type="INT" addr="8" size="2" />
+    <ITEM name="SETA" type="USINT" addr="10" size="1" />
+    <ITEM name="SETB" type="USINT" addr="11" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_CWG0503S_CODE" size="6" pou="struct" >
+    <ITEM name="STAT" type="USINT" addr="0" size="1" />
+    <ARRAY size="5" lo="0" hi="4" > 
+      <ITEM name="VAL" type="USINT" addr="1" size="1" />
+      </ARRAY> 
+  </RECORD>
+  <RECORD name="TCIB_CWG0503S_STAT" size="1" pou="struct" >
+    <ITEM name="OUF4" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="VLD4" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="OUF5" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="VLD5" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="dummy4" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="dummy5" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="dummy6" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="dummy7" type="BOOL" addr="0" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_CWG0503S_DI" size="1" pou="struct" >
+    <ITEM name="DI1" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="DI2" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="DI3" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="DI4" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="DI5" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="TAMPER4" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="TAMPER5" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="dummy7" type="BOOL" addr="0" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_C_WG_0503S_IN" size="16" pou="struct" >
+    <ITEM name="CODE" type="TCIB_CWG0503S_CODE" addr="0" size="6" />
+    <ITEM name="STAT" type="TCIB_CWG0503S_STAT" addr="6" size="1" />
+    <ITEM name="AI4" type="REAL" addr="7" size="4" />
+    <ITEM name="AI5" type="REAL" addr="11" size="4" />
+    <ITEM name="DI" type="TCIB_CWG0503S_DI" addr="15" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_DO3" size="1" pou="struct" >
+    <ITEM name="DO1" type="BOOL" addr="0" bit="0" size="1" />
+    <ITEM name="DO2" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="DO3" type="BOOL" addr="0" bit="2" size="1" />
+    <ITEM name="dummy3" type="BOOL" addr="0" bit="3" size="1" />
+    <ITEM name="dummy4" type="BOOL" addr="0" bit="4" size="1" />
+    <ITEM name="dummy5" type="BOOL" addr="0" bit="5" size="1" />
+    <ITEM name="dummy6" type="BOOL" addr="0" bit="6" size="1" />
+    <ITEM name="dummy7" type="BOOL" addr="0" bit="7" size="1" />
+  </RECORD>
+  <RECORD name="TCIB_C_WG_0503S_OUT" size="1" pou="struct" >
+    <ITEM name="DOs" type="TCIB_DO3" addr="0" size="1" />
+  </RECORD>
+ </TYPES>
+ <DATA>
+  <ITEM name="ROSOCHA_IO_IN" type="DT_IR2553_IN" location="%I" addr="396" size="64" puball="1" />
+  <ITEM name="SYS_000_1" type="BOOL" location="%I" addr="396" bit="5" size="1" puball="1" descr="HDO;000" />
+  <ITEM name="SYS_230" type="BOOL" location="%I" addr="396" bit="4" size="1" puball="1" descr="AC 230V;000" />
+  <ITEM name="DOR_X12" type="BOOL" location="%I" addr="396" bit="3" size="1" puball="1" descr="Predna Brana;X01" />
+  <ITEM name="PIR_X11_2" type="BOOL" location="%I" addr="396" bit="2" size="1" puball="1" descr="Pred Garáou;X01" />
+  <ITEM name="PIR_XB1" type="BOOL" location="%I" addr="396" bit="1" size="1" puball="1" descr="Na bazén;X01" />
+  <ITEM name="PIR_X00" type="BOOL" location="%I" addr="396" bit="0" size="1" puball="1" descr="Technika bazén;X00" />
+  <ITEM name="DLM_001" type="tC_DL_0012Sin" location="%I" addr="717" size="2" puball="1" descr="Dali-1;000" />
+  <ITEM name="TEH_102" type="REAL" location="%I" addr="739" size="4" puball="1" descr="Podlaha;102" />
+  <ITEM name="PIR_102" type="BOOL" location="%I" addr="719" bit="1" size="1" puball="1" descr="atnícek;102" />
+  <ITEM name="KEY_002_1" type="TCIB_C_KY_0001R_IN" location="%I" addr="750" size="23" puball="1" descr="Klavesnica predsien;101" />
+  <ITEM name="DYM_201" type="REAL" location="%I" addr="781" size="4" puball="1" descr="Chodba-2;201" />
+  <ITEM name="TER_109" type="REAL" location="%I" addr="777" size="4" puball="1" descr="Miestnost;109" />
+  <ITEM name="PIR_109" type="BOOL" location="%I" addr="773" bit="5" size="1" puball="1" descr="Spajz;109" />
+  <ITEM name="WSB_109_2" type="BOOL" location="%I" addr="773" bit="0" size="1" puball="1" descr="pajz;109" />
+  <ITEM name="TER_131" type="REAL" location="%I" addr="807" size="4" puball="1" descr="Chodba-1;103" />
+  <ITEM name="TGL_131_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="800" size="6" puball="1" descr="Na schody;103" />
+  <ITEM name="LUX_103" type="REAL" location="%I" addr="796" size="4" puball="1" descr="Súmrak 1P;103" />
+  <ITEM name="PIR_131_2" type="BOOL" location="%I" addr="790" bit="0" size="1" puball="1" descr="Schod-1.1;012" />
+  <ITEM name="TER_2X1" type="REAL" location="%I" addr="832" size="4" puball="1" descr="atník;105" />
+  <ITEM name="TGL_2X1_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="825" size="6" puball="1" descr="atník;105" />
+  <ITEM name="TEH_2X1" type="REAL" location="%I" addr="817" size="4" puball="1" descr="Podlaha;105" />
+  <ITEM name="PIR_2X1_2" type="BOOL" location="%I" addr="815" bit="1" size="1" puball="1" descr="atník;105" />
+  <ITEM name="TER_107" type="REAL" location="%I" addr="857" size="4" puball="1" descr="Miestnost;107" />
+  <ITEM name="TGL_107_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="850" size="6" puball="1" descr="Pracovna;107" />
+  <ITEM name="TEH_107" type="REAL" location="%I" addr="842" size="4" puball="1" descr="Podlaha;107" />
+  <ITEM name="PIR_107_2" type="BOOL" location="%I" addr="840" bit="1" size="1" puball="1" descr="Pracovna;107" />
+  <ITEM name="TER_113" type="REAL" location="%I" addr="882" size="4" puball="1" descr="WC;113" />
+  <ITEM name="TGL_113_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="875" size="6" puball="1" descr="WC;113" />
+  <ITEM name="TEH_103" type="REAL" location="%I" addr="867" size="4" puball="1" descr="Podlaha chdba;103" />
+  <ITEM name="PIR_113_2" type="BOOL" location="%I" addr="865" bit="1" size="1" puball="1" descr="WC;113" />
+  <ITEM name="TGL_101_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="900" size="6" puball="1" descr="Predsien;101" />
+  <ITEM name="LUX_X12" type="REAL" location="%I" addr="896" size="4" puball="1" descr="Hl.vchod;X12" />
+  <ITEM name="TEH_101" type="REAL" location="%I" addr="892" size="4" puball="1" descr="Podlaha;101" />
+  <ITEM name="TER_101" type="REAL" location="%I" addr="932" size="4" puball="1" descr="Miestnost;101" />
+  <ITEM name="TGL_11P_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="925" size="6" puball="1" descr="Predsien-P;101" />
+  <ITEM name="PIR_X12" type="BOOL" location="%I" addr="915" bit="1" size="1" puball="1" descr="Hl.Vstup;X12" />
+  <ITEM name="PIR_101_2" type="BOOL" location="%I" addr="915" bit="0" size="1" puball="1" descr="Predsien-P;101" />
+  <ITEM name="TGL_1BL_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="950" size="6" puball="1" descr="Obývacka-L;112" />
+  <ITEM name="TEH_112" type="REAL" location="%I" addr="942" size="4" puball="1" descr="Obývacka;112" />
+  <ITEM name="PIR_112_2" type="BOOL" location="%I" addr="940" bit="1" size="1" puball="1" descr="Chodba;112" />
+  <ITEM name="TER_112" type="REAL" location="%I" addr="982" size="4" puball="1" descr="Miestnost;112" />
+  <ITEM name="TGL_1BP_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="975" size="6" puball="1" descr="Obývacka-P;112" />
+  <ITEM name="PIR_13X_2" type="BOOL" location="%I" addr="965" bit="1" size="1" puball="1" descr="Obyvacka;112" />
+  <ITEM name="PIR_110_2" type="BOOL" location="%I" addr="965" bit="0" size="1" puball="1" descr="Kuchyna;110" />
+  <ITEM name="COX_110_0" type="REAL" location="%I" addr="994" size="4" puball="1" descr="CO2 Kuchyna;110" />
+  <ITEM name="DYM_110" type="BOOL" location="%I" addr="990" bit="2" size="1" puball="1" descr="Dym kuchyna;110" />
+  <ITEM name="PIR_XE0" type="BOOL" location="%I" addr="990" bit="1" size="1" puball="1" descr="Chodník-bazén;X00" />
+  <ITEM name="TER_X10" type="REAL" location="%I" addr="1032" size="4" puball="1" descr="Terasa-1;X10" />
+  <ITEM name="TGL_X10_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1025" size="6" puball="1" descr="Terasa-1;X10" />
+  <ITEM name="PIR_X10" type="BOOL" location="%I" addr="1015" bit="0" size="1" puball="1" descr="Terasa;X10" />
+  <ITEM name="TER_110" type="REAL" location="%I" addr="1057" size="4" puball="1" descr="Kuchyna;110" />
+  <ITEM name="TGL_110_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1050" size="6" puball="1" descr="Kuchyna;110" />
+  <ITEM name="TEH_110" type="REAL" location="%I" addr="1042" size="4" puball="1" descr="Podlaha;110" />
+  <ITEM name="PIR_X13" type="BOOL" location="%I" addr="1040" bit="1" size="1" puball="1" descr="Chodník-gará;X01" />
+  <ITEM name="TER_243" type="REAL" location="%I" addr="1083" size="4" puball="1" descr="Miestnost;204" />
+  <ITEM name="TGL_243_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1076" size="6" puball="1" descr="Postel-L;204" />
+  <ITEM name="PIR_24L_2" type="BOOL" location="%I" addr="1066" bit="0" size="1" puball="1" descr="Postel-L;204" />
+  <ITEM name="TGL_22L_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1101" size="6" puball="1" descr="Zrkadlo-L;202" />
+  <ITEM name="PIR_21S_2" type="BOOL" location="%I" addr="1091" bit="1" size="1" puball="1" descr="Schody-Podesta;103" />
+  <ITEM name="PIR_1A3_2" type="BOOL" location="%I" addr="1091" bit="0" size="1" puball="1" descr="Kupelna-2;202" />
+  <ITEM name="TER_202" type="REAL" location="%I" addr="1133" size="4" puball="1" descr="Kupelna-2;202" />
+  <ITEM name="TGL_22P_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1126" size="6" puball="1" descr="Kúpelna-2-P;202" />
+  <ITEM name="DLM_002" type="tC_DL_0012Sin" location="%I" addr="1141" size="2" puball="1" descr="Dali-2;000" />
+  <ITEM name="TGL_242_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1153" size="6" puball="1" descr="Postel-P;204" />
+  <ITEM name="TEH_204" type="REAL" location="%I" addr="1145" size="4" puball="1" descr="Podlaha 204;204" />
+  <ITEM name="PIR_24P_2" type="BOOL" location="%I" addr="1143" bit="1" size="1" puball="1" descr="Postel-P;204" />
+  <ITEM name="TGL_241_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1178" size="6" puball="1" descr="Na terasu;204" />
+  <ITEM name="PIR_X21_2" type="BOOL" location="%I" addr="1168" bit="0" size="1" puball="1" descr="Terasa-X21;X02" />
+  <ITEM name="TGL_233_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1205" size="6" puball="1" descr="Dvere;203" />
+  <ITEM name="TEH_233" type="REAL" location="%I" addr="1197" size="4" puball="1" descr="Podlaha;203" />
+  <ITEM name="PIR_201_2" type="BOOL" location="%I" addr="1195" bit="1" size="1" puball="1" descr="Chodba-2;201" />
+  <ITEM name="TGL_234_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1231" size="6" puball="1" descr="Na terasu;203" />
+  <ITEM name="PIR_X22_2" type="BOOL" location="%I" addr="1221" bit="1" size="1" puball="1" descr="Terasa-X22;X23" />
+  <ITEM name="PIR_X23" type="BOOL" location="%I" addr="1221" bit="0" size="1" puball="1" descr="Teraska-X23;X23" />
+  <ITEM name="TER_201" type="REAL" location="%I" addr="1273" size="4" puball="1" descr="Chodba-2;201" />
+  <ITEM name="TGL_201_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1266" size="6" puball="1" descr="Chodba-2;201" />
+  <ITEM name="PIR_2E1_2" type="BOOL" location="%I" addr="1256" bit="0" size="1" puball="1" descr="Sch.2-&gt;1;012" />
+  <ITEM name="TEH_202" type="REAL" location="%I" addr="1301" size="4" puball="1" descr="Podlaha K2;202" />
+  <ITEM name="LUX_202" type="REAL" location="%I" addr="1289" size="4" puball="1" descr="Súmrak 2P;202" />
+  <ITEM name="TER_203" type="REAL" location="%I" addr="1322" size="4" puball="1" descr="Miestnost;203" />
+  <ITEM name="TGL_231_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1315" size="6" puball="1" descr="Postel-L;203" />
+  <ITEM name="PIR_231_2" type="BOOL" location="%I" addr="1305" bit="0" size="1" puball="1" descr="Postel-L;203" />
+  <ITEM name="PIR_A03" type="BOOL" location="%I" addr="1330" bit="1" size="1" puball="1" descr="Nad rozvadzacom;003" />
+  <ITEM name="DOR_X11" type="BOOL" location="%I" addr="1330" bit="0" size="1" puball="1" descr="Zadna brana;X01" />
+  <ITEM name="TGL_232_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1374" size="6" puball="1" descr="Postel-P;203" />
+  <ITEM name="TEH_203" type="REAL" location="%I" addr="1370" size="4" puball="1" descr="Podlaha;203" />
+  <ITEM name="PIR_23P_2" type="BOOL" location="%I" addr="1364" bit="0" size="1" puball="1" descr="Postel-P;203" />
+  <ITEM name="KEY_108_0" type="TCIB_C_WG_0503S_IN" location="%I" addr="1389" size="16" puball="1" descr="Klavesnica-garaz;108" />
+  <ITEM name="DOR_108" type="BOOL" location="%I" addr="1407" bit="5" size="1" puball="1" descr="Garaz-snimac;108" />
+  <ITEM name="PIR_108" type="BOOL" location="%I" addr="1407" bit="4" size="1" puball="1" descr="Garaz;108" />
+  <ITEM name="WSB_108_2" type="BOOL" location="%I" addr="1407" bit="0" size="1" puball="1" descr="Gará-brana;108" />
+  <ITEM name="TER_108" type="REAL" location="%I" addr="1427" size="4" puball="1" descr="Miestnost;108" />
+  <ITEM name="WSB_182_2" type="BOOL" location="%I" addr="1423" bit="0" size="1" puball="1" descr="Gará-dvere;108" />
+  <ITEM name="TGL_16L_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1449" size="6" puball="1" descr="Kúpelna-L;106" />
+  <ITEM name="PIR_106_2" type="BOOL" location="%I" addr="1439" bit="0" size="1" puball="1" descr="Kupelna;106" />
+  <ITEM name="TER_106" type="REAL" location="%I" addr="1481" size="4" puball="1" descr="Kupelna-1;106" />
+  <ITEM name="TGL_16P_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1474" size="6" puball="1" descr="Kúpelna-P;106" />
+  <ITEM name="TEH_106" type="REAL" location="%I" addr="1466" size="4" puball="1" descr="Podlaha;106" />
+  <ITEM name="TGL_14P_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1499" size="6" puball="1" descr="Postel-P;104" />
+  <ITEM name="PIR_14P_2" type="BOOL" location="%I" addr="1489" bit="0" size="1" puball="1" descr="Postel-P;104" />
+  <ITEM name="TGL_14D_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1524" size="6" puball="1" descr="Pri dverách;104" />
+  <ITEM name="TEH_104" type="REAL" location="%I" addr="1516" size="4" puball="1" descr="Podlaha;104" />
+  <ITEM name="TER_104" type="REAL" location="%I" addr="1556" size="4" puball="1" descr="Spálna;104" />
+  <ITEM name="TGL_14L_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1549" size="6" puball="1" descr="Postel-L;104" />
+  <ITEM name="PIR_14L_2" type="BOOL" location="%I" addr="1539" bit="0" size="1" puball="1" descr="Postel-L;104" />
+  <ITEM name="COX_002_0" type="REAL" location="%I" addr="1638" size="4" puball="1" descr="CO2 Vináren;002" />
+  <ITEM name="TER_002" type="REAL" location="%I" addr="1675" size="4" puball="1" descr="Miestnost;002" />
+  <ITEM name="TGL_002_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1668" size="6" puball="1" descr="Vináren;002" />
+  <ITEM name="TEH_002" type="REAL" location="%I" addr="1660" size="4" puball="1" descr="Podlaha;002" />
+  <ITEM name="PIR_002_2" type="BOOL" location="%I" addr="1658" bit="1" size="1" puball="1" descr="Vináren;002" />
+  <ITEM name="TER_001" type="REAL" location="%I" addr="1700" size="4" puball="1" descr="Chodba-0;001" />
+  <ITEM name="TGL_YY1_6" type="TCIB_C_WS_0000R_PG_BTNs" location="%I" addr="1693" size="6" puball="1" descr="Chodba.0;001" />
+  <ITEM name="TEH_001" type="REAL" location="%I" addr="1685" size="4" puball="1" descr="Podlaha;001" />
+  <ITEM name="PIR_001" type="BOOL" location="%I" addr="1683" bit="1" size="1" puball="1" descr="Chodba-0;001" />
+  <ITEM name="TEH_003" type="REAL" location="%I" addr="1716" size="4" puball="1" descr="Podlaha;003" />
+  <ITEM name="TER_003" type="REAL" location="%I" addr="1712" size="4" puball="1" descr="Miestnost;003" />
+  <ITEM name="WSB_003_2" type="BOOL" location="%I" addr="1708" bit="0" size="1" puball="1" descr="Technika;003" />
+  <ITEM name="PIR_003" type="BOOL" location="%I" addr="1724" bit="5" size="1" puball="1" descr="PIR-technika;003" />
+  <ITEM name="PIR_006" type="BOOL" location="%I" addr="1724" bit="4" size="1" puball="1" descr="PIR-WC-0;003" />
+  <ITEM name="WSB_006_2" type="BOOL" location="%I" addr="1724" bit="0" size="1" puball="1" descr="WC-technika;003" />
+  <ITEM name="TER_005" type="REAL" location="%I" addr="1744" size="4" puball="1" descr="Miestnost;005" />
+  <ITEM name="PIR_005" type="BOOL" location="%I" addr="1740" bit="5" size="1" puball="1" descr="Sklad;005" />
+  <ITEM name="PIR_004" type="BOOL" location="%I" addr="1740" bit="4" size="1" puball="1" descr="Fitness;004" />
+  <ITEM name="WSB_005_2" type="BOOL" location="%I" addr="1740" bit="0" size="1" puball="1" descr="Sklad;005" />
+  <ITEM name="TEH_004" type="REAL" location="%I" addr="1768" size="4" puball="1" descr="Podlaha;004" />
+  <ITEM name="TEH_005" type="REAL" location="%I" addr="1764" size="4" puball="1" descr="Podlaha;005" />
+  <ITEM name="TER_004" type="REAL" location="%I" addr="1760" size="4" puball="1" descr="Miestnost;004" />
+  <ITEM name="WSB_04X_2" type="BOOL" location="%I" addr="1756" bit="0" size="1" puball="1" descr="Fitko-sklad;004" />
+  <ITEM name="PIR_01X_2" type="BOOL" location="%I" addr="1772" bit="5" size="1" puball="1" descr="Sch??;012" />
+  <ITEM name="PIR_01S_2" type="BOOL" location="%I" addr="1772" bit="4" size="1" puball="1" descr="Podesta-0;012" />
+  <ITEM name="WSB_004_2" type="BOOL" location="%I" addr="1772" bit="0" size="1" puball="1" descr="Fitness;004" />
+  <ITEM name="ZAS_000" type="BOOL" location="%Q" addr="8" bit="1" size="1" puball="1" descr="HW-Reset;000" />
+  <ITEM name="ZAS_DAL" type="BOOL" location="%Q" addr="8" bit="0" size="1" puball="1" descr="HW-reset DALI;000" />
+  <ITEM name="ROM_112" type="USINT" location="%Q" addr="86" size="1" puball="1" descr="Obývacka;1" />
+  <ITEM name="ROM_110" type="USINT" location="%Q" addr="85" size="1" puball="1" descr="Kuchyna;1" />
+  <ITEM name="ROM_103" type="USINT" location="%Q" addr="84" size="1" puball="1" descr="Chodba;1" />
+  <ITEM name="ROM_101" type="USINT" location="%Q" addr="83" size="1" puball="1" descr="Predsien;1" />
+  <ITEM name="ROM_104" type="USINT" location="%Q" addr="82" size="1" puball="1" descr="Spálna;1" />
+  <ITEM name="ROM_106" type="USINT" location="%Q" addr="81" size="1" puball="1" descr="Kúpelna;1" />
+  <ITEM name="ROM_105" type="USINT" location="%Q" addr="80" size="1" puball="1" descr="atník;1" />
+  <ITEM name="ROM_102" type="USINT" location="%Q" addr="79" size="1" puball="1" descr="atnícek;1" />
+  <ITEM name="ROM_113" type="USINT" location="%Q" addr="78" size="1" puball="1" descr="WC;1" />
+  <ITEM name="ROM_107" type="USINT" location="%Q" addr="77" size="1" puball="1" descr="Pracovna;1" />
+  <ITEM name="ROM_109" type="USINT" location="%Q" addr="76" size="1" puball="1" descr="pajz;1" />
+  <ITEM name="ROM_108" type="USINT" location="%Q" addr="75" size="1" puball="1" descr="Gará;1" />
+  <ITEM name="ROM_012" type="USINT" location="%Q" addr="74" size="1" puball="1" descr="Schodisko;1" />
+  <ITEM name="ROM_002" type="USINT" location="%Q" addr="70" size="1" puball="1" descr="Vináren;3" />
+  <ITEM name="ROM_001" type="USINT" location="%Q" addr="69" size="1" puball="1" descr="Chodba-PP;3" />
+  <ITEM name="ROM_003" type="USINT" location="%Q" addr="68" size="1" puball="1" descr="Technika;3" />
+  <ITEM name="ROM_004" type="USINT" location="%Q" addr="67" size="1" puball="1" descr="Fitness;3" />
+  <ITEM name="ROM_005" type="USINT" location="%Q" addr="66" size="1" puball="1" descr="Sklad;3" />
+  <ITEM name="ROM_201" type="USINT" location="%Q" addr="63" size="1" puball="1" descr="Chodba-2P;1" />
+  <ITEM name="ROM_202" type="USINT" location="%Q" addr="62" size="1" puball="1" descr="Kúpelna-2P;1" />
+  <ITEM name="ROM_203" type="USINT" location="%Q" addr="61" size="1" puball="1" descr="Host 2.03;1" />
+  <ITEM name="ROM_204" type="USINT" location="%Q" addr="60" size="1" puball="1" descr="Host 2.04;1" />
+  <ITEM name="ROM_X02" type="USINT" location="%Q" addr="16" size="1" puball="1" descr="2.NP Vonku;2" />
+  <ITEM name="ROM_X01" type="USINT" location="%Q" addr="15" size="1" puball="1" descr="1.NP Vonku;2" />
+  <ITEM name="ROM_X10" type="USINT" location="%Q" addr="14" size="1" puball="1" descr="Terasa-1;2" />
+  <ITEM name="ROM_X00" type="USINT" location="%Q" addr="13" size="1" puball="1" descr="Bazén room;3" />
+  <ITEM name="ROM_000" type="USINT" location="%Q" addr="9" size="1" puball="1" descr="#Setup;0" />
+  <ITEM name="DLM_001_Q" type="tC_DL_0012Sout" location="%Q" addr="93" size="4" puball="1" />
+  <ITEM name="TVE_107" type="BOOL" location="%Q" addr="114" bit="2" size="1" puball="1" descr="Pracovna;107" />
+  <ITEM name="TVE_105" type="BOOL" location="%Q" addr="114" bit="1" size="1" puball="1" descr="atník;105" />
+  <ITEM name="TVE_102" type="BOOL" location="%Q" addr="114" bit="0" size="1" puball="1" descr="atnícek;102" />
+  <ITEM name="TVE_108" type="BOOL" location="%Q" addr="113" bit="7" size="1" puball="1" descr="Gará;108" />
+  <ITEM name="TVE_104" type="BOOL" location="%Q" addr="113" bit="6" size="1" puball="1" descr="Spálna.1;104" />
+  <ITEM name="TVE_106" type="BOOL" location="%Q" addr="113" bit="5" size="1" puball="1" descr="Kúpelna.1;106" />
+  <ITEM name="TVE_005" type="BOOL" location="%Q" addr="113" bit="4" size="1" puball="1" descr="Sklad;005" />
+  <ITEM name="TVE_004" type="BOOL" location="%Q" addr="113" bit="3" size="1" puball="1" descr="Fitness;004" />
+  <ITEM name="TVE_003" type="BOOL" location="%Q" addr="113" bit="2" size="1" puball="1" descr="Technika;003" />
+  <ITEM name="TVE_002" type="BOOL" location="%Q" addr="113" bit="1" size="1" puball="1" descr="Vináren;002" />
+  <ITEM name="TVE_001" type="BOOL" location="%Q" addr="113" bit="0" size="1" puball="1" descr="Chodba.0;001" />
+  <ITEM name="ROL_004_D" type="BOOL" location="%Q" addr="116" bit="3" size="1" puball="1" />
+  <ITEM name="ROL_004_U" type="BOOL" location="%Q" addr="116" bit="2" size="1" puball="1" descr="Fitness??;004" />
+  <ITEM name="ROL_001_D" type="BOOL" location="%Q" addr="116" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_001_U" type="BOOL" location="%Q" addr="116" bit="0" size="1" puball="1" descr="Chodba-0;001" />
+  <ITEM name="ROL_104_D" type="BOOL" location="%Q" addr="115" bit="7" size="1" puball="1" />
+  <ITEM name="ROL_104_U" type="BOOL" location="%Q" addr="115" bit="6" size="1" puball="1" descr="Spálna;104" />
+  <ITEM name="ROL_106_D" type="BOOL" location="%Q" addr="115" bit="5" size="1" puball="1" />
+  <ITEM name="ROL_106_U" type="BOOL" location="%Q" addr="115" bit="4" size="1" puball="1" descr="Kúpelna-1;106" />
+  <ITEM name="ROL_003_D" type="BOOL" location="%Q" addr="115" bit="3" size="1" puball="1" />
+  <ITEM name="ROL_003_U" type="BOOL" location="%Q" addr="115" bit="2" size="1" puball="1" descr="Technika;003" />
+  <ITEM name="ROL_1A2_D" type="BOOL" location="%Q" addr="115" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_1A2_U" type="BOOL" location="%Q" addr="115" bit="0" size="1" puball="1" descr="K jazierku;112" />
+  <ITEM name="ROL_114_D" type="BOOL" location="%Q" addr="124" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_114_U" type="BOOL" location="%Q" addr="124" bit="0" size="1" puball="1" descr="Schodisko;012" />
+  <ITEM name="ROL_202_D" type="BOOL" location="%Q" addr="123" bit="7" size="1" puball="1" />
+  <ITEM name="ROL_202_U" type="BOOL" location="%Q" addr="123" bit="6" size="1" puball="1" descr="Kúpelna-2;202" />
+  <ITEM name="ROL_103_D" type="BOOL" location="%Q" addr="123" bit="5" size="1" puball="1" />
+  <ITEM name="ROL_103_U" type="BOOL" location="%Q" addr="123" bit="4" size="1" puball="1" descr="Chodba-1;103" />
+  <ITEM name="ROL_0F4_D" type="BOOL" location="%Q" addr="123" bit="3" size="1" puball="1" />
+  <ITEM name="ROL_0F4_U" type="BOOL" location="%Q" addr="123" bit="2" size="1" puball="1" descr="Fitness;004" />
+  <ITEM name="ROL_002_D" type="BOOL" location="%Q" addr="123" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_002_U" type="BOOL" location="%Q" addr="123" bit="0" size="1" puball="1" descr="Vinnáren;002" />
+  <ITEM name="SVD_GA2" type="BOOL" location="%Q" addr="132" bit="0" size="1" puball="1" descr="Gabión-terasa;X01" />
+  <ITEM name="SVD_GA1" type="BOOL" location="%Q" addr="131" bit="7" size="1" puball="1" descr="Gabión-gará;X01" />
+  <ITEM name="VEN_001_Q" type="BOOL" location="%Q" addr="131" bit="1" size="1" puball="1" />
+  <ITEM name="VEN_001_1" type="BOOL" location="%Q" addr="131" bit="0" size="1" puball="1" descr="Rekuperácia;003" />
+  <ITEM name="ZAS_KAM" type="BOOL" location="%Q" addr="134" bit="2" size="1" puball="1" descr="Nahravanie-KAM;000" />
+  <ITEM name="VVO_003_Q" type="BOOL" location="%Q" addr="134" bit="1" size="1" puball="1" />
+  <ITEM name="VVO_003_2" type="BOOL" location="%Q" addr="134" bit="0" size="1" puball="1" descr="Ventil vody;003" />
+  <ITEM name="TVE_201" type="BOOL" location="%Q" addr="133" bit="7" size="1" puball="1" descr="Chodba.2;201" />
+  <ITEM name="TVE_202" type="BOOL" location="%Q" addr="133" bit="6" size="1" puball="1" descr="Kúpelna.2;202" />
+  <ITEM name="TVE_204" type="BOOL" location="%Q" addr="133" bit="5" size="1" puball="1" descr="Host 2.04;204" />
+  <ITEM name="TVE_203" type="BOOL" location="%Q" addr="133" bit="4" size="1" puball="1" descr="Host 2.03;203" />
+  <ITEM name="TVE_103" type="BOOL" location="%Q" addr="133" bit="3" size="1" puball="1" descr="Chodba.1;103" />
+  <ITEM name="TVE_100" type="BOOL" location="%Q" addr="133" bit="2" size="1" puball="1" descr="Kuchyna;110" />
+  <ITEM name="TVE_112" type="BOOL" location="%Q" addr="133" bit="1" size="1" puball="1" descr="Obývacka;112" />
+  <ITEM name="SVD_005" type="BOOL" location="%Q" addr="136" bit="2" size="1" puball="1" descr="Sklad;005" />
+  <ITEM name="SVD_004" type="BOOL" location="%Q" addr="136" bit="1" size="1" puball="1" descr="Fitness;004" />
+  <ITEM name="SVD_003" type="BOOL" location="%Q" addr="136" bit="0" size="1" puball="1" descr="Technika;003" />
+  <ITEM name="SVD_001" type="BOOL" location="%Q" addr="135" bit="7" size="1" puball="1" descr="Chodba-0.01;001" />
+  <ITEM name="SVD_006" type="BOOL" location="%Q" addr="135" bit="6" size="1" puball="1" descr="Strop-WC;003" />
+  <ITEM name="GAT_108_0" type="BOOL" location="%Q" addr="135" bit="2" size="1" puball="1" descr="Garaz;108" />
+  <ITEM name="GAT_X11_1" type="BOOL" location="%Q" addr="135" bit="1" size="1" puball="1" descr="Zadna brana;X01" />
+  <ITEM name="GAT_X12_1" type="BOOL" location="%Q" addr="135" bit="0" size="1" puball="1" descr="Predna Brana;X01" />
+  <ITEM name="ROL_XZ6_D" type="BOOL" location="%Q" addr="138" bit="3" size="1" puball="1" />
+  <ITEM name="ROL_XZ6_U" type="BOOL" location="%Q" addr="138" bit="2" size="1" puball="1" descr="Jazierko-L;X10" />
+  <ITEM name="ROL_XY6_D" type="BOOL" location="%Q" addr="138" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_XY6_U" type="BOOL" location="%Q" addr="138" bit="0" size="1" puball="1" descr="Bazen-L;X10" />
+  <ITEM name="ROL_XX6_D" type="BOOL" location="%Q" addr="137" bit="7" size="1" puball="1" />
+  <ITEM name="ROL_XX6_U" type="BOOL" location="%Q" addr="137" bit="6" size="1" puball="1" descr="Bazen-P;X10" />
+  <ITEM name="ROL_112_D" type="BOOL" location="%Q" addr="137" bit="5" size="1" puball="1" />
+  <ITEM name="ROL_112_U" type="BOOL" location="%Q" addr="137" bit="4" size="1" puball="1" descr="Na Aqárium;112" />
+  <ITEM name="ROL_X16_D" type="BOOL" location="%Q" addr="137" bit="3" size="1" puball="1" />
+  <ITEM name="ROL_X16_U" type="BOOL" location="%Q" addr="137" bit="2" size="1" puball="1" descr="Jazierko-P;X10" />
+  <ITEM name="ROL_110_D" type="BOOL" location="%Q" addr="137" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_110_U" type="BOOL" location="%Q" addr="137" bit="0" size="1" puball="1" descr="Kuchyna;110" />
+  <ITEM name="KEY_002_Q" type="TCIB_C_KY_0001R_OUT" location="%Q" addr="145" size="38" puball="1" />
+  <ITEM name="WSB_109_Q" type="BOOL" location="%Q" addr="183" bit="0" size="1" puball="1" />
+  <ITEM name="ROL_108_D" type="BOOL" location="%Q" addr="184" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_108_U" type="BOOL" location="%Q" addr="184" bit="0" size="1" puball="1" descr="Gará;108" />
+  <ITEM name="TGL_131_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="186" size="12" puball="1" />
+  <ITEM name="TGL_2X1_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="198" size="12" puball="1" />
+  <ITEM name="TGL_107_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="210" size="12" puball="1" />
+  <ITEM name="TGL_113_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="222" size="12" puball="1" />
+  <ITEM name="TGL_101_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="234" size="12" puball="1" />
+  <ITEM name="TGL_11P_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="246" size="12" puball="1" />
+  <ITEM name="TGL_1BL_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="258" size="12" puball="1" />
+  <ITEM name="TGL_1BP_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="270" size="12" puball="1" />
+  <ITEM name="ROL_107_D" type="BOOL" location="%Q" addr="283" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_107_U" type="BOOL" location="%Q" addr="283" bit="0" size="1" puball="1" descr="Pracovna;107" />
+  <ITEM name="SIR_002" type="BOOL" location="%Q" addr="285" bit="6" size="1" puball="1" descr="Siréna-terasa;X10" />
+  <ITEM name="TGL_X10_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="285" size="12" puball="1" />
+  <ITEM name="TGL_110_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="297" size="12" puball="1" />
+  <ITEM name="ZAS_24L" type="BOOL" location="%Q" addr="309" bit="1" size="1" puball="1" descr="N.Lampa-L 2.04;204" />
+  <ITEM name="ZAS_24P" type="BOOL" location="%Q" addr="309" bit="0" size="1" puball="1" descr="N.Lampa-P 2.04;204" />
+  <ITEM name="TGL_243_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="310" size="12" puball="1" />
+  <ITEM name="TGL_22L_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="322" size="12" puball="1" />
+  <ITEM name="TGL_22P_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="334" size="12" puball="1" />
+  <ITEM name="DLM_002_Q" type="tC_DL_0012Sout" location="%Q" addr="346" size="4" puball="1" />
+  <ITEM name="TGL_242_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="350" size="12" puball="1" />
+  <ITEM name="TGL_241_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="362" size="12" puball="1" />
+  <ITEM name="ROL_204_D" type="BOOL" location="%Q" addr="374" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_204_U" type="BOOL" location="%Q" addr="374" bit="0" size="1" puball="1" descr="Vlavo;204" />
+  <ITEM name="ROL_24T_D" type="BOOL" location="%Q" addr="376" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_24T_U" type="BOOL" location="%Q" addr="376" bit="0" size="1" puball="1" descr="Na terasu;204" />
+  <ITEM name="TGL_233_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="378" size="12" puball="1" />
+  <ITEM name="ROL_201_D" type="BOOL" location="%Q" addr="390" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_201_U" type="BOOL" location="%Q" addr="390" bit="0" size="1" puball="1" descr="Chodba-2;201" />
+  <ITEM name="TGL_234_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="392" size="12" puball="1" />
+  <ITEM name="ZAS_23P" type="BOOL" location="%Q" addr="404" bit="1" size="1" puball="1" descr="N.Lampa-P 2.03;203" />
+  <ITEM name="ZAS_23L" type="BOOL" location="%Q" addr="404" bit="0" size="1" puball="1" descr="N.Lampa-L 2.03;203" />
+  <ITEM name="TGL_201_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="405" size="12" puball="1" />
+  <ITEM name="TGL_231_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="433" size="12" puball="1" />
+  <ITEM name="KOT_003_1" type="REAL" location="%Q" addr="445" size="4" puball="1" descr="Kotol;003" />
+  <ITEM name="SIR_001" type="BOOL" location="%Q" addr="461" bit="0" size="1" puball="1" descr="Siréna gará;X01" />
+  <ITEM name="TGL_232_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="466" size="12" puball="1" />
+  <ITEM name="KEY_108_Q" type="TCIB_C_WG_0503S_OUT" location="%Q" addr="478" size="1" puball="1" />
+  <ITEM name="ROL_2D3_D" type="BOOL" location="%Q" addr="479" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_2D3_U" type="BOOL" location="%Q" addr="479" bit="0" size="1" puball="1" descr="Ter.zad.brána;203" />
+  <ITEM name="ROL_2P3_D" type="BOOL" location="%Q" addr="481" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_2P3_U" type="BOOL" location="%Q" addr="481" bit="0" size="1" puball="1" descr="Oproti posteli;203" />
+  <ITEM name="WSB_108_Q" type="BOOL" location="%Q" addr="483" bit="0" size="1" puball="1" />
+  <ITEM name="WSB_182_Q" type="BOOL" location="%Q" addr="484" bit="0" size="1" puball="1" />
+  <ITEM name="TGL_16L_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="485" size="12" puball="1" />
+  <ITEM name="TGL_16P_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="497" size="12" puball="1" />
+  <ITEM name="TGL_14P_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="509" size="12" puball="1" />
+  <ITEM name="TGL_14D_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="521" size="12" puball="1" />
+  <ITEM name="TGL_14L_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="533" size="12" puball="1" />
+  <ITEM name="TGL_002_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="548" size="12" puball="1" />
+  <ITEM name="TGL_YY1_Q" type="TCIB_C_WS_0000R_PG_GLASSO" location="%Q" addr="560" size="12" puball="1" />
+  <ITEM name="WSB_003_Q" type="BOOL" location="%Q" addr="572" bit="0" size="1" puball="1" />
+  <ITEM name="WSB_006_Q" type="BOOL" location="%Q" addr="573" bit="0" size="1" puball="1" />
+  <ITEM name="WSB_005_Q" type="BOOL" location="%Q" addr="574" bit="0" size="1" puball="1" />
+  <ITEM name="WSB_04X_Q" type="BOOL" location="%Q" addr="575" bit="0" size="1" puball="1" />
+  <ITEM name="WSB_004_Q" type="BOOL" location="%Q" addr="576" bit="0" size="1" puball="1" />
+  <ITEM name="ROL_XTU_D" type="BOOL" location="%Q" addr="577" bit="1" size="1" puball="1" />
+  <ITEM name="ROL_XTU_U" type="BOOL" location="%Q" addr="577" bit="0" size="1" puball="1" descr="Roletka 2x;X10" />
+  <ITEM name="TER_MTS_1" type="REAL" location="%M" addr="178732" size="4" puball="1" descr="Vonk.teplota-Meteo.;000" />
+  <ITEM name="LUX_MTS_1" type="REAL" location="%M" addr="184916" size="4" puball="1" descr="Súmrak-Meteo.;000" />
+ </DATA>
+</MAP>

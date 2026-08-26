@@ -1,0 +1,151 @@
+(*` {CSY}Knihovna vıvojového systému Mosaic{ENU}Mosaic IDE library *)
+(*` {CSY}Jméno souboru{ENU}File name{} : D:\TecoLibSrc\RamBoxLib\RamBoxLib_V10_20220602.mlb *)
+(*` {CSY}Knihovna : RamBoxLib{ENU}Library : RamBoxLib{} 1.0 *)
+(*` {CSY}Autor{ENU}Author{} : Teco a.s. Kolín *)
+(*` {CSY}Autorská práva{ENU}Copyright{} : (c) 2022 Teco a.s. *)
+(*` {CSY}Verze IEC pøekladaèe{ENU}IEC compiler version{} : 4.2.15.0 *)
+(*` {CSY}Verze assembleru{ENU}Assembler version{} : 4.3.00 *)
+
+//{Knihovna : RamBoxLib 1.0  }
+(*` {CSY}Historie{ENU}History{}: *)
+(*`
+{CSY}
+v1.0 02.06.2022	Nem Úvodni verze knihovny
+
+{ENU}
+v1.0 2022-06-02 Nem First edition
+*)
+
+(*----------------------------------------------------------------------------*)
+// {LIBRARY="LOCALLIB\STDLIB_V22_20180619.MLB"}
+
+__DECL FUNCTION ReadBlockFromRBx : usint
+(*`{ENU} Transfer of data block from RamBox memory to variable. Maximal block size is 255 bytes. Return value : number of transfered bytes.
+   {CSY} Pøenos bloku pamìti z RamBoxu do promìnné. Maximální velikost bloku je 255 bytù. Funkce vrací poèet pøenesenıch bytù.*)
+  VAR_INPUT
+    ramBoxAddress    : udint;  (*`{ENU} source address (RamBox)  {CSY} adresa zdroje (adresa v RamBoxu)*)
+    length           : usint;  (*`{ENU} size of data block (number of bytes, max 255) {CSY} velikost pøenášeného bloku (poèet bytù, max 255)*)
+  END_VAR
+  VAR_IN_OUT
+    variable         : usint;  (*`{ENU} destination address (variable) {CSY} adresa cíle (promìnná)*)
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION WriteBlockToRBx : usint
+(*`{ENU} Transfers of data block from variable to RamBox memory. Maximal block size is 255 bytes. Return value : number of transfered bytes.
+         Warning !!! variable's data type can not be BOOL or ARRAY[] OF BOOL !!!
+   {CSY} Pøenos bloku pamìti z promìnné do RamBoxu. Maximální velikost bloku je 255 bytù. Funkce vrací poèet pøenesenıch bytù.
+         Upozornìní !!! promìnná nesmí bıt typu BOOL nebo ARRAY[] OF BOOL*)
+  VAR_INPUT
+    ramBoxAddress    : udint;  (*`{ENU} destination address (RamBox)  {CSY} adresa cíle (adresa v RamBoxu)*)
+    length           : usint;  (*`{ENU} size of data block (number of bytes, max 255) {CSY} velikost pøenášeného bloku (poèet bytù, max 255)*)
+  END_VAR
+  VAR_IN_OUT
+    variable         : usint;  (*`{ENU} source address (variable) {CSY} adresa zdroje (promìnná)*)
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION ReadFromRamBox : bool
+(*`{ENU} Transfer of data block from RamBox memory to variable. Return value : TRUE if all data was transfered.
+         Warning !!! variable's data type can not be BOOL or ARRAY[] OF BOOL !!!
+   {CSY} Pøenos bloku pamìti z RamBoxu do promìnné. Funkce vrací TRUE, pokud byla všechna poadovaná data pøenesena.
+         Upozornìní !!! promìnná nesmí bıt typu BOOL nebo ARRAY[] OF BOOL*)
+  VAR_INPUT
+    ramBoxAddress    : udint;  (*`{ENU} source address (RamBox)  {CSY} adresa zdroje (adresa v RamBoxu)*)
+    length           : uint;  (*`{ENU} size of data block (number of bytes, max 10000)  {CSY} velikost pøenášeného bloku (poèet bytù, max 10000)*)
+  END_VAR
+  VAR_IN_OUT
+    variable         : usint;  (*`{ENU} destination address (variable) {CSY} adresa cíle (promìnná)*)
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION WriteToRamBox : bool
+(*`{ENU} Transfer of data block from variable to RamBox memory. Return value : TRUE if all data was transfered.
+         Warning !!! variable's data type can not be BOOL or ARRAY[] OF BOOL !!!
+   {CSY} Pøenos bloku pamìti z promìnné do RamBoxu. Funkce vrací TRUE, pokud byla všechna poadovaná data pøenesena.
+         Upozornìní !!! promìnná nesmí bıt typu BOOL nebo ARRAY[] OF BOOL*)
+  VAR_INPUT
+    ramBoxAddress    : udint;  (*`{ENU} destination address (RamBox)  {CSY} adresa cíle (adresa v RamBoxu)*)
+    length           : uint;  (*`{ENU} size of data block (number of bytes, max 10000)  {CSY} velikost pøenášeného bloku (poèet bytù, max 10000)*)
+  END_VAR
+  VAR_IN_OUT
+    variable         : usint;  (*`{ENU} source address (variable) {CSY} adresa zdroje (promìnná)*)
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION ReadFromRBx : bool
+(*`{ENU} Transfer of data block from RamBox memory to variable. Return value is TRUE if all data was transferred.
+         Warning !!! variable's data type can not be BOOL or ARRAY[] OF BOOL !!!
+   {CSY} Pøenos bloku pamìti z RamBoxu do promìnné. Funkce vrací TRUE, pokud byla všechna poadovaná data pøenesena.
+         Upozornìní !!! promìnná nesmí bıt typu BOOL nebo ARRAY[] OF BOOL*)
+  VAR_INPUT
+    ramBoxAddress    : udint;  (*`{ENU} source address (address in RamBox)  {CSY} adresa zdroje (adresa v RamBoxu)*)
+    length           : udint;  (*`{ENU} size of data block (number of bytes)  {CSY} velikost pøenášeného bloku (poèet bytù)*)
+    varAddress       : udint;  (*`{ENU} destination address (address of variable)  {CSY} adresa cíle (adresa promìnné)*)
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION WriteToRBx : bool
+(*`{ENU} Transfers of data block from variable to RamBox memory. Return value is TRUE if all data was transferred.
+         Warning !!! variable's data type can not be BOOL or ARRAY[] OF BOOL !!!
+   {CSY} Pøenos bloku pamìti z promìnné do RamBoxu. Funkce vrací TRUE, pokud byla všechna poadovaná data pøenesena.
+         Upozornìní !!! promìnná nesmí bıt typu BOOL nebo ARRAY[] OF BOOL*)
+  VAR_INPUT
+    ramBoxAddress    : udint;  (*`{ENU} destination address (address in RamBox)  {CSY} adresa cíle (adresa v RamBoxu)*)
+    length           : udint;  (*`{ENU} size of data block (number of bytes)  {CSY} velikost pøenášeného bloku (poèet bytù)*)
+    varAddress       : udint;  (*`{ENU} source address (address of variable)  {CSY} adresa zdroje (adresa promìnné)*)
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION SetValueToRamBox : bool
+(*`{ENU} Sets constant into data block in RamBox memory. Return value is TRUE if all data was written.
+   {CSY} Zapíše konstantu do bloku pamìti v RamBoxu. Funkce vrací TRUE, pokud se vše podaøilo zapsat.*)
+  VAR_INPUT
+    ramBoxAddress    : udint;  (*`{ENU} destination address (address in RamBox)  {CSY} adresa cíle (adresa v RamBoxu)*)
+    length           : udint;  (*`{ENU} size of data block in RamBox (number of bytes)  {CSY} velikost bloku v RAMBoxu (poèet bytù)*)
+    value            : udint;  (*`{ENU} written constant  {CSY} zapisovaná konstanta*)
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION SizeOfRamBox : uint
+(*`{ENU} RamBox memory size identification. Return value : RamBox memory size [kilobytes].
+   {CSY} Test aktuální velikost pamìti v RamBoxu. Funkce vrací velikost RamBoxu v kilobytech.*)
+END_FUNCTION
+
+__DECL FUNCTION ResizeRamBox : bool
+(*`{ENU} Resize RamBox memory. When is succesfull returns TRUE.
+   {CSY} Zmìna aktuální velikost pamìti v RamBoxu. Vrací TRUE pokud se zmìna podaøí.*)
+  VAR_INPUT
+    newSize          : uint;  (*`{ENU} new size of memory in RamBox [kilobytes] {CSY} nová velikost pamìti v RAMBoxu v kilobytech*)
+  END_VAR
+END_FUNCTION
+
+
+
+c¥yÖ(Æ<Ì6Àz‚Ÿñæéç	÷ùäçıìùäçıìùäçıì‹	ñ}O¥yÕ5Ğz÷?Ä>ç6Ê9Î×5Èç"weX¥Z¥X¦^ \¢R¬P®V¨TªJ´H¶N°L²B¼@¾F¸Dºz„x†~€|‚rŒpR¥
+…z…z…l”N¥À;ÁÉ5Æ1ã(Ê7÷İéjŸ\¥ìîz•Y¥ıB¥a…Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?Ö\¥áz…z•A¥÷…zúÃ9ú÷?Ä>ç6Ê9Î×5Èç"F¥a…Ë>…3Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?ÖHeU¥Z¥UµK·I±O³M½C¿A¹NeJ¥Z¥J´H¶N°L²B¼@¾F¸DºQeK¥Z¥K·I±O³Mr¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄQeH¥Z¥H¶N°L²Bn¥6Á"…z…z×;ÈÊ"ä>Á(À)Öz…z…z…z…z…z…zzÄ>×?Ö;…,…>Ä.Ä8Ê"ĞQeI¥Z¥I±O³M½Co¥6Á"¬z…zÓ;×3Ä8É?…z…z…z…z…z…z…z…z…zzÄ>×?Ö;…,… Ä*Ì)Ë3Î/QeN¥Z¥N°L²B¼@p¥6Áz…z…z”k…z…z…z…z…z…z…z…z…z…z…z…zzÎ5Áz÷çQeO¥Z¥O³M½C¿As¥	ü	…z…zn…z…z…z…z…z…z…z…z…z…z…z…zzÖ#ÖçQeL¥Z¥L²B¼@¾FG¥-×"…z¬zúÃ9ú÷?Ä>ç6Ê9Î×5Èç"BeM¥Z¥M½C¿A¹G»E…{‡yƒ}sCeB¥Z¥B¼@¾F¸Dºz„x†~€|‚rŒpv_¥
+÷…zA¥á…zúÃ9ú÷?Ä>ç6Ê9Î×5Èç"^¥éîY¥àR¥…z…z…l”R¥yÀ4Á*Ê/…Z%N¥yÕ5Ğzò(Ì.ÀÉ5Æ1ñ5÷İweA¥Z¥A¹G»E…{‡yƒ}sq‰w‹u•k—i‘o“mcŸa™g›eåçR¥
+…z…z…l”I¥×3Ñ?ç6Ê9ÎÊç"ú•`\¥ìîz•Y¥ıB¥a…Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?Ö\¥áz…z•@¥÷…zúÃ9úò(Ì.ÀÉ5Æ1ñ5÷İF¥a…Ë>…3Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?ÖHep¥Z¥pvˆtŠj”h–nl’Neq¥Z¥q‰w‹u•k—i‘o“mcŸQev¥Z¥vˆtŠj”hr¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄQew¥Z¥w‹u•k—in¥6Á"…z…z×;ÈÊ"ä>Á(À)Öz…z…z…z…z…z…zzÄ>×?Ö;…,…>Ä.Ä8Ê"ĞQet¥Z¥tŠj”h–no¥6Á"¬z…zÓ;×3Ä8É?…z…z…z…z…z…z…z…z…zzÄ>×?Ö;…,… Ä*Ì)Ë3Î/Qeu¥Z¥u•k—i‘op¥6Áz…z…z”h…z…z…z…z…z…z…z…z…z…z…z…zzÎ5ÁzòçQej¥Z¥j”h–nls¥	ü	…z…zn…z…z…z…z…z…z…z…z…z…z…z…zzÖ#ÖçQek¥Z¥k—i‘o“mF¥-×"…z¬zúÃ9úò(Ì.ÀÉ5Æ1ñ5÷İBeh¥Z¥h–nl’bœ`f˜dšäæàCei¥Z¥i‘o“mcŸa™g›eåçáã_¥
+÷…z@¥á…zúÃ9úò(Ì.ÀÉ5Æ1ñ5÷İ^¥éîY¥àR¥…z…z…l”R¥yÀ4Á*Ê/…Z%I¥yÕ5Ğz÷?Ä>ã(Ê7÷;ÈÊ"qel¥Z¥l’bœ`f˜dšäæàâìîèê
+ôöğòü şR¥
+…z…z…l”H¥À;Á×5ÈÄ7ç5İéjŸ\¥ìîz•Y¥ıB¥a…Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?Ö\¥áz…z•C¥÷…zúÃ9ú÷?Ä>ã(Ê7÷;ÈÊ"F¥a…Ë>…3Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?ÖHe¥Z¥ãíïéëõ÷Ne¥Z¥âìîèê
+ôöğQe¥Z¥íïér¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄQe¥Z¥ìîèn¥6Á"…z…z×;ÈÊ"ä>Á(À)Öz…z…z…z…z…z…zzÄ>×?Ö;…,…>Ä.Ä8Ê"ĞQe¥Z¥ïéëo¥6Á"¬z…zÓ;×3Ä8É?…z…z…z…z…z…z…z…z…zzÄ>×?Ö;…,… Ä*Ì)Ë3Î/Qe¥Z¥îèê
+p¥6Áz…z…z”k…z…z…z…z…z…z…z…z…z…z…z…zzÎ5Áz÷çQe¥Z¥éëõs¥	ü	…z…zn…z…z…z…z…z…z…z…z…z…z…z…zzÖ#ÖçQe¥Z¥èê
+ôr¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄQe¥Z¥ëõ÷	X¥ôQe¥Z¥ê
+ôöA¥-×"…z¬zúÃ9ú÷?Ä>ã(Ê7÷;ÈÊ"Be¥Z¥õ÷	ñóıÿùûÅ;ÇCe
+¥Z¥
+ôöğòü şøú:Ä8Æ>_¥
+÷…zC¥á…zúÃ9ú÷?Ä>ã(Ê7÷;ÈÊ"^¥éîY¥àR¥…z…z…l”R¥yÀ4Á*Ê/…Z%H¥yÕ5Ğzò(Ì.ÀÊÄ7ç5İpe	¥Z¥	ñóıÿùûÅ;Ç9Á?Ã=Í3Ï1É7Ë5Õ+×)Ñ/Ó-İR¥
+…z…z…l”K¥×3Ñ?ñ5÷;ÈÊ"ú•`\¥ìîz•Y¥ıB¥a…Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?Ö\¥áz…z•B¥÷…zúÃ9úò(Ì.ÀÊÄ7ç5İF¥a…Ë>…3Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?ÖHe8¥Z¥8Æ>À<Â2Ì0Î6È4ÊNe9¥Z¥9Á?Ã=Í3Ï1É7Ë5Õ+×Ve>¥Z¥>À<Â2Ì0Îr¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄVe?¥Z¥?Ã=Í3Ï1Én¥6Á"…z…z×;ÈÊ"ä>Á(À)Öz…z…z…z…z…z…zzÄ>×?Ö;…,…>Ä.Ä8Ê"ĞVe<¥Z¥<Â2Ì0Î6Èo¥6Á"¬z…zÓ;×3Ä8É?…z…z…z…z…z…z…z…z…zzÄ>×?Ö;…,… Ä*Ì)Ë3Î/Ve=¥Z¥=Í3Ï1É7Ëp¥6Áz…z…z”h…z…z…z…z…z…z…z…z…z…z…z…zzÎ5ÁzòçVe2¥Z¥2Ì0Î6È4Ês¥	ü	…z…zn…z…z…z…z…z…z…z…z…z…z…z…zzÖ#ÖçVe3¥Z¥3Ï1É7Ë5Õr¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄVe0¥Z¥0Î6È4Ê*ÔX¥ôVe1¥Z¥1É7Ë5Õ+×@¥-×"…z¬zúÃ9úò(Ì.ÀÊÄ7ç5İCe6¥Z¥6È4Ê*Ô(Ö.Ğ,Ò"Ü Ş&Ø$ÚÚ@e7¥Z¥7Ë5Õ+×)Ñ/Ó-İ#ß!Ù'Û%%Û'_¥
+÷…zB¥á…zúÃ9úò(Ì.ÀÊÄ7ç5İ^¥éîY¥àR¥…z…z…l”R¥yÀ4Á*Ê/…Z%J¥yÕ5Ğz÷?Ä>ã(Ê7÷İse*¥Z¥*Ô(Ö.Ğ,Ò"Ü Ş&Ø$ÚÚ$Ø&Ş Ü"Ò,Ğ.Ö(Ô*Ê4È6ÎR¥
+…z…z…l”U¥À;Á×5Èç"ú•`\¥ìîz•Y¥ıB¥a…Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?Ö\¥áz…z•L¥÷…zúÃ9ú÷?Ä>ã(Ê7÷İF¥a…Ë>…3Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?ÖIe'¥Z¥'Û%%Û'Ù!ß#İ-Ó/ÑOe$¥Z¥$ÚÚ$Ø&Ş Ü"Ò,Ğ.Ö(ÔVe%¥Z¥%%Û'Ù!ß#r¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄVeÚ¥Z¥Ú$Ø&Ş Ü"n¥6Á"…z…z×;ÈÊ"ä>Á(À)Öz…z…z…z…z…z…zzÄ>×?Ö;…,…>Ä.Ä8Ê"ĞVeÛ¥Z¥Û'Ù!ß#İ-o¥6Á"¬z…zÓ;×Á>×?Ö)…z…z…z…z…z…z…z…zzÄ>×?Ö;…,… Ä*Ì)Ë3Î/VeØ¥Z¥Ø&Ş Ü"Ò,p¥6Áz…z…z”k…z…z…z…z…z…z…z…z…z…z…z…zzÎ5Áz÷çVeÙ¥Z¥Ù!ß#İ-Ó/s¥	ü	…z…zn…z…z…z…z…z…z…z…z…z…z…z…zzÖ#ÖçVeŞ¥Z¥Ş Ü"Ò,Ğ.r¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄVeß¥Z¥ß#İ-Ó/Ñ)X¥ôVeÜ¥Z¥Ü"Ò,Ğ.Ö(B¥-×"…z¬zúÃ9ú÷?Ä>ã(Ê7÷İCeİ¥Z¥İ-Ó/Ñ)×+Õ5Ë7É1Ï3Í=Ã?Á@eÒ¥Z¥Ò,Ğ.Ö(Ô*Ê4È6Î0Ì2Â<À>Æ8_¥
+÷…zL¥á…zúÃ9ú÷?Ä>ã(Ê7÷İ^¥éîY¥àR¥…z…z…l”R¥yÀ4Á*Ê/…Z%U¥yÕ5Ğzò(Ì.ÀÊç"reÑ¥Z¥Ñ)×+Õ5Ë7É1Ï3Í=Ã?Á9Ç;Åûùÿıóñ	÷R¥
+…z…z…l”T¥×3Ñ?ñ5÷İéjŸ\¥ìîz•Y¥ıB¥a…Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?Ö\¥áz…z•O¥÷…zúÃ9úò(Ì.ÀÊç"F¥a…Ë>…3Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?ÖIeÂ¥Z¥Â<À>Æ8Ä:úøş üOeÃ¥Z¥Ã?Á9Ç;ÅûùÿıóVeÀ¥Z¥À>Æ8Ä:úr¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄVeÁ¥Z¥Á9Ç;Åûn¥6Á"…z…z×;ÈÊ"ä>Á(À)Öz…z…z…z…z…z…zzÄ>×?Ö;…,…>Ä.Ä8Ê"ĞVeÆ¥Z¥Æ8Ä:úøo¥6Á"¬z…zÓ;×Á>×?Ö)…z…z…z…z…z…z…z…zzÄ>×?Ö;…,… Ä*Ì)Ë3Î/VeÇ¥Z¥Ç;Åûùp¥6Áz…z…z”h…z…z…z…z…z…z…z…z…z…z…z…zzÎ5ÁzòçVeÄ¥Z¥Ä:úøş s¥	ü	…z…zn…z…z…z…z…z…z…z…z…z…z…z…zzÖ#ÖçVeÅ¥Z¥Åûùÿr¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄVeú¥Z¥úøş üX¥ôVeû¥Z¥ûùÿıM¥-×"…z¬zúÃ9úò(Ì.ÀÊç"Ceø¥Z¥øş üòğöô
+êèîì@eù¥Z¥ùÿıóñ	÷õëéïí_¥
+÷…zO¥á…zúÃ9úò(Ì.ÀÊç"^¥éîY¥àR¥…z…z…l”R¥yÀ4Á*Ê/…Z%O¥yÕ5Ğzö?ÑÄ6Ğ?ñ5÷;ÈÊ"teÿ¥Z¥ÿıóñ	÷õëéïíãáçåe›g™aŸcm“o‘i—kR¥
+…z…z…l”N¥	À.ó;É/ÀÊÄ7ç5İéjŸ\¥ìîz•Y¥ıB¥a…Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?Ö\¥áz…z•A¥÷…zúÃ9úö?ÑÄ6Ğ?ñ5÷;ÈÊ"F¥a…Ë>…3Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?ÖIeê¥Z¥êèîìâàæäOeë¥Z¥ëéïíãáçåe›Veè¥Z¥èîìâr¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄVeé¥Z¥éïíãn¥6Á"…z…z×;ÈÊ"ä>Á(À)Öz…z…z…z…z…z…zzÄ>×?Ö;…,…>Ä.Ä8Ê"ĞVeî¥Z¥îìâàn¥6Á"¬z…zÓ;É/Àz…z…z…z…z…z…z…z…z…z…zzÍ5Á4Ê.ÄzÕ(Êzß;Õ3ÖVeï¥Z¥ïíãáp¥6Áz…z…z”i…z…z…z…z…z…z…z…z…z…z…z…zzÎ5ÁzöçVeì¥Z¥ìâàæs¥	ü	…z…zn…z…z…z…z…z…z…z…z…z…z…z…zzÖ#ÖçVeí¥Z¥íãáçr¥6Á"¬z…zÉ?Ë=Ñ2…z…z…z…z…z…z…z…z…z…zzÁ?É1ÄVeâ¥Z¥âàæäX¥ôVeã¥Z¥ãáçåeG¥-×"…z¬zúÃ9úö?ÑÄ6Ğ?ñ5÷;ÈÊ"Ceà¥Z¥àæäšd˜f`œb’ln–h”@eá¥Z¥áçåe›g™aŸcm“o‘i—k•u_¥
+÷…zA¥á…zúÃ9úö?ÑÄ6Ğ?ñ5÷;ÈÊ"^¥éîY¥àR¥…z…z…l”R¥yÀ4Á*Ê/…Z%K¥yÕ5Ğzö3ß?ê<÷;ÈÊ"peä¥Z¥äšd˜f`œb’ln–h”jŠtˆvpŒr‚|€~†x„zºD¸FR¥
+…z…z…l”J¥	Ì ÀÃÄ7ç5İéjŸ\¥ìîz•Y¥ıB¥a…Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?Ö\¥áz…z•M¥÷…zúÃ9úö3ß?ê<÷;ÈÊ"F¥a…Ë>…3Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?ÖIe™¥Z¥™aŸcm“o‘i—k•u‹Oe¥Z¥`œb’ln–h”jŠtˆvVeŸ¥Z¥Ÿcm“o‘ig¥áz…z…z…k‘z…z…z…z…z…z…z…z…z…zzÎ5Ázìçz˜zÌ>À4Ñ3Ã3Î;Æ?…Ä7ç5İ/Veœ¥Z¥œb’ln–h¥	ü	…z…z…b‘z…z…z…z…z…z…z…z…z…zzÖ#ÖçVe¥Z¥m“o‘i—kL¥-×"…ú<Æú	Ì ÀÃÄ7ç5İCe’¥Z¥’ln–h”jŠtˆvpŒr‚|€~†@e“¥Z¥“o‘i—k•u‹w‰qs}ƒy‡{_¥
+÷…zM¥á…zúÃ9úö3ß?ê<÷;ÈÊ"^¥éîY¥àR¥…z…z…l”R¥yÀ4Á*Ê/…Z%K¥yÕ5Ğz÷?Ö3ß?÷;ÈÊ"pe‘¥Z¥‘i—k•u‹w‰qs}ƒy‡{…E»G¹A¿C½M³O±I·KµUR¥
+…z…z…l”J¥À)Ì ÀÄ7ç5İéjŸ\¥ìîz•Y¥ıB¥a…Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?Ö\¥áz…z•M¥÷…zúÃ9ú÷?Ö3ß?÷;ÈÊ"F¥a…Ë>…3Ë3Ñ3Ä6Ì ÀzˆzÓ;×3Ä8É?ÖIe‰¥Z¥‰qs}ƒy‡{…E»Oe¥Z¥pŒr‚|€~†x„zºD¸F¾Ve¥Z¥s}ƒyU¥á…z…z…4À-ö3ß?VeŒ¥Z¥Œr‚|€~†x¥áz…z…z…kz…z…z…z…z…z…z…z…z…zzÎ5Ázıçz˜zß7À4ÄzÓ?É3Î5Ö.Ìz÷;ÈÊ"ĞVe¥Z¥}ƒy‡{¥	ü	…z…z…b‘z…z…z…z…z…z…z…z…z…zzÖ#ÖçVe‚¥Z¥‚|€~†x„zL¥-×"…ú<ÆúÀ)Ì ÀÄ7ç5İCeƒ¥Z¥ƒy‡{…E»G¹A¿C½M³O±I·@e€¥Z¥€~†x„zºD¸F¾@¼B²L°N¶H´J_¥
+÷…zM¥á…zúÃ9ú÷?Ö3ß?÷;ÈÊ"^¥éîY¥àR¥…z…z…l”R¥yÀ4Á*Ê/…Z%Z%Z%Z%Z%Q¥yÖ(Æ<Ì6Àz‚})¾Z¥@¥Z

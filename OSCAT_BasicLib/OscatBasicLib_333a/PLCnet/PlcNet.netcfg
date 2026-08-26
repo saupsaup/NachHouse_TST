@@ -1,0 +1,9 @@
+[PlcNetCfg]
+Version="xPRO","4.3.00"
+[/PlcNetCfg]
+
+[projects]
+Ages=0,0,0
+AdvancedFacilities=0
+[/projects]
+

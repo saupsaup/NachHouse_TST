@@ -1,0 +1,15 @@
+[r0_p0_CP_2000]
+ProjectGroup=Rosocha_APP
+ProjectName=NachHouse
+PanelName=r0_p0_CP_2000
+PanelCaption=ROSOCHA
+PanelType=6
+PanelSize=80
+PanelRows=4
+PanelCols=20
+CodeTable=2
+USI_Used=1
+PanelTool_Used=1
+boUserKeyb=1
+KeybVarName=r16_p7_DISP_IN
+VideoRamVarName=r16_p7_DISP_OUT

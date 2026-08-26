@@ -1,0 +1,43 @@
+(* ROOM_API_PILOT - public numeric contract and limits. *)
+
+VAR_GLOBAL CONSTANT
+    C_API_VERSION          : STRING[32] := 'ROOM_API_PILOT/1';
+    C_MAX_ROOMS            : USINT := 40;
+    C_DIFF_HISTORY_DEPTH   : USINT := 8;
+
+    API_ACTION_NONE          : USINT := 0;
+    API_ACTION_ADD_ROOM      : USINT := 1;
+    API_ACTION_DELETE_ROOM   : USINT := 2;
+    API_ACTION_COPY_ROOM     : USINT := 3;
+    API_ACTION_SET_ROOM_DATA : USINT := 4;
+
+    API_RESULT_NONE               : USINT := 0;
+    API_RESULT_OK                 : USINT := 1;
+    API_RESULT_ERROR              : USINT := 2;
+    API_RESULT_NOT_FOUND          : USINT := 3;
+    API_RESULT_NO_FREE_SLOT       : USINT := 4;
+    API_RESULT_ALREADY_EXISTS     : USINT := 5;
+    API_RESULT_INVALID_ARGUMENT   : USINT := 6;
+    API_RESULT_UNSUPPORTED_ACTION : USINT := 7;
+
+    API_DIFF_NONE   : USINT := 0;
+    API_DIFF_UPSERT : USINT := 1;
+    API_DIFF_DELETE : USINT := 2;
+
+    API_SYNC_CURRENT       : USINT := 0;
+    API_SYNC_DIFF          : USINT := 1;
+    API_SYNC_FULL_REQUIRED : USINT := 2;
+
+    API_ALARM_OK      : USINT := 0;
+    API_ALARM_WARNING : USINT := 1;
+    API_ALARM_ALARM   : USINT := 2;
+
+    API_DAY_PHASE_DAY   : UINT := 140;
+    API_DAY_PHASE_DUSK  : UINT := 142;
+    API_DAY_PHASE_NIGHT : UINT := 144;
+    API_DAY_PHASE_DAWN  : UINT := 146;
+
+    API_DEFAULT_ICON_ID     : UINT := 16;
+    API_DEFAULT_TEMPERATURE : REAL := 20.0;
+    API_DEFAULT_HUMIDITY    : REAL := 40.0;
+END_VAR

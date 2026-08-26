@@ -1,0 +1,15 @@
+[r0_p0_CP_2000]
+ProjectGroup=BrowsePlcDisk
+ProjectName=BrowsePlcDisk
+PanelName=r0_p0_CP_2000
+PanelCaption=Centrální jednotka
+PanelType=6
+PanelSize=80
+PanelRows=4
+PanelCols=20
+CodeTable=2
+USI_Used=1
+PanelTool_Used=1
+boUserKeyb=1
+KeybVarName=r16_p7_DISP_IN
+VideoRamVarName=r16_p7_DISP_OUT

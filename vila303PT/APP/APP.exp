@@ -1,0 +1,239 @@
+TYPE
+
+END_TYPE
+
+
+VAR_GLOBAL
+
+GAT_X01_Q AT %IB725.0 : BOOL;
+TER_1W6 AT %IB751 : REAL;  (* Kúp_1P-WC 356E;106 *)
+WSB_1W6_4 AT %IB747.0 : BOOL;  (* Kúp_1P-WC;106 *)
+TER_206 AT %IB767 : REAL;  (* Izba 2.06;206 *)
+WSB_206_4 AT %IB763.0 : BOOL;  (* Izba 2.06;206 *)
+TER_106 AT %IB807 : REAL;  (* Kúpelna_1P;106 *)
+WSB_106_2 AT %IB803.0 : BOOL;  (* Kúpelna_1P;106 *)
+WSB_0P1_4 AT %IB819.0 : BOOL;  (* Vst.Hala-P;001 *)
+TER_001 AT %IB839 : REAL;  (* Vstup.hala;001 *)
+WSB_0L1_4 AT %IB835.0 : BOOL;  (* Vst.Hala-L;001 *)
+TER_007 AT %IB855 : REAL;  (* Chodba-PP;007 *)
+WSB_007_4 AT %IB851.0 : BOOL;  (* Chodba-Fitko;007 *)
+TER_010 AT %IB871 : REAL;  (* Chodba_PP/WC/Kúp.;007 *)
+WSB_0B7_4 AT %IB867.0 : BOOL;  (* Chodba_PP-WC;007 *)
+TER_021 AT %IB887 : REAL;  (* Kotolna;021 *)
+WSB_021_4 AT %IB883.0 : BOOL;  (* Kotolna;021 *)
+TER_020 AT %IB903 : REAL;  (* Show Room;020 *)
+WSB_020_4 AT %IB899.0 : BOOL;  (* Show Room;020 *)
+WSB_1P4_4 AT %IB915.0 : BOOL;  (* Obýv.Schody-P;104 *)
+TER_207 AT %IB935 : REAL;  (* Kúpelna_2P;207 *)
+WSB_207_4 AT %IB931.0 : BOOL;  (* Kúpelna_2P;207 *)
+TER_104 AT %IB951 : REAL;  (* Obýv.-stred;104 *)
+WSB_104_4 AT %IB947.0 : BOOL;  (* Obýv.Schody-L;104 *)
+WSB_1T4_4 AT %IB963.0 : BOOL;  (* Obýv-Na terasu;104 *)
+TER_X11 AT %IB983 : REAL;  (* Terasa-velká;X11 *)
+WSB_X11_4 AT %IB979.0 : BOOL;  (* Terasa-velká;X11 *)
+TER_1C4 AT %IB999 : REAL;  (* Obyv-do chodby;104 *)
+WSB_1C4_4 AT %IB995.0 : BOOL;  (* Obyv-do chodby;104 *)
+TER_105 AT %IB1015 : REAL;  (* Chodba_1P;105 *)
+WSB_105_4 AT %IB1011.0 : BOOL;  (* Chodba_1P;105 *)
+TER_107 AT %IB1031 : REAL;  (* Izba 1.07;107 *)
+WSB_107_4 AT %IB1027.0 : BOOL;  (* Izba 1.07;107 *)
+TER_108 AT %IB1047 : REAL;  (* Izba 1.08;108 *)
+WSB_108_4 AT %IB1043.0 : BOOL;  (* Izba 1.08;108 *)
+WSB_204_4 AT %IB1059.0 : BOOL;  (* Kuchyna-P;204 *)
+TER_2L4 AT %IB1079 : REAL;  (* Kuchyna;204 *)
+WSB_2L4_4 AT %IB1075.0 : BOOL;  (* Kuchyna-L;204 *)
+WSB_2T4_4 AT %IB1091.0 : BOOL;  (* Kuch-terasa;204 *)
+TER_1A6 AT %IB1111 : REAL;  (* Kúp_106-Vana AFC1;106 *)
+WSB_1A6_2 AT %IB1107.0 : BOOL;  (* Kúp_106-Vana;106 *)
+TER_005 AT %IB1127 : REAL;  (* Garáž;005 *)
+GAT_005_Q AT %IB1123.4 : BOOL;
+WSB_005_2 AT %IB1123.0 : BOOL;  (* Garáž;005 *)
+TER_008 AT %IB1143 : REAL;  (* Fitko;008 *)
+WSB_008_2 AT %IB1139.0 : BOOL;  (* Fitko;008 *)
+TER_006 AT %IB1159 : REAL;  (* Sklad;006 *)
+WSB_006_2 AT %IB1155.0 : BOOL;  (* Sklad;006 *)
+PIR_207 AT %IB1182.3 : BOOL;  (* Kúpelna_2P;207 *)
+PIR_010 AT %IB1182.2 : BOOL;  (* Kúpelna_PP;010 *)
+PIR_1A6 AT %IB1182.0 : BOOL;  (* Chodbicka;106 *)
+PIR_009 AT %IB1181.7 : BOOL;  (* WC_PP;009 *)
+PIR_106 AT %IB1181.6 : BOOL;  (* Vana;106 *)
+TEK_021 AT %IB1214 : REAL;  (* Kotol;021 *)
+LUX_X01_1 AT %IB1243 : UINT;  (* Súmrak vonku;X01 *)
+TER_X01 AT %IB1235 : REAL;  (* Vonk.teplota;X01 *)
+TVE_107_0 AT %QB147.2 : BOOL;  (* Izba 1.07;107 *)
+TVE_005_0 AT %QB147.1 : BOOL;  (* Garáž;005 *)
+TVE_010_0 AT %QB147.0 : BOOL;  (* Kúpelna_PP;010 *)
+WSB_1W6_Q AT %QB161.0 : BOOL;
+WSB_206_Q AT %QB162.0 : BOOL;
+WSB_106_Q AT %QB164.0 : BOOL;
+WSB_0L1_Q AT %QB166.0 : BOOL;
+WSB_007_Q AT %QB167.0 : BOOL;
+WSB_0B7_Q AT %QB168.0 : BOOL;
+WSB_021_Q AT %QB169.0 : BOOL;
+WSB_020_Q AT %QB170.0 : BOOL;
+WSB_1P4_Q AT %QB171.0 : BOOL;
+WSB_207_Q AT %QB172.0 : BOOL;
+WSB_104_Q AT %QB173.0 : BOOL;
+WSB_1T4_Q AT %QB174.0 : BOOL;
+WSB_X11_Q AT %QB175.0 : BOOL;
+WSB_1C4_Q AT %QB176.0 : BOOL;
+WSB_105_Q AT %QB177.0 : BOOL;
+WSB_107_Q AT %QB178.0 : BOOL;
+WSB_108_Q AT %QB179.0 : BOOL;
+WSB_204_Q AT %QB180.0 : BOOL;
+WSB_2L4_Q AT %QB181.0 : BOOL;
+WSB_2T4_Q AT %QB182.0 : BOOL;
+WSB_1A6_Q AT %QB183.0 : BOOL;
+WSB_005_Q AT %QB184.0 : BOOL;
+WSB_008_Q AT %QB185.0 : BOOL;
+WSB_006_Q AT %QB186.0 : BOOL;
+GAT_005_0 AT %QB188.2 : BOOL;  (* Brána-garáž;005 *)
+TVE_2X4_0 AT %QB188.1 : BOOL;  (* Kuchyna-P;204 *)
+TVE_204_0 AT %QB188.0 : BOOL;  (* Kuchyna-S;204 *)
+TVE_2K4_0 AT %QB187.7 : BOOL;  (* Kuchyna-L;204 *)
+TVE_020_0 AT %QB187.6 : BOOL;  (* Show Room;020 *)
+TVE_006_0 AT %QB187.5 : BOOL;  (* Sklad;006 *)
+TVE_008_0 AT %QB187.4 : BOOL;  (* Fitko;008 *)
+TVE_001_0 AT %QB187.3 : BOOL;  (* Vstup.Hala;001 *)
+TVE_R10_0 AT %QB187.2 : BOOL;  (* Rebrík;010 *)
+TVE_009_0 AT %QB187.1 : BOOL;  (* WC PP;009 *)
+TVE_002_0 AT %QB187.0 : BOOL;  (* Schody PP1;002 *)
+SVD_108 AT %QB190.2 : BOOL;  (* Strop 1.08;108 *)
+SVD_1A7 AT %QB190.1 : BOOL;  (* Strop 1.07;107 *)
+SVD_1F4 AT %QB190.0 : BOOL;  (* Štorec.2;104 *)
+SVD_1E4 AT %QB189.7 : BOOL;  (* Štvorec.1;104 *)
+SVD_107 AT %QB189.6 : BOOL;  (* Podhlad 1.07;107 *)
+SVD_Y01 AT %QB189.5 : BOOL;  (* LP SP.30 ? *)
+SVD_1D4 AT %QB189.4 : BOOL;  (* Chodba-obýv.;104 *)
+SVD_1B6 AT %QB189.3 : BOOL;  (* WC-podhlad;106 *)
+SVD_1A6 AT %QB189.2 : BOOL;  (* Podhlad-Vana_1P;106 *)
+SVD_1C4 AT %QB189.1 : BOOL;  (* Strop.3-obýv.;104 *)
+SVD_1B4 AT %QB189.0 : BOOL;  (* Strop.2-obýv.;104 *)
+SVD_XZ1 AT %QB192.2 : BOOL;  (* Stena;X11 *)
+SVD_XY1 AT %QB192.1 : BOOL;  (* Bodovky;X11 *)
+SVD_009 AT %QB192.0 : BOOL;  (* Strop-WC_PP;009 *)
+SVD_0E0 AT %QB191.7 : BOOL;  (* Strop-Kúp_PP;010 *)
+SVD_0E1 AT %QB191.6 : BOOL;  (* Stropná rampa;001 *)
+SVD_2I4 AT %QB191.5 : BOOL;  (* Štvorec.2;204 *)
+SVD_2H4 AT %QB191.4 : BOOL;  (* Štvorec.1;204 *)
+SVD_2C7 AT %QB191.3 : BOOL;  (* Zrkadlo;207 *)
+SVD_2B7 AT %QB191.2 : BOOL;  (* Strop kúp_2P;207 *)
+SVD_2B6 AT %QB191.1 : BOOL;  (* Strop 2.06;206 *)
+SVD_X01 AT %QB191.0 : BOOL;  (* Stena-parkovisko;X01 *)
+SVD_2C4 AT %QB193.7 : BOOL;  (* Luster;204 *)
+SVD_2B4 AT %QB193.6 : BOOL;  (* Bodovky-stred;204 *)
+SVD_2A4 AT %QB193.5 : BOOL;  (* Bodovky-Terasa;204 *)
+SVD_207 AT %QB193.4 : BOOL;  (* Sprcha;207 *)
+SVD_206 AT %QB193.3 : BOOL;  (* Podhlad 2.06;206 *)
+SVD_204 AT %QB193.2 : BOOL;  (* Podhlad;204 *)
+SVD_1G4 AT %QB193.1 : BOOL;  (* Podhlad/terasa;104 *)
+SVD_Y02 AT %QB193.0 : BOOL;  (* SP.32 ? *)
+GAT_X01_1 AT %QB194.7 : BOOL;  (* Brána-hlavná;X01 *)
+SVD_1M6 AT %QB194.6 : BOOL;  (* Chodbicka;106 *)
+SVD_201 AT %QB194.5 : BOOL;  (* Schodisko_2P;201 *)
+SVD_2R4 AT %QB194.4 : BOOL;  (* Kuch.Linka;204 *)
+ROL_207_D AT %QB194.3 : BOOL;
+ROL_207_U AT %QB194.2 : BOOL;  (* Kúpelna_2P;207 *)
+ROL_206_D AT %QB194.1 : BOOL;
+ROL_206_U AT %QB194.0 : BOOL;  (* Izba 2.06;206 *)
+SVD_XX1 AT %QB196.2 : BOOL;  (* Bodovky-parkovisko;X01 *)
+SVD_XG1 AT %QB196.1 : BOOL;  (* Gabion;X11 *)
+SVD_XE1 AT %QB196.0 : BOOL;  (* Kvetinác;X11 *)
+SVD_1L4 AT %QB195.7 : BOOL;  (* Chodba;104 *)
+SVD_2E6 AT %QB195.6 : BOOL;  (* Podhlad 2.06;206 *)
+SVD_1K6 AT %QB195.5 : BOOL;  (* Podhlad-WC.1;106 *)
+SVD_1J6 AT %QB195.4 : BOOL;  (* Strop-Vana;106 *)
+SVD_1I6 AT %QB195.3 : BOOL;  (* Strop-WC.2;106 *)
+SVD_1H6 AT %QB195.2 : BOOL;  (* Strop-Sprcha;106 *)
+SVD_1G6 AT %QB195.1 : BOOL;  (* Vana-Zrkadlo;106 *)
+SVD_X21 AT %QB195.0 : BOOL;  (* Balkon-Vyhadzuje istic;X21 *)
+SVD_1M4 AT %QB198.2 : BOOL;  (* Strop.1-obýv.;104 *)
+SVD_104 AT %QB198.1 : BOOL;  (* Luster-obýv.;104 *)
+SVD_0A1 AT %QB198.0 : BOOL;  (* Podhlad-vst.h.;001 *)
+SVD_006 AT %QB197.7 : BOOL;  (* Sklad;006 *)
+SVD_005 AT %QB197.6 : BOOL;  (* Garáž;005 *)
+SVD_020 AT %QB197.5 : BOOL;  (* Show Room;020 *)
+SVD_021 AT %QB197.4 : BOOL;  (* Kotolna;021 *)
+SVD_0A9 AT %QB197.3 : BOOL;  (* LP-WC_PP;009 *)
+SVD_010 AT %QB197.2 : BOOL;  (* LP-Sprcha_PP;010 *)
+SVD_008 AT %QB197.1 : BOOL;  (* Strop-Fitko;008 *)
+SVD_001 AT %QB197.0 : BOOL;  (* Luster-vst.h.;001 *)
+ROL_020_D AT %QB200.3 : BOOL;
+ROL_020_U AT %QB200.2 : BOOL;  (* Show Room;020 *)
+ROL_108_D AT %QB200.1 : BOOL;
+ROL_108_U AT %QB200.0 : BOOL;  (* Izba 1.08;108 *)
+ROL_107_D AT %QB199.7 : BOOL;
+ROL_107_U AT %QB199.6 : BOOL;  (* Izba 1.07;107 *)
+ROL_1E4_D AT %QB199.5 : BOOL;
+ROL_1E4_U AT %QB199.4 : BOOL;  (* Obýv-3;104 *)
+ROL_2D4_D AT %QB199.3 : BOOL;
+ROL_2D4_U AT %QB199.2 : BOOL;  (* Kuch-D;204 *)
+ROL_1D4_D AT %QB199.1 : BOOL;
+ROL_1D4_U AT %QB199.0 : BOOL;  (* Obýv-4;104 *)
+ROL_2B4_D AT %QB208.3 : BOOL;
+ROL_2B4_U AT %QB208.2 : BOOL;  (* Kuchyna-3;204 *)
+ROL_2A4_D AT %QB208.1 : BOOL;
+ROL_2A4_U AT %QB208.0 : BOOL;  (* Kuchyna-2;204 *)
+ROL_204_D AT %QB207.7 : BOOL;
+ROL_204_U AT %QB207.6 : BOOL;  (* Kuchyna-1;204 *)
+ROL_1B4_D AT %QB207.5 : BOOL;
+ROL_1B4_U AT %QB207.4 : BOOL;  (* Obýv-2;104 *)
+ROL_1A4_D AT %QB207.3 : BOOL;
+ROL_1A4_U AT %QB207.2 : BOOL;  (* Obýv-1;104 *)
+ROL_104_D AT %QB207.1 : BOOL;
+ROL_104_U AT %QB207.0 : BOOL;  (* Obýv-5;104 *)
+TVE_207_0 AT %QB216.2 : BOOL;  (* Kúpelna 2P;207 *)
+TVE_2R7_0 AT %QB216.1 : BOOL;  (* Rebrík-Kúp.2P;207 *)
+TVE_206_0 AT %QB216.0 : BOOL;  (* Izba 2.06;206 *)
+TVE_101_0 AT %QB215.7 : BOOL;  (* Schody 1P;101 *)
+TVE_1K4_0 AT %QB215.6 : BOOL;  (* Obývacka-L;104 *)
+TVE_104_0 AT %QB215.5 : BOOL;  (* Obývacka-S;104 *)
+TVE_1O4_0 AT %QB215.4 : BOOL;  (* Obývacka-P;104 *)
+TVE_108_0 AT %QB215.3 : BOOL;  (* Izba 1.08;108 *)
+TVE_X12_0 AT %QB215.2 : BOOL;  (* Terasa-malá;X12 *)
+TVE_106_0 AT %QB215.1 : BOOL;  (* Kúpelna 1P;106 *)
+TVE_1R6_0 AT %QB215.0 : BOOL;  (* Rebrík-Vana 1P;106 *)
+KOT_021_1 AT %QB221 : REAL;  (* Kotol;021 *)
+VEN_021_2 AT %QB217 : REAL;  (* Rekuperácia;021 *)
+ROM_104 AT %MB155553.0 : BOOL;  (* Obývaèka;1 *)
+ROM_105 AT %MB155553.0 : BOOL;  (* Chodba 1P;1 *)
+ROM_106 AT %MB155553.0 : BOOL;  (* Kúpelòa 1P;1 *)
+ROM_107 AT %MB155553.0 : BOOL;  (* Izba 1.07;1 *)
+ROM_108 AT %MB155553.0 : BOOL;  (* Izba 1.08;1 *)
+ROM_204 AT %MB155553.0 : BOOL;  (* Kuchyòa;1 *)
+ROM_206 AT %MB155553.0 : BOOL;  (* Izba 2.06;1 *)
+ROM_207 AT %MB155553.0 : BOOL;  (* Kúpelòa 2P;1 *)
+ROM_001 AT %MB155553.0 : BOOL;  (* Vstup.Hala;1 *)
+ROM_005 AT %MB155553.0 : BOOL;  (* Garáž;1 *)
+ROM_006 AT %MB155553.0 : BOOL;  (* Sklad;1 *)
+ROM_007 AT %MB155553.0 : BOOL;  (* Chodba_PP;1 *)
+ROM_008 AT %MB155553.0 : BOOL;  (* Fitko;1 *)
+ROM_009 AT %MB155553.0 : BOOL;  (* WC-PP;1 *)
+ROM_010 AT %MB155553.0 : BOOL;  (* Kúpelòa PP;1 *)
+ROM_020 AT %MB155553.0 : BOOL;  (* Show room;1 *)
+ROM_021 AT %MB155553.0 : BOOL;  (* Kotolòa;1 *)
+ROM_002 AT %MB155553.0 : BOOL;  (* Schody PP;1 *)
+ROM_101 AT %MB155553.0 : BOOL;  (* Schody 1P;1 *)
+ROM_201 AT %MB155553.0 : BOOL;  (* Schody 2P;1 *)
+ROM_X01 AT %MB155553.0 : BOOL;  (* Parkovisko;2 *)
+ROM_X11 AT %MB155553.0 : BOOL;  (* Terasa ve¾ká;2 *)
+ROM_X12 AT %MB155553.0 : BOOL;  (* Terasa malá;2 *)
+ROM_X21 AT %MB155553.0 : BOOL;  (* Balkón_2P;2 *)
+PIR_501 AT %MB270322.0 : BOOL;  (* Obyv-vpravo;104 *)
+PIR_502 AT %MB270323.0 : BOOL;  (* Kuchyna;204 *)
+PIR_503 AT %MB270324.0 : BOOL;  (* Obyv-stred;104 *)
+PIR_504 AT %MB270325.0 : BOOL;  (* Izba 1.07;107 *)
+PIR_509 AT %MB270330.0 : BOOL;  (* Schody 2P;201 *)
+PIR_510 AT %MB270331.0 : BOOL;  (* Izba 2.06;206 *)
+PIR_511 AT %MB270332.0 : BOOL;  (* Obyvacka;104 *)
+PIR_512 AT %MB270333.0 : BOOL;  (* Izba 1.08;108 *)
+PIR_517 AT %MB270338.0 : BOOL;  (* Sklad;006 *)
+PIR_518 AT %MB270339.0 : BOOL;  (* Show room ?;020 *)
+PIR_519 AT %MB270340.0 : BOOL;  (* Fitko ?;008 *)
+PIR_520 AT %MB270341.0 : BOOL;  (* Schody PP;002 *)
+PIR_525 AT %MB270346.0 : BOOL;  (* Garaz;005 *)
+PIR_526 AT %MB270347.0 : BOOL;  (* Vstup.Hala;001 *)
+PIR_527 AT %MB270348.0 : BOOL;  (* Kotolna;021 *)
+PIR_528 AT %MB270349.0 : BOOL;  (* Schody 1P;101 *)
+
+END_VAR

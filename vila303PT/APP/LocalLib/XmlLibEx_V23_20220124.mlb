@@ -1,0 +1,5330 @@
+(*` {CSY}Knihovna vývojového systému Mosaic{ENU}Mosaic IDE library *)
+(*` {CSY}Jméno souboru{ENU}File name{} : C:\TecoLibSrc\XmlLibEx\XmlLibEx_V23_20220124.mlb *)
+(*` {CSY}Knihovna : XmlLibEx{ENU}Library : XmlLibEx{} 2.3 *)
+(*` {CSY}Autor{ENU}Author{} : Teco a.s. *)
+(*` {CSY}Autorská práva{ENU}Copyright{} : (c) 2016 Teco a.s. *)
+(*` {CSY}Verze IEC pøekladaèe{ENU}IEC compiler version{} : 4.2.17.0 *)
+(*` {CSY}Verze assembleru{ENU}Assembler version{} : 4.3.00 *)
+
+//{Knihovna : XmlLibEx 2.3  }
+(*` {CSY}Historie{ENU}History{}: *)
+(*`
+{CSY}
+v1.0 20.09.2012 nem první verze knihovny - neverejna
+                    vyžaduje podporu ve firmare PLC (SYS 82)
+v1.1 01.10.2012 nem první uvolnìná verze
+v1.2 11.12.2012 nem doplnìn blok fbXmlTagParser1()
+                    provedeny upravy kvuli on-line zmene
+v1.3 03.11.2013 nem doplnìny bloky fbXmlParser(), fbXmlFileParser()
+                    a fbXmlPageParser()
+v1.4 17.01.2014 nem oprava chovani xml stacku na zacatku dokumentu
+v1.5 29.10.2014 ciz Pøidání funkèních blokù fbXmlFileParserFindTag() 
+                    a fbXmlPageParserFindTag()
+v1.6 08.07.2015 nem Pøi dokonèení pársování nebo pøi chybì pársování
+                    uzavøeno spojení se serverem 
+v1.7 26.10.2015 Nem ve fbXmlPageParser() použit blok
+                    fbSplitUrlAddress() z InternetLib_v34
+v1.8 22.02.2016 Nem fbXmlParser() mùže zpracovat i texty v xml
+                    delší než 254 znakù (potøebuje FW v9.7)
+v1.9 12.04.2016 Nem ve fbXmlPageParser() a fbXmlFileParser() - 
+                    oprava chování promìnné busy pøi zpracování 
+                    komentáøe v xml
+v2.0 01.11.2017 Nem ve fbXmlPageParser() zvìtšena velikost vnitøní 
+                    promìnné Action na STRING[255] - kvuli bloku
+                    fbSplitUrlAddress()
+v2.1 21.12.2021 Byd opraven stav, kdy se nevrátil text pøedcházející komentáøi pøi parsování XML
+v2.2 24.01.2022 Byd opraveny chyby ve funkèním bloku fbXmlPageParserFindTag, které mohly vést k pøeteèení vyrovnávací pamìti 
+                    fbXmlPageParserFind a fbXmlPageParserFindTag novì umožnují deklarovat chanCode := ANY_uni
+v2.3 14.11.2022 Byd zmìna velikosti hranice pro doèítání ze souboru pro fbXmlFileParser - opravuje problém pøi ètení XML souboru s dlouhými texty
+{ENU}
+v1.0 2012-09-20 nem first edition - non/public version 
+                    firmware support required (SYS 82)
+v1.1 2012-10-01 nem first public version
+v1.2 2012-12-11 nem new function block fbXmlTagParser1()
+                    adjustments for on-line program change
+v1.3 2013-11-03 nem new function blocks fbXmlParser(),
+                    fbXmlFileParser() and fbXmlPageParser() 
+v1.4 2014-01-17 nem corrected behavior of xml stack at the beginning of document
+v1.5 2014-10-29 ciz Add a functional blocks  to the library  fbXmlFileParserFindTag() 
+                    and fbXmlPageParserFindTag()
+v1.6 2015-07-07 nem Connection with server is closed when parsing error occurred 
+v1.7 2015-10-26 Nem fbXmlPageParser() uses block
+                    fbSplitUrlAddress() from InternetLib_v34 
+v1.8 2016-02-22 Nem fbXmlParser() can process xml text 
+                    longer than 254 characters (FW v9.7 is necessary)
+v1.9 2016-04-12 Nem in fbXmlPageParser() and fbXmlFileParser() -
+                    changed behavior of variable busy 
+                    when xml comment is processed
+v2.0 2017-01-01 Nem in fbXmlPageParser() was changed size of variable 
+                    Action to STRING[255] - because of fbSplitUrlAddress()
+v2.1 2021-12-21 Byd fixed a state when a text preceding a comment wasn't return during XML parsing
+v2.2 2022-01-24 Byd fixed bugs in the fbXmlPageParserFindTag function block that could lead to a buffer overflow
+                    fbXmlPageParserFind and fbXmlPageParserFindTag now allow to declare chanCode := ANY_uni
+v2.3 2022-11-14 Byd the boundary for reading from file changed in fbXmlFileParser - fixes a problem when reading XML file with long texts
+*)
+
+(*----------------------------------------------------------------------------*)
+{LIBRARY="LOCALLIB\STDLIB_V22_20180619.MLB"}
+{LIBRARY="LOCALLIB\SYSLIB_V47_20210916.MLB"}
+{LIBRARY="LOCALLIB\FILELIB_V28_20200709.MLB"}
+{LIBRARY="LOCALLIB\COMLIB_V36_20211110.MLB"}
+// {LIBRARY="LOCALLIB\DATABOXLIB_V17_20201109.MLB"}
+// {LIBRARY="LOCALLIB\ENCRYPTLIB_V13_20160923.MLB"}
+{LIBRARY="LOCALLIB\CONVERTLIB_V23_20201214.MLB"}
+{LIBRARY="LOCALLIB\INTERNETLIB_V57_20211009.MLB"}
+// {LIBRARY="LOCALLIB\DEBUGCOMLIB_V32_20200114.MLB"}
+
+VAR_GLOBAL CONSTANT
+ XML_MAX_TAG_LEN : uint := 80;  (*`{CSY} max velikost tagu v XML             {ENU} max size of tag in XML document*)
+ XML_MAX_ATR_LEN : uint := 64;  (*`{CSY} max velikost atributu v XML         {ENU} max size of attribute in XML document*)
+ XML_MAX_VAL_LEN : uint := 192;  (*`{CSY} max velikost hodnoty v XML          {ENU} max size of value in XML document*)
+ XML_MAX_TXT_LEN : uint := 254;  (*`{CSY} max velikost textu v XML            {ENU} max size of text in XML document*)
+ XML_MAX_ATR_NUM : uint := 10;  (*`{CSY} max poèet atributu v XML tagu       {ENU} max number of attributes (one XML tag)*)
+
+END_VAR
+
+TYPE TXmlItem :
+  STRUCT  (*`{CSY} struktura obsahující položky jednoho øádku XML dokumentu {ENU} struct for one XML line*)
+    tag              : string [80];  (*`{CSY} název XML elementu                                       {ENU} name of XML element*)
+    isTxt            : bool;  (*`{CSY} pøíznak textu                                            {ENU} text flag*)
+    indexTxt         : udint;  (*`{CSY} index textu od zaèátku xml bufferu                       {ENU} index of text in the xml buffer*)
+    lenTxt           : udint;  (*`{CSY} délka textu                                              {ENU} length of text*)
+    txt              : string [254];  (*`{CSY} prvních 254 znakù textù                                  {ENU} text (first 254 characters)*)
+    startTAG         : bool;  (*`{CSY} TRUE = zaèátek párového TAGu (napr. <ROOT>)              {ENU} TRUE means begin of pair tag*)
+    endTAG {ALIGNED} : bool;  (*`{CSY} TRUE = konec párového TAGu   (napr. </ROOT>)             {ENU} TRUE means end of pair tag*)
+    eod {ALIGNED} {HIDDEN} : bool;  (*`{CSY} konec dat                                                {ENU} end of data*)
+    numAtr           : uint;  (*`{CSY} poèet nalezených atributu                                {ENU} number of attributes*)
+    atr              : ARRAY [1..10] OF string [64];  (*`{CSY} název XML atributu                                       {ENU} name of XML attribute*)
+    val              : ARRAY [1..10] OF string [192];  (*`{CSY} hodnota XML atributu                                     {ENU} value of XML attribute*)
+  END_STRUCT;
+END_TYPE
+
+__DECL FUNCTION_BLOCK fbXmlTagParser
+(*`{CSY} pøevádí jeden øádek XML dokumentu do struktury TXmlItem
+   {ENU} converts one line from XML document into a TXmlItem structure*)
+  VAR_INPUT
+    start            : bool;  (*`{CSY} TRUE zaène parsovat od zaèátku XML dat, FALSE pokracuje tam, kde se minule skonèilo {ENU} TRUE means start of parsing at the begin of XML document, FALSE means continue*)
+    size             : udint;  (*`{CSY} velikost bufferu s XML daty {ENU} size of buffer containing XML document*)
+  END_VAR
+  VAR_IN_OUT
+    sourceXML        : usint;  (*`{CSY} zaèátek XML dat      {ENU} begin of XML document*)
+    itemXML          : TXmlItem;  (*`{CSY} výstup XML parseru   {ENU} XML parser output*)
+  END_VAR
+  VAR_OUTPUT
+    eod              : bool;  (*`{CSY} Konec dat            {ENU} End of data*)
+  END_VAR
+  VAR
+    index            : udint;  (*`index v XML bufferu - pamatovat kvuli on-line zmene*)
+    src              : PTR_TO usint;
+    end              : PTR_TO usint;
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION GetAttrValue : string [192]
+(*`{CSY} Vrací hodnotu atributu definovaného jménem
+  {ENU} Returns value of attribute defined by name*)
+  VAR_INPUT
+    name             : string [64];  (*`{CSY} jméno atributu   {ENU} name of attribute*)
+  END_VAR
+  VAR_IN_OUT
+    itemXML          : TXmlItem;  (*`{CSY} výstup XML parseru   {ENU} XML parser output*)
+  END_VAR
+  VAR
+    ptrVal           : PTR_TO usint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION SetAttrValue : bool
+(*`{CSY}Zapisuje název a hodnotu atributu do struktury TXmlItem. Vrací TRUE pokud se podaøilo zapsat.
+  {ENU}Write name and value of attribute to the structure TXmlItem. Returns TRUE if successful.*)
+  VAR_INPUT
+    name             : string [64];  (*`{CSY} jméno atributu   {ENU} name of attribute*)
+    value            : string [192];  (*`{CSY} hodnota atributu   {ENU} value of attribute*)
+  END_VAR
+  VAR_IN_OUT
+    itemXML          : TXmlItem;  (*`{CSY} výstup XML parseru   {ENU} XML parser output*)
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION_BLOCK fbXmlTagComposer
+(*`{CSY}Pøevádí strukturu TXmlItem na jeden tag XML dokumentu
+   {ENU}Converts a TXmlItem structure into one tag of XML document*)
+  VAR_INPUT
+    start            : bool;  (*`{CSY} TRUE zaène ukládat od zaèátku XML dat, FALSE pokraèuje tam, kde se minule skonèilo {ENU} TRUE means start of composing at the begin of XML document, FALSE means continue*)
+    size             : udint;  (*`{CSY} velikost bufferu pro XML data {ENU} size of buffer for XML document*)
+  END_VAR
+  VAR_IN_OUT
+    destXML          : usint;  (*`{CSY} zaèátek XML dat       {ENU} begin of XML document*)
+    itemXML          : TXmlItem;  (*`{CSY} vstup XML composeru   {ENU} XML composer input*)
+  END_VAR
+  VAR_OUTPUT
+    sizeXML          : udint;  (*`{CSY} aktuální velikost XML {ENU} actual size of XML document*)
+    sizeErr          : bool;  (*`{CSY} nedostatek místa {ENU} insuficient size*)
+  END_VAR
+  VAR
+    beg              : PTR_TO usint;
+    end              : PTR_TO usint;
+    dst              : PTR_TO usint;
+  END_VAR
+END_FUNCTION_BLOCK
+
+VAR_GLOBAL CONSTANT
+ XML_MAX_STACK_LEVEL : sint := 9;  (*`{ENU} max level of XML stack {CSY} maximální úroveò XML stacku*)
+
+END_VAR
+
+TYPE TXmlStackItem :
+  STRUCT
+    tag              : string [80];  (*`{ENU} tag name         {CSY} název tagu*)
+    dummy {HIDDEN}   : byte;  (*`{ENU} reserved         {CSY} dorovnat na sudou*)
+  END_STRUCT;
+END_TYPE
+
+TYPE TXmlStack :
+  STRUCT  (*`{CSY} struktura obsahující historii pársování XML dokumentu {ENU} structure about history of parsing XML document*)
+    done {ALIGNED}   : bool;  (*`{ENU} next item is avalable {CSY} byla vyparsovaná položka*)
+    eod {ALIGNED}    : bool;  (*`{ENU} end of document       {CSY} konec dokumentu*)
+    error            : usint;  (*`{ENU} error code            {CSY} kód chyby*)
+    errTxt           : string [32];  (*`{ENU} error description     {CSY} popis chyby*)
+    maxLevel {HIDDEN} : sint;  (*`{ENU} max stack level       {CSY} max úroveò stacku*)
+    level            : sint;  (*`{ENU} stack level           {CSY} úroveò stacku*)
+    layer            : ARRAY [0..9] OF TXmlStackItem;  (*`{ENU} tag names  {CSY} názvy tagù*)
+  END_STRUCT;
+END_TYPE
+
+TYPE TXmlInfo :
+  STRUCT
+    item             : TXmlItem;  (*`{ENU} XML parser output    {CSY} výstup XML parseru*)
+    stack            : TXmlStack;  (*`{ENU} stack for parsing    {CSY} zásobník pro analýzu dokumentu*)
+  END_STRUCT;
+END_TYPE
+
+__DECL FUNCTION_BLOCK fbXmlParser
+(*`{ENU} Converts one item from XML document into a TXmlItem structure and sets TXmlStack structure
+   {CSY} Pøevádí jednu položku XML dokumentu do struktury TXmlItem. Zároveò nastavuje strukturu TXmlStack pro snadné parsování.*)
+  VAR_INPUT
+    start            : bool;  (*`{ENU} TRUE means start of parsing at the begin of XML document, FALSE means continue {CSY} TRUE zaène parsovat od zaèátku XML dat, FALSE pokraèuje tam, kde se minule skonèilo*)
+    shrink           : bool;  (*`{ENU} shrink request {CSY} TRUE odstraní z bufferu již zpracovanou èást a nezpracovaný zbytek pøesune na zaèátek bufferu*)
+    size             : udint;  (*`{ENU} size of buffer with XML document {CSY} velikost bufferu s XML dokumentem*)
+  END_VAR
+  VAR_IN_OUT
+    sourceXML        : usint;  (*`{ENU} begin of XML document {CSY} zaèátek XML dat*)
+    xmlItem          : TXmlItem;  (*`{ENU} XML parser output     {CSY} výstup XML parseru*)
+    xmlStack         : TXmlStack;  (*`{ENU} stack for parsing     {CSY} zásobník pro analýzu dokumentu*)
+  END_VAR
+  VAR_OUTPUT
+    done             : bool;  (*`{ENU} new item is ready    {CSY} byla vyparsována další položka*)
+    eod              : bool;  (*`{ENU} end of XML document  {CSY} konec XML dokumentu*)
+    error            : usint;  (*`{ENU} error code           {CSY} error <> 0 ... došlo k chybì*)
+    restLen          : uint;  (*`{ENU} number of bytes remaining to be processed {CSY} poèet bytù, který zbývá zpracovat*)
+    line             : udint;  (*`{ENU} line number          {CSY} èíslo øádku v xml dokumentu*)
+  END_VAR
+  VAR
+    index            : udint;
+    src              : PTR_TO usint;
+    end              : PTR_TO usint;
+    tagState         : byte;
+    commentFlg       : bool;
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbXmlFileParser
+(*`{ENU} Parsing of XML document from file. Information about xml element is saved into TXmlInfo structure.
+  {CSY} Parsování XML dokumentu ze souboru. Informace o vyparsované položce je uložena do struktury TXmlInfo.*)
+  VAR CONSTANT
+    XML_BUMBER       : uint :=  512;  (*`{ENU} bumper of xml buffer {CSY} nárazník v xml bufferu*)
+    XML_BUFFER_SIZE  : uint :=  768;  (*`{ENU} size of xml buffer {CSY} velikost bufferu*)
+  END_VAR
+  VAR_INPUT
+    exec             : bool;  (*`{ENU} request for parsing {CSY} parsovat XML soubor*)
+  END_VAR
+  VAR_IN_OUT
+    fileName         : string [80];  (*`{ENU} mame of XML file  {CSY} jméno souboru s XML dokumentem*)
+    xmlInfo          : TXmlInfo;  (*`{ENU} result of parsing {CSY} výsledek parsování*)
+  END_VAR
+  VAR_OUTPUT
+    start            : bool;  (*`{ENU} initialization flag          {CSY} pøíznak inicializace bloku*)
+    done             : bool;  (*`{ENU} new item is ready in xmlItem {CSY} výsledek parsování je pøipraven v xmlInfo*)
+    busy             : bool;  (*`{ENU} block is busy                {CSY} blok je zaneprázdnìn*)
+    eof              : bool;  (*`{ENU} end of file                  {CSY} konec souboru*)
+    break            : bool;  (*`{ENU} buffer processed, continue next cycle {CSY} buffer zpracován, pokraèovat pøíští cyklus*)
+    err              : bool;  (*`{ENU} error flag                   {CSY} pøíznak chyby*)
+    errTxt           : string [80];  (*`{ENU} error description            {CSY} popis chyby*)
+    fileSize         : udint;  (*`{ENU} size of file                 {CSY} velikost souboru*)
+    processed        : udint;  (*`{ENU} processed                    {CSY} zpracováno (poèet znakù)*)
+    line             : udint;  (*`{ENU} line number in XML document  {CSY} èíslo øádku v XML dokumentu*)
+  END_VAR
+  VAR
+    rqInit           : bool;
+    rqFile           : bool;
+    rqParse          : bool;
+    rqStart          : bool;
+    trgExecOn        : R_TRIG;
+    ReadFile         : ReadFromFile;
+    XmlParser        : fbXmlParser;
+    xmlBuffer        : ARRAY [0..768] OF usint;
+    sumaLen          : udint;  (*`kolik nacteno ze souboru*)
+    actLen           : udint;  (*`aktualni velikost xml bufferu*)
+    restLen          : uint;
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbXmlPageParser
+(*`{ENU} Parsing of XML document file from web site. Information about xml element is saved into TXmlInfo structure.
+  {CSY} Parsování XML dokumentu z web stránky. Informace o vyparsované položce je uložena do struktury TXmlInfo.*)
+  VAR CONSTANT
+    XML_BUMBER       : uint :=  256;  (*`{ENU} bumper of xml buffer {CSY} nárazník v xml bufferu*)
+    XML_BUFFER_SIZE  : uint :=  768;  (*`{ENU} size of xml buffer   {CSY} velikost bufferu*)
+  END_VAR
+  VAR_INPUT
+    exec             : bool;  (*`{ENU} request for parsing                     {CSY} parsovat XML soubor*)
+    chanCode         : uint;  (*`{ENU} channel code (ETH1_uni0, ETH1_uni1,...) {CSY} komunikaèní kanál (ETH1_uni0, ETH1_uni1,...)*)
+  END_VAR
+  VAR_IN_OUT
+    pageName         : string [255];  (*`{ENU} mame of web page with XML file  {CSY} název web stránky s s XML dokumentem*)
+    xmlInfo          : TXmlInfo;  (*`{ENU} result of parsing               {CSY} výsledek parsování*)
+  END_VAR
+  VAR_OUTPUT
+    start            : bool;  (*`{ENU} initialization flag          {CSY} pøíznak inicializace bloku*)
+    done             : bool;  (*`{ENU} new item is ready in xmlItem {CSY} výsledek parsování je pøipraven v xmlInfo*)
+    busy             : bool;  (*`{ENU} block is busy                {CSY} blok je zaneprázdnìn*)
+    eof              : bool;  (*`{ENU} end of file                  {CSY} konec souboru*)
+    break            : bool;  (*`{ENU} buffer processed, continue next cycle {CSY} buffer zpracován, pokraèovat pøíští cyklus*)
+    err              : bool;  (*`{ENU} error flag                   {CSY} pøíznak chyby*)
+    errTxt           : string [80];  (*`{ENU} error description            {CSY} popis chyby*)
+    fileSize         : udint;  (*`{ENU} size of file                 {CSY} velikost souboru*)
+    processed        : udint;  (*`{ENU} processed                    {CSY} zpracováno (poèet znakù)*)
+    line             : udint;  (*`{ENU} line number in XML document  {CSY} èíslo øádku v XML dokumentu*)
+  END_VAR
+  VAR
+    rqShrink         : bool;
+    rqFile           : bool;
+    rqParse          : bool;
+    rqStart          : bool;
+    closeSocket      : bool;
+    trgExecOn        : R_TRIG;
+    XmlParser        : fbXmlParser;
+    xmlBuffer        : ARRAY [0..768] OF usint;
+    sumaLen          : udint;  (*`kolik nacteno ze souboru*)
+    actLen           : udint;  (*`aktualni velikost xml bufferu*)
+    restLen          : uint;
+    HttpIP           : TIPadr;
+    HttpPort         : uint;
+    HttpName         : string [80];
+    Action           : string [255];
+    Empty            : string [1];
+    SplitUrlAddress  : fbSplitUrlAddress;
+    HttpRequest      : fbHttpRequest;
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbXmlFileParserFindTag
+(*`{ENU} Parsing XML document from a specific tag from a file. Information about xml element is saved into TXmlInfo structure.
+  {CSY} Parsování XML dokumentu od urèitého tagu ze souboru . Informace o vyparsované položce je uložena do struktury TXmlInfo.*)
+  VAR CONSTANT
+    XML_BUMBER       : uint :=  256;  (*`{ENU} bumper of xml buffer         {CSY} nárazník v xml bufferu*)
+    XML_BUFFER_SIZE  : uint :=  768;  (*`{ENU} size of xml buffer           {CSY} velikost bufferu*)
+  END_VAR
+  VAR_INPUT
+    exec             : bool;  (*`{ENU} request for parsing          {CSY} parsovat XML soubor*)
+    findTag          : string [80];  (*`{ENU} start tag for parsing        {CSY} tag, od kterého se zaène parsovat XML soubor*)
+    orderFindTag     : uint := 1;  (*`{ENU} the order of the search tag in the file {CSY}  udává poøadi hledaného tagu v souboru*)
+  END_VAR
+  VAR_IN_OUT
+    fileName         : string [80];  (*`{ENU} mame of XML file             {CSY} jméno souboru s XML dokumentem*)
+    xmlInfo          : TXmlInfo;  (*`{ENU} result of parsing            {CSY} výsledek parsování*)
+  END_VAR
+  VAR_OUTPUT
+    start            : bool;  (*`{ENU} initialization flag          {CSY} pøíznak inicializace bloku*)
+    done             : bool;  (*`{ENU} new item is ready in xmlItem {CSY} výsledek parsování je pøipraven v xmlInfo*)
+    busy             : bool;  (*`{ENU} block is busy                {CSY} blok je zaneprázdnìn*)
+    eof              : bool;  (*`{ENU} end of file                  {CSY} konec souboru*)
+    break            : bool;  (*`{ENU} buffer processed, continue next cycle {CSY} buffer zpracován, pokraèovat pøíští cyklus*)
+    err              : bool;  (*`{ENU} error flag                   {CSY} pøíznak chyby*)
+    errTxt           : string [80];  (*`{ENU} error description            {CSY} popis chyby*)
+    fileSize         : udint;  (*`{ENU} size of file                 {CSY} velikost souboru*)
+    processed        : udint;  (*`{ENU} processed                    {CSY} zpracováno (poèet znakù)*)
+    line             : udint;  (*`{ENU} line number in XML document  {CSY} èíslo øádku v XML dokumentu*)
+  END_VAR
+  VAR
+    sumaLen          : udint;  (*`kolik nacteno ze souboru*)
+    actLen           : udint;  (*`aktualni velikost xml bufferu*)
+    restLen          : uint;  (*`pocet bytu, ktere je zbyva zpracovat*)
+    indexFindTag     : int;  (*`index hledaneho tagu*)
+    FindTagFinish    : bool;  (*`nalezen koncovy tag*)
+    TagFindTrue      : bool;  (*`nalezeno klièové parsované slovo*)
+    rqInit           : bool;
+    rqFile           : bool;
+    rqParse          : bool;
+    rqStart          : bool;
+    memoryFindTag    : uint;  (*`pamet pro zapamatovaní na jaký tag xml souboru má reagovat*)
+    trgExecOn        : R_TRIG;
+    ReadFile         : ReadFromFile;
+    XmlParser        : fbXmlParser;
+    xmlBuffer        : ARRAY [0..768] OF usint;
+    src              : PTR_TO usint;
+    end              : PTR_TO usint;
+    PTRxmlBuffer     : PTR_TO string [80];
+    layerZerou       : F_TRIG;  (*`slouží ke zjistìní kdy pri parsovani klesne z 1 vrstvy na 0 vrstvy*)
+    layersZerou_One  : bool;
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbXmlPageParserFindTag
+(*`{ENU} Parsing XML document from a web page from a specific tag. Information about xml element is saved into TXmlInfo structure.
+  {CSY} Parsování XML dokumentu z web stránky od urèitého tagu. Informace o vyparsované položce je uložena do struktury TXmlInfo.*)
+  VAR CONSTANT
+    XML_BUMBER       : uint :=  256;  (*`{ENU} bumper of xml buffer {CSY} nárazník v xml bufferu*)
+    XML_BUFFER_SIZE  : uint :=  768;  (*`{ENU} size of xml buffer   {CSY} velikost bufferu*)
+  END_VAR
+  VAR_INPUT
+    exec             : bool;  (*`{ENU} request for parsing                         {CSY} parsovat XML soubor*)
+    chanCode         : uint;  (*`{ENU} channel code (ETH1_uni0, ETH1_uni1,...)     {CSY} komunikacní kanál (ETH1_uni0, ETH1_uni1,...)*)
+    findTag          : string [80];  (*`{ENU} start tag for parsing                       {CSY} tag, od kterého se zaène parsovat XML soubor*)
+    orderFindTag     : uint :=  1;  (*`{ENU} the order of the search tag in the web page {CSY} udává poøadi hledaného tagu v souboru*)
+  END_VAR
+  VAR_IN_OUT
+    pageName         : string [255];  (*`{ENU} mame of web page with XML file  {CSY} název web stránky s s XML dokumentem*)
+    xmlInfo          : TXmlInfo;  (*`{ENU} result of parsing               {CSY} výsledek parsování*)
+  END_VAR
+  VAR_OUTPUT
+    start            : bool;  (*`{ENU} initialization flag          {CSY} pøíznak inicializace bloku*)
+    done             : bool;  (*`{ENU} new item is ready in xmlItem {CSY} výsledek parsování je pøipraven v xmlInfo*)
+    busy             : bool;  (*`{ENU} block is busy                {CSY} blok je zaneprázdnen*)
+    eof              : bool;  (*`{ENU} end of file                  {CSY} konec souboru*)
+    break            : bool;  (*`{ENU} buffer processed, continue next cycle {CSY} buffer zpracován, pokraèovat pøíštím cyklu*)
+    err              : bool;  (*`{ENU} error flag                   {CSY} pøíznak chyby*)
+    errTxt           : string [80];  (*`{ENU} error description            {CSY} popis chyby*)
+    fileSize         : udint;  (*`{ENU} size of file                 {CSY} velikost souboru*)
+    processed        : udint;  (*`{ENU} processed                    {CSY} zpracováno (poèet znaku)*)
+    line             : udint;  (*`{ENU} line number in XML document  {CSY} èíslo øádku v XML dokumentu*)
+  END_VAR
+  VAR
+    rqShrink         : bool;
+    rqFile           : bool;
+    rqParse          : bool;
+    rqStart          : bool;
+    closeSocket      : bool;
+    trgExecOn        : R_TRIG;
+    XmlParser        : fbXmlParser;
+    xmlBuffer        : ARRAY [0..768] OF usint;
+    sumaLen          : udint;  (*`kolik nacteno ze souboru*)
+    actLen           : udint;  (*`aktualni velikost xml bufferu*)
+    restLen          : uint;
+    HttpIP           : TIPadr;
+    HttpPort         : uint;
+    HttpName         : string [80];
+    Action           : string [255];
+    Empty            : string [1];
+    SplitUrlAddress  : fbSplitUrlAddress;
+    HttpRequest      : fbHttpRequest;
+    indexFindTag     : int;  (*`index hledaneho tagu*)
+    FindTagFinish    : bool;  (*`nalezen koncovy tag*)
+    TagFindTrue      : bool;  (*`nalezeno klicové parsované slovo*)
+    FinishCommServer : bool;
+    memoryFindTag    : uint;
+    src              : PTR_TO usint;
+    end              : PTR_TO usint;
+    PTRxmlBuffer     : PTR_TO string [80];
+    layerZerou       : F_TRIG;
+    layersZerou_One  : bool;
+    findTagLen       : uint;
+  END_VAR
+END_FUNCTION_BLOCK
+
+
+
+{USES=fbXmlParser:Memset,MemcpyPtr}
+{USES=fbXmlFileParser:Memset,FileInfo,GetLastErr,GetLastErrTxt}
+{USES=fbXmlPageParser:Memset,OpenUniSocket,CloseUniSocket}
+{USES=fbXmlFileParserFindTag:Memset,FileInfo,GetLastErr,GetLastErrTxt,MemcpyPtr}
+{USES=fbXmlPageParserFindTag:Memset,OpenUniSocket,MemcpyPtr0}
+#srcfile 'C:\TECOLIBSRC\XMLLIBEX\XMLLIBEX\FBXMLTAGPARSER.ST'
+#pou fbXmlTagParser
+#srcline 25 ;FUNCTION_BLOCK fbXmlTagParser
+P     61
+fbXmlTagParser_L0:
+ LINK 0
+#srcline 46 ;  IF start THEN index := 0; END_IF;   // zacit od zacatku bufferu
+ LDX  start
+#debug bool start
+ JMC  fbXmlTagParser_L1
+ LD   udint 0
+ WRX  index
+#debug_left udint index
+fbXmlTagParser_L1:
+#srcline 47 ;  end := ADR(sourceXML) + size;       // nastavit aktualni konec dat
+ LDX  sourceXML
+#debug pointer sourceXML
+ LDX  size
+#debug udint size
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+#srcline 48 ;  src := ADR( sourceXML) + index;     // ptry pocitat v kazdem volani kvuli on-line zmene
+ LDX  sourceXML
+#debug pointer sourceXML
+ LDX  index
+#debug udint index
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 49 ;//  IF PTR_TO_UDINT(src) = DINT_TO_UDINT(-1) THEN eod := 1; RETURN; END_IF;
+#srcline 50 ;  {asm}
+#srcline 51
+    LDX    src        ; odkud parsovat (v xml bufferu)
+#srcline 52
+    LDX    end        ; konec xml bufferu
+#srcline 53
+    LDX    itemXML    ; struktura, do ktere ulozime to, co jsme vyparsovali z xml
+#srcline 54
+    LD     1          ; fcParseXmlTag
+#srcline 55
+    SYS    82
+#srcline 56
+    WRX    src        ; odkud parsovat priste
+#srcline 57 ;  {end_asm}
+#srcline 58 ;  IF itemXML.isTxt THEN
+ LDX  itemXML
+ ADD  81  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool itemXML.isTxt
+ JMC  fbXmlTagParser_L3
+#srcline 59 ;    itemXML.indexTxt := itemXML.indexTxt - PTR_TO_UDINT( ADR( sourceXML));
+ LDX  itemXML
+ ADD  82  ; + offset 
+ LDIL 
+#debug udint itemXML.indexTxt
+ LDX  sourceXML
+#debug pointer sourceXML
+ SUB
+ LDX  itemXML
+ ADD  82  ; + offset 
+ WRIL 
+#debug_left udint itemXML.indexTxt
+#srcline 60 ;  END_IF;
+fbXmlTagParser_L3:
+#srcline 61 ;  eod := itemXML.eod;
+ LDX  itemXML
+ ADD  347  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool itemXML.eod
+ WRX  eod
+#debug_left bool eod
+#srcline 62 ;  index := PTR_TO_UDINT(src) - PTR_TO_UDINT( ADR( sourceXML)); // pro pristi volani
+ LEAX src
+ LDIL 
+#debug pointer src
+ LDX  sourceXML
+#debug pointer sourceXML
+ SUB
+ WRX  index
+#debug_left udint index
+#srcline 63 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbXmlTagParser__InstanceInit__:
+ LINK 0
+ LD   udint $FFFFFFFF    ; nil
+ WRX  src
+ LD   udint $FFFFFFFF    ; nil
+ WRX  end
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+#pou GetAttrValue
+#srcline 66 ;FUNCTION GetAttrValue : STRING[XML_MAX_VAL_LEN]
+P     61
+GetAttrValue_L0:
+ LINK 0
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__GetAttrValue
+ LD   -1
+ WRX  ptrVal
+; End initialize - variables
+#srcline 81 ;begin
+#srcline 82 ;  {asm}
+#srcline 83
+    LEAX   name
+#srcline 84
+    LDX    itemXML
+#srcline 85
+    LD     3          ; fcGetAttributeValue
+#srcline 86
+    SYS    82
+#srcline 87
+    WRX    ptrVal
+#srcline 88
+    LD     0          ; null string
+#srcline 89
+    LEAX   __fc__GetAttrValue
+#srcline 90
+    WRI
+#srcline 91 ;  {end_asm}
+#srcline 92 ;  IF PTR_TO_UDINT(ptrVal) = 16#FFFFFFFF THEN
+ LEAX ptrVal
+ LDIL 
+#debug pointer ptrVal
+ LD   udint $FFFFFFFF
+ EQ
+ JMC  GetAttrValue_L1
+#srcline 93 ;    RETURN;
+ JMP  GetAttrValue_RET
+#srcline 94 ;  ELSE
+ JMP  GetAttrValue_L2
+GetAttrValue_L1:
+#srcline 95 ;  	{asm}
+#srcline 96
+      LEAX   __fc__GetAttrValue
+#srcline 97
+      LD     192               ;XML_MAX_VAL_LEN
+#srcline 98
+      DST
+#srcline 99
+      LDX    ptrVal
+#srcline 100
+      SCON
+#srcline 101
+      PDST
+#srcline 102 ;  	{end_asm}
+#srcline 103 ;  END_IF;
+GetAttrValue_L2:
+#srcline 105 ;END_FUNCTION
+GetAttrValue_RET:
+ PRV  
+ LEAX  __fc__GetAttrValue
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou SetAttrValue
+#srcline 108 ;FUNCTION SetAttrValue : BOOL
+
+#struct SetAttrValue__temp__
+  bool tmp
+P     61
+SetAttrValue_L0:
+ LINK __SizeOf(SetAttrValue__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__SetAttrValue
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 126 ;begin
+#srcline 127 ;  SetAttrValue := false;
+ LD   bool 0       ; false
+ WRX  __fc__SetAttrValue
+#debug_left bool SetAttrValue
+#srcline 128 ;  {asm}
+#srcline 129
+    LEAX   name
+#srcline 130
+    LEAX   value
+#srcline 131
+    LDX    itemXML
+#srcline 132
+    LD     4          ; fcSetAttributeValue
+#srcline 133
+    SYS    82
+#srcline 134
+    WRX    tmp
+#srcline 135 ;  {end_asm}
+#srcline 136 ;  SetAttrValue := tmp;
+ LDY  tmp
+#debug bool tmp
+ WRX  __fc__SetAttrValue
+#debug_left bool SetAttrValue
+#srcline 138 ;END_FUNCTION
+ PRV  
+ LDX  __fc__SetAttrValue
+ ULNK
+RET
+E     61
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'C:\TECOLIBSRC\XMLLIBEX\XMLLIBEX\FBXMLTAGCOMPOSER.ST'
+#pou fbXmlTagComposer
+#srcline 2 ;FUNCTION_BLOCK fbXmlTagComposer
+P     61
+fbXmlTagComposer_L0:
+ LINK 0
+#srcline 24 ;  IF start THEN dst := ADR(destXML); beg := dst; end := dst + size; END_IF;
+ LDX  start
+#debug bool start
+ JMC  fbXmlTagComposer_L1
+ LDX  destXML
+#debug pointer destXML
+ LEAX dst
+ WRIL 
+#debug_left pointer dst
+ LEAX dst
+ LDIL 
+#debug pointer dst
+ LEAX beg
+ WRIL 
+#debug_left pointer beg
+ LEAX dst
+ LDIL 
+#debug pointer dst
+ LDX  size
+#debug udint size
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+fbXmlTagComposer_L1:
+#srcline 25 ;  IF PTR_TO_UDINT(dst) = DINT_TO_UDINT(-1) THEN RETURN; END_IF;
+ LEAX dst
+ LDIL 
+#debug pointer dst
+ LD   dint -1
+ EQ
+ JMC  fbXmlTagComposer_L3
+ JMP  fbXmlTagComposer_RET
+fbXmlTagComposer_L3:
+#srcline 26 ;  {asm}
+#srcline 27
+    LDX    dst        ; kam ukladat (v xml bufferu)
+#srcline 28
+    LDX    end        ; konec xml bufferu
+#srcline 29
+    LDX    itemXML    ; struktura, kterou ulozime do xml
+#srcline 30
+    LD     2          ; fcComposeXmlTag
+#srcline 31
+    SYS    82
+#srcline 32
+    WRX    dst        ; kam ukladat priste
+#srcline 33 ;  {end_asm}
+#srcline 35 ;  sizeXML := PTR_TO_UDINT(dst) - PTR_TO_UDINT(beg);
+ LEAX dst
+ LDIL 
+#debug pointer dst
+ LEAX beg
+ LDIL 
+#debug pointer beg
+ SUB
+ WRX  sizeXML
+#debug_left udint sizeXML
+#srcline 36 ;  sizeErr := PTR_TO_UDINT(dst) > PTR_TO_UDINT(end);  //  sizeErr := sizeXML > size;
+ LEAX dst
+ LDIL 
+#debug pointer dst
+ LEAX end
+ LDIL 
+#debug pointer end
+ GT
+ WRX  sizeErr
+#debug_left bool sizeErr
+#srcline 37 ;END_FUNCTION_BLOCK
+fbXmlTagComposer_RET:
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbXmlTagComposer__InstanceInit__:
+ LINK 0
+ LD   udint $FFFFFFFF    ; nil
+ WRX  beg
+ LD   udint $FFFFFFFF    ; nil
+ WRX  end
+ LD   udint $FFFFFFFF    ; nil
+ WRX  dst
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'C:\TECOLIBSRC\XMLLIBEX\XMLLIBEX\FBXMLPARSER.ST'
+#pou fbXmlParser
+#srcline 53 ;FUNCTION_BLOCK fbXmlParser
+
+#struct fbXmlParser__temp__
+  pointer tmp,
+  string[81] tmpStr,
+  udint P0__st__,
+  string[82] PS0__st__
+#data byte _str_fbXmlParser_0 = 
+  'S','i','z','e',' ','o','f',' ','X','M','L',' ','d','o','c','u','m','e','n','t',
+  ' ','i','s',' ','z','e','r','o',0
+#data byte _str_fbXmlParser_1 = 
+  'X','M','L',' ','s','t','a','c','k',' ','u','n','d','e','r','f','l','o','w',0
+#data byte _str_fbXmlParser_2 = 
+  'X','M','L',' ','s','t','a','c','k',' ','u','n','d','e','r','f','l','o','w',0
+#data byte _str_fbXmlParser_3 = 
+  'X','M','L',' ','s','t','a','c','k',' ','o','v','e','r','f','l','o','w',0
+#data byte _str_fbXmlParser_4 = 
+  '',0
+#data byte _str_fbXmlParser_5 = 
+  'X','M','L',' ','s','t','a','c','k',' ','u','n','d','e','r','f','l','o','w',0
+#data byte _str_fbXmlParser_6 = 
+  'X','M','L',' ','s','y','n','t','a','x','e',' ','e','r','r','o','r',0
+#data byte _str_fbXmlParser_7 = 
+  'X','M','L',' ','s','t','a','c','k',' ','o','v','e','r','f','l','o','w',0
+#data byte _str_fbXmlParser_8 = 
+  '',0
+P     61
+fbXmlParser_L0:
+ LINK __SizeOf(fbXmlParser__temp__)
+; Initialize - dynamic variables
+ LD   udint $FFFFFFFF    ; nil
+ WRY  tmp
+; End initialize - dynamic variables
+#srcline 86 ;  IF size = 0 THEN done := 0; error := 1; xmlStack.errTxt := 'Size of XML document is zero'; RETURN; END_IF; // neni co parsovat
+ LDX  size
+#debug udint size
+ LD   udint 0
+ EQ
+ JMC  fbXmlParser_L1
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   usint 1
+ WRX  error
+#debug_left usint error
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ LD   32
+ DST    ; Level 1
+ LEA  _str_fbXmlParser_0
+ SCON 
+#debug_left string xmlStack.errTxt
+ PDST   ; Level 1
+ JMP  fbXmlParser_RET
+fbXmlParser_L1:
+#srcline 87 ;  end := ADR(sourceXML) + size;   // nastavit aktualni konec dat
+ LDX  sourceXML
+#debug pointer sourceXML
+ LDX  size
+#debug udint size
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+#srcline 88 ;  IF start THEN
+ LDX  start
+#debug bool start
+ JMC  fbXmlParser_L3
+#srcline 89 ;    index := 0; tagState := 0; commentFlg := 0; line := 0;
+ LD   udint 0
+ WRX  index
+#debug_left udint index
+ LD   byte 0
+ WRX  tagState
+#debug_left byte tagState
+ LD   bool 0       ; false
+ WRX  commentFlg
+#debug_left bool commentFlg
+ LD   udint 0
+ WRX  line
+#debug_left udint line
+#srcline 90 ;    memset( 0, sizeof(TXmlStack), void(xmlStack));
+ NXT
+ LD   udint 0
+ WR   __Instance__Memset~val
+#debug_left udint __Instance__Memset~val
+ LD   858  ; SizeOf()
+ WR   __Instance__Memset~length
+#debug_left uint __Instance__Memset~length
+ LDX  xmlStack
+ WR   __Instance__Memset~dest
+#debug_left pointer __Instance__Memset.dest
+ PRV
+ LEA  __Instance__Memset
+ CAL  Memset_L0
+#srcline 91 ;    xmlStack.maxLevel := XML_MAX_STACK_LEVEL;   // nastavit max. povolenou uroven stacku
+ LD   sint 9
+ LDX  xmlStack
+ ADD  36  ; + offset 
+ WRI 
+#debug_left sint xmlStack.maxLevel
+#srcline 92 ;  ELSE
+ JMP  fbXmlParser_L4
+fbXmlParser_L3:
+#srcline 93 ;    IF shrink THEN
+ LDX  shrink
+#debug bool shrink
+ JMC  fbXmlParser_L5
+#srcline 94 ;      src := ADR(sourceXML) + index;
+ LDX  sourceXML
+#debug pointer sourceXML
+ LDX  index
+#debug udint index
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 95 ;      IF PTR_TO_UDINT(end) > PTR_TO_UDINT(src) THEN
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ GT
+ JMC  fbXmlParser_L7
+#srcline 96 ;        restLen := UDINT_TO_UINT( PTR_TO_UDINT(end) - PTR_TO_UDINT(src)); // pocet bytu do konce bufferu
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ SUB
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+#srcline 97 ;        IF PTR_TO_UDINT(src) <> PTR_TO_UDINT( ADR(sourceXML)) THEN
+ LEAX src
+ LDIL 
+#debug pointer src
+ LDX  sourceXML
+#debug pointer sourceXML
+ EQ
+ NEG
+ JMC  fbXmlParser_L9
+#srcline 98 ;          MemcpyPtr( source := src, dest := ADR(sourceXML), length := UINT_TO_UDINT(restLen));
+ NXT
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LDX  sourceXML
+#debug pointer sourceXML
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ LDX  restLen
+#debug uint restLen
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ PRV
+ LEA  __Instance__MemcpyPtr
+ CAL  MemcpyPtr_L0
+#srcline 99 ;          index := 0;
+ LD   udint 0
+ WRX  index
+#debug_left udint index
+#srcline 100 ;        END_IF;
+fbXmlParser_L9:
+#srcline 101 ;      END_IF;
+fbXmlParser_L7:
+#srcline 102 ;      RETURN;       // nic dalsiho krome shrink nedelat
+ JMP  fbXmlParser_RET
+#srcline 103 ;    END_IF;
+fbXmlParser_L5:
+#srcline 104 ;  END_IF;
+fbXmlParser_L4:
+#srcline 106 ;  // parsovat jeden radek dokumentu
+#srcline 107 ;  src := ADR(sourceXML) + index;
+ LDX  sourceXML
+#debug pointer sourceXML
+ LDX  index
+#debug udint index
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 108 ;  {asm}
+#srcline 109
+    LDX    src                ; odkud parsovat (v xml bufferu)
+#srcline 110
+    LDX    end                ; konec xml bufferu
+#srcline 111
+    LDX    xmlItem            ; struktura, do ktere ulozime to, co jsme vyparsovali z xml
+#srcline 112
+    LD     1                  ; fcParseXmlTag
+#srcline 113
+    SYS    82
+#srcline 114
+    WRX    src                ; odkud parsovat priste
+#srcline 115 ;  {end_asm}
+#srcline 117 ;  index := PTR_TO_UDINT( src) - PTR_TO_UDINT( ADR( sourceXML));    // pozice pro pristi volani
+ LEAX src
+ LDIL 
+#debug pointer src
+ LDX  sourceXML
+#debug pointer sourceXML
+ SUB
+ WRX  index
+#debug_left udint index
+#srcline 118 ;  error := 0; xmlStack.error := 0;
+ LD   usint 0
+ WRX  error
+#debug_left usint error
+ LD   usint 0
+ LDX  xmlStack
+ ADD  2  ; + offset 
+ WRI 
+#debug_left usint xmlStack.error
+#srcline 119 ;  eod   := xmlItem.eod;                                  // zpracovan cely XML buffer
+ LDX  xmlItem
+ ADD  347  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlItem.eod
+ WRX  eod
+#debug_left bool eod
+#srcline 121 ;  IF eod THEN
+ LDX  eod
+#debug bool eod
+ JMC  fbXmlParser_L11
+#srcline 122 ;    tmp := ADR(xmlItem.txt);                             // ptr na text
+ LDX  xmlItem
+ ADD  90  ; + offset 
+#debug pointer xmlItem.txt
+ LEAY tmp
+ WRIL 
+#debug_left pointer tmp
+#srcline 123 ;    IF tmp^ <> 0 THEN                                    // je nejaky text ?
+ LEAY tmp
+ LDIL    ; dereference 
+ LDI  
+#debug usint tmp^
+ LD   usint 0
+ EQ
+ NEG
+ JMC  fbXmlParser_L13
+#srcline 124 ;      xmlItem.isTxt := 1;                                // pokud se text nevesel do bufferu, tak nastavit priznak, protoze SYS 82 ho nenastavi
+ LD   bool -1      ; true
+ LDX  xmlItem
+ ADD  81  ; + offset 
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlItem.isTxt
+#srcline 125 ;(*
+#srcline 126 ;    ELSE
+#srcline 127 ;      //!!! tohle ma problem, pokud ma xml za koncoym tagem treba mezery
+#srcline 128 ;      tmp := src - 1;
+#srcline 129 ;      IF tmp^ <> 16#3E THEN   // kontrola, jestli parsovani skoncilo na znaku '>'
+#srcline 130 ;        // tag s atributy se nevyparsoval cely !!! s tim uz si neporadim
+#srcline 131 ;        error := 5; xmlStack.error := 5;
+#srcline 132 ;        xmlStack.layer[xmlStack.level].tag := xmlItem.tag;       // aby bylo videt, co se mi nelibi
+#srcline 133 ;        xmlStack.errTxt := 'XML parsing error';
+#srcline 134 ;        done := 0; RETURN;
+#srcline 135 ;      END_IF;
+#srcline 136 ;*)
+#srcline 137 ;    END_IF;
+fbXmlParser_L13:
+#srcline 138 ;  END_IF;
+fbXmlParser_L11:
+#srcline 140 ;  IF xmlItem.isTxt THEN
+ LDX  xmlItem
+ ADD  81  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlItem.isTxt
+ JMC  fbXmlParser_L15
+#srcline 141 ;    xmlItem.indexTxt := xmlItem.indexTxt - PTR_TO_UDINT( ADR( sourceXML));
+ LDX  xmlItem
+ ADD  82  ; + offset 
+ LDIL 
+#debug udint xmlItem.indexTxt
+ LDX  sourceXML
+#debug pointer sourceXML
+ SUB
+ LDX  xmlItem
+ ADD  82  ; + offset 
+ WRIL 
+#debug_left udint xmlItem.indexTxt
+#srcline 142 ;    IF eod THEN                                                             // narazili jsme na konec bufferu
+ LDX  eod
+#debug bool eod
+ JMC  fbXmlParser_L17
+#srcline 143 ;      tmp := ADR(xmlItem.tag);                                              // overit, jestli je skutecne nalezen koncovy tag k textu
+ LDX  xmlItem
+#debug pointer xmlItem.tag
+ LEAY tmp
+ WRIL 
+#debug_left pointer tmp
+#srcline 144 ;      IF tmp^ = 0 THEN xmlItem.endTAG := 0; eod := 0; END_IF;               // kdyz ne, smazat priznak (pokud text obsahuje lomitka a je dlouhy, tak SYS 82 muze nastavit falesny priznak)
+ LEAY tmp
+ LDIL    ; dereference 
+ LDI  
+#debug usint tmp^
+ LD   usint 0
+ EQ
+ JMC  fbXmlParser_L19
+ LD   bool 0       ; false
+ LDX  xmlItem
+ ADD  346  ; + offset 
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlItem.endTAG
+ LD   bool 0       ; false
+ WRX  eod
+#debug_left bool eod
+fbXmlParser_L19:
+#srcline 145 ;      IF NOT xmlItem.endTAG THEN                                            // text se nevesel do bufferu
+ LDX  xmlItem
+ ADD  346  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlItem.endTAG
+ NEG
+ JMC  fbXmlParser_L21
+#srcline 146 ;        xmlItem.lenTxt := size - xmlItem.indexTxt;                          // dopocitat skutecnou delku teto casti textu
+ LDX  size
+#debug udint size
+ LDX  xmlItem
+ ADD  82  ; + offset 
+ LDIL 
+#debug udint xmlItem.indexTxt
+ SUB
+ LDX  xmlItem
+ ADD  86  ; + offset 
+ WRIL 
+#debug_left udint xmlItem.lenTxt
+#srcline 147 ;      END_IF;
+fbXmlParser_L21:
+#srcline 148 ;    END_IF;
+fbXmlParser_L17:
+#srcline 149 ;  ELSE
+ JMP  fbXmlParser_L16
+fbXmlParser_L15:
+#srcline 150 ;    xmlItem.lenTxt := LEN( xmlItem.txt);
+ LDX  xmlItem
+ ADD  90  ; + offset 
+#debug string xmlItem.txt
+ SLEN 
+ LDX  xmlItem
+ ADD  86  ; + offset 
+ WRIL 
+#debug_left udint xmlItem.lenTxt
+#srcline 151 ;  END_IF;
+fbXmlParser_L16:
+#srcline 153 ;  done := (( LEN( xmlItem.tag) <> 0) OR (xmlItem.lenTxt <> 0)) AND (error = 0); // priznak, ze je k dispozici nejaky vysledek parsovani
+ LDX  xmlItem
+#debug string xmlItem.tag
+ SLEN 
+ LD   int 0
+ EQ
+ NEG
+ LDX  xmlItem
+ ADD  86  ; + offset 
+ LDIL 
+#debug udint xmlItem.lenTxt
+ LD   udint 0
+ EQ
+ NEG
+ OR  
+ LDX  error
+#debug usint error
+ LD   usint 0
+ EQ
+ AND
+ WRX  done
+#debug_left bool done
+#srcline 154 ;  xmlStack.done := done;
+ LDX  done
+#debug bool done
+ LDX  xmlStack
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlStack.done
+#srcline 155 ;//  xmlItem.eod := eod;     // sesouhlasit
+#srcline 156 ;  line := line + 1;       // pocitani radku - pozor ! korigovano nize !
+ LDX  line
+#debug udint line
+ LD   udint 1
+ ADD
+ WRX  line
+#debug_left udint line
+#srcline 158 ;  IF eod THEN
+ LDX  eod
+#debug bool eod
+ JMC  fbXmlParser_L23
+#srcline 159 ;    restLen := 0;
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+#srcline 160 ;//    memset( 0, sizeof(TXmlStack), void(xmlStack));
+#srcline 161 ;    xmlStack.maxLevel := XML_MAX_STACK_LEVEL;
+ LD   sint 9
+ LDX  xmlStack
+ ADD  36  ; + offset 
+ WRI 
+#debug_left sint xmlStack.maxLevel
+#srcline 162 ;    xmlStack.eod := 1;
+ LD   bool -1      ; true
+ LDX  xmlStack
+ ADD  1  ; + offset 
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlStack.eod
+#srcline 163 ;  ELSE
+ JMP  fbXmlParser_L24
+fbXmlParser_L23:
+#srcline 164 ;    restLen := UDINT_TO_UINT( PTR_TO_UDINT(end) - PTR_TO_UDINT(src));  // pocet bytu do konce bufferu
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ SUB
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+#srcline 165 ;    // nastavit xmlStack
+#srcline 166 ;    IF xmlItem.startTAG OR xmlItem.endTAG THEN                         // neni to komentar
+ LDX  xmlItem
+ ADD  345  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlItem.startTAG
+ LDX  xmlItem
+ ADD  346  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlItem.endTAG
+ OR  
+ JMC  fbXmlParser_L25
+#srcline 167 ;      IF commentFlg THEN                                               // minule byl komentar
+ LDX  commentFlg
+#debug bool commentFlg
+ JMC  fbXmlParser_L27
+#srcline 168 ;        commentFlg := 0;                                               // smazat priznak
+ LD   bool 0       ; false
+ WRX  commentFlg
+#debug_left bool commentFlg
+#srcline 169 ;        IF xmlStack.level < 1 THEN                                     // snizit uroven
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ LD   sint 1
+ LTS
+ JMC  fbXmlParser_L29
+#srcline 170 ;          done := 0; xmlStack.done := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ LDX  xmlStack
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlStack.done
+#srcline 171 ;          error := 3; xmlStack.error := 3;
+ LD   usint 3
+ WRX  error
+#debug_left usint error
+ LD   usint 3
+ LDX  xmlStack
+ ADD  2  ; + offset 
+ WRI 
+#debug_left usint xmlStack.error
+#srcline 172 ;          xmlStack.errTxt := 'XML stack underflow'; RETURN;
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ LD   32
+ DST    ; Level 1
+ LEA  _str_fbXmlParser_1
+ SCON 
+#debug_left string xmlStack.errTxt
+ PDST   ; Level 1
+ JMP  fbXmlParser_RET
+#srcline 173 ;        END_IF;
+fbXmlParser_L29:
+#srcline 174 ;        xmlStack.level := xmlStack.level - 1;
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ LD   sint 1
+ SUB
+ EXTB
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ WRI 
+#debug_left sint xmlStack.level
+#srcline 175 ;      END_IF;
+fbXmlParser_L27:
+#srcline 176 ;      tagState := SHL(IN := tagState, N := 2) AND 16#0F;
+ LDX  tagState
+#debug byte tagState
+ LD   uint 2
+ SHL
+ AND  $FF
+ LD   byte $0F
+ AND
+ WRX  tagState
+#debug_left byte tagState
+#srcline 177 ;      tagState.1 := xmlItem.startTAG; tagState.0 := xmlItem.endTAG;
+ LDX  xmlItem
+ ADD  345  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlItem.startTAG
+ WRX  tagState.1
+#debug_left bool tagState.1
+ LDX  xmlItem
+ ADD  346  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlItem.endTAG
+ WRX  tagState.0
+#debug_left bool tagState.0
+#srcline 178 ;      CASE BYTE_TO_USINT(tagState) OF
+ LDX  tagState
+#debug byte tagState
+ WRY  P0__st__
+ LD   $01
+ LDY  P0__st__
+ EQ  
+ JMC  fbXmlParser_L32
+#srcline 179 ;        16#01 :                                                        // chyba : pouze end tag na zacatku dokumentu
+#srcline 180 ;            done := 0; xmlStack.done := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ LDX  xmlStack
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlStack.done
+#srcline 181 ;            error := 3; xmlStack.error := 3;
+ LD   usint 3
+ WRX  error
+#debug_left usint error
+ LD   usint 3
+ LDX  xmlStack
+ ADD  2  ; + offset 
+ WRI 
+#debug_left usint xmlStack.error
+#srcline 182 ;            xmlStack.errTxt := 'XML stack underflow'; RETURN;
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ LD   32
+ DST    ; Level 1
+ LEA  _str_fbXmlParser_2
+ SCON 
+#debug_left string xmlStack.errTxt
+ PDST   ; Level 1
+ JMP  fbXmlParser_RET
+ JMP  fbXmlParser_L31
+fbXmlParser_L32:
+ LD   $0A
+ LDY  P0__st__
+ EQ   
+ JMD  fbXmlParser_L33
+ LD   $0B
+ LDY  P0__st__
+ EQ   
+ JMC  fbXmlParser_L34
+fbXmlParser_L33:
+#srcline 183 ;        16#0A, 16#0B :
+#srcline 184 ;            xmlStack.level := xmlStack.level + 1;                      // zvysit stack
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ LD   sint 1
+ ADD
+ EXTB
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ WRI 
+#debug_left sint xmlStack.level
+#srcline 185 ;            IF xmlStack.level > XML_MAX_STACK_LEVEL THEN
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ LD   sint 9
+ GTS
+ JMC  fbXmlParser_L35
+#srcline 186 ;              done := 0; xmlStack.done := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ LDX  xmlStack
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlStack.done
+#srcline 187 ;              error := 2; xmlStack.error := 2;
+ LD   usint 2
+ WRX  error
+#debug_left usint error
+ LD   usint 2
+ LDX  xmlStack
+ ADD  2  ; + offset 
+ WRI 
+#debug_left usint xmlStack.error
+#srcline 188 ;              xmlStack.errTxt := 'XML stack overflow'; RETURN;
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ LD   32
+ DST    ; Level 1
+ LEA  _str_fbXmlParser_3
+ SCON 
+#debug_left string xmlStack.errTxt
+ PDST   ; Level 1
+ JMP  fbXmlParser_RET
+#srcline 189 ;            END_IF;
+fbXmlParser_L35:
+ JMP  fbXmlParser_L31
+fbXmlParser_L34:
+ LD   $05
+ LDY  P0__st__
+ EQ   
+ JMD  fbXmlParser_L37
+ LD   $0D
+ LDY  P0__st__
+ EQ   
+ JMC  fbXmlParser_L38
+fbXmlParser_L37:
+#srcline 190 ;        16#05, 16#0D :
+#srcline 191 ;            xmlStack.layer[xmlStack.level].tag := '';                  // snizit stack
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  38  ; + offset 
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ RCHK 9   ; Range Check
+ MUL  82   ; SizeOf(...)
+ ADD     ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  38  ; + offset 
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ RCHK 9   ; Range Check
+ MUL  82   ; SizeOf(...)
+ ADD     ; + offset 
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlParser_4
+ SCON 
+#debug_left string xmlStack.layer[xmlStack.level].tag
+ PDST   ; Level 1
+#srcline 192 ;            IF xmlStack.level < 1 THEN
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ LD   sint 1
+ LTS
+ JMC  fbXmlParser_L39
+#srcline 193 ;              done := 0; xmlStack.done := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ LDX  xmlStack
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlStack.done
+#srcline 194 ;              error := 3; xmlStack.error := 3;
+ LD   usint 3
+ WRX  error
+#debug_left usint error
+ LD   usint 3
+ LDX  xmlStack
+ ADD  2  ; + offset 
+ WRI 
+#debug_left usint xmlStack.error
+#srcline 195 ;              xmlStack.errTxt := 'XML stack underflow'; RETURN;
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ LD   32
+ DST    ; Level 1
+ LEA  _str_fbXmlParser_5
+ SCON 
+#debug_left string xmlStack.errTxt
+ PDST   ; Level 1
+ JMP  fbXmlParser_RET
+#srcline 196 ;            END_IF;
+fbXmlParser_L39:
+#srcline 197 ;            xmlStack.level := xmlStack.level - 1;
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ LD   sint 1
+ SUB
+ EXTB
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ WRI 
+#debug_left sint xmlStack.level
+#srcline 198 ;            tmpStr := DELETE( IN := xmlItem.tag, L := 1, P := 1);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LDX  xmlItem
+#debug string xmlItem.tag
+ LD   1
+ LD   1
+ SUB  1
+ SDEL 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAY tmpStr
+ WRI  
+ LEAY tmpStr
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string tmpStr
+ PDST   ; Level 1
+#srcline 199 ;            IF xmlStack.layer[xmlStack.level].tag <> tmpStr THEN       // zkontrolovat syntaxi xml
+ LDX  xmlStack
+ ADD  38  ; + offset 
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ RCHK 9   ; Range Check
+ MUL  82   ; SizeOf(...)
+ ADD     ; + offset 
+#debug string xmlStack.layer[xmlStack.level].tag
+ LEAY tmpStr
+#debug string tmpStr
+ SCMP 
+ EQ   0
+ NEG
+ JMC  fbXmlParser_L41
+#srcline 200 ;              done := 0; xmlStack.done := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ LDX  xmlStack
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlStack.done
+#srcline 201 ;              error := 4; xmlStack.error := 4;
+ LD   usint 4
+ WRX  error
+#debug_left usint error
+ LD   usint 4
+ LDX  xmlStack
+ ADD  2  ; + offset 
+ WRI 
+#debug_left usint xmlStack.error
+#srcline 202 ;              xmlStack.layer[xmlStack.level].tag := xmlItem.tag;       // aby bylo videt, co se mi nelibi
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  38  ; + offset 
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ RCHK 9   ; Range Check
+ MUL  82   ; SizeOf(...)
+ ADD     ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  38  ; + offset 
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ RCHK 9   ; Range Check
+ MUL  82   ; SizeOf(...)
+ ADD     ; + offset 
+ LD   80
+ DST    ; Level 1
+ LDX  xmlItem
+#debug string xmlItem.tag
+ SCON 
+#debug_left string xmlStack.layer[xmlStack.level].tag
+ PDST   ; Level 1
+#srcline 203 ;              xmlStack.errTxt := 'XML syntaxe error'; RETURN;
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ LD   32
+ DST    ; Level 1
+ LEA  _str_fbXmlParser_6
+ SCON 
+#debug_left string xmlStack.errTxt
+ PDST   ; Level 1
+ JMP  fbXmlParser_RET
+#srcline 204 ;            END_IF;
+fbXmlParser_L41:
+ JMP  fbXmlParser_L31
+fbXmlParser_L38:
+ LD   $09
+ LDY  P0__st__
+ EQ  
+ JMC  fbXmlParser_L43
+#srcline 205 ;        16#09 :
+#srcline 206 ;            line := line - 1;                                          // stejny radek
+ LDX  line
+#debug udint line
+ LD   udint 1
+ SUB
+ WRX  line
+#debug_left udint line
+ JMP  fbXmlParser_L31
+fbXmlParser_L43:
+fbXmlParser_L31:
+#srcline 208 ;      xmlStack.layer[xmlStack.level].tag := xmlItem.tag;
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  38  ; + offset 
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ RCHK 9   ; Range Check
+ MUL  82   ; SizeOf(...)
+ ADD     ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  38  ; + offset 
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ RCHK 9   ; Range Check
+ MUL  82   ; SizeOf(...)
+ ADD     ; + offset 
+ LD   80
+ DST    ; Level 1
+ LDX  xmlItem
+#debug string xmlItem.tag
+ SCON 
+#debug_left string xmlStack.layer[xmlStack.level].tag
+ PDST   ; Level 1
+#srcline 209 ;    ELSE
+ JMP  fbXmlParser_L26
+fbXmlParser_L25:
+#srcline 210 ;      IF NOT xmlItem.isTxt THEN                                        // kdyz to neni dlouhy text
+ LDX  xmlItem
+ ADD  81  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlItem.isTxt
+ NEG
+ JMC  fbXmlParser_L44
+#srcline 211 ;        // komentar v xml bude na stacku jako prazdna polozka na dalsi urovni
+#srcline 212 ;        IF NOT commentFlg THEN                                           // minule nebyl komentar (kdyz ano, uroven zustane)
+ LDX  commentFlg
+#debug bool commentFlg
+ NEG
+ JMC  fbXmlParser_L46
+#srcline 213 ;          xmlStack.level := xmlStack.level + 1;                          // zvysit stack
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ LD   sint 1
+ ADD
+ EXTB
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ WRI 
+#debug_left sint xmlStack.level
+#srcline 214 ;          IF xmlStack.level > XML_MAX_STACK_LEVEL THEN
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ LD   sint 9
+ GTS
+ JMC  fbXmlParser_L48
+#srcline 215 ;            done := 0; xmlStack.done := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ LDX  xmlStack
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlStack.done
+#srcline 216 ;            error := 2; xmlStack.error := 2;
+ LD   usint 2
+ WRX  error
+#debug_left usint error
+ LD   usint 2
+ LDX  xmlStack
+ ADD  2  ; + offset 
+ WRI 
+#debug_left usint xmlStack.error
+#srcline 217 ;            xmlStack.errTxt := 'XML stack overflow'; RETURN;
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  3  ; + offset 
+ LD   32
+ DST    ; Level 1
+ LEA  _str_fbXmlParser_7
+ SCON 
+#debug_left string xmlStack.errTxt
+ PDST   ; Level 1
+ JMP  fbXmlParser_RET
+#srcline 218 ;          END_IF;
+fbXmlParser_L48:
+#srcline 219 ;          xmlStack.layer[xmlStack.level].tag := '';                      // misto komentare prazdny retezec
+ LD   0   ; null string
+ LDX  xmlStack
+ ADD  38  ; + offset 
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ RCHK 9   ; Range Check
+ MUL  82   ; SizeOf(...)
+ ADD     ; + offset 
+ WRI  
+ LDX  xmlStack
+ ADD  38  ; + offset 
+ LDX  xmlStack
+ ADD  37  ; + offset 
+ LDI  
+#debug sint xmlStack.level
+ EXTB 
+ RCHK 9   ; Range Check
+ MUL  82   ; SizeOf(...)
+ ADD     ; + offset 
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlParser_8
+ SCON 
+#debug_left string xmlStack.layer[xmlStack.level].tag
+ PDST   ; Level 1
+#srcline 220 ;        END_IF;
+fbXmlParser_L46:
+#srcline 221 ;        commentFlg := 1;                                                 // priznak komentare
+ LD   bool -1      ; true
+ WRX  commentFlg
+#debug_left bool commentFlg
+#srcline 222 ;      END_IF;
+fbXmlParser_L44:
+#srcline 223 ;    END_IF;
+fbXmlParser_L26:
+#srcline 224 ;  END_IF;
+fbXmlParser_L24:
+#srcline 225 ;END_FUNCTION_BLOCK
+fbXmlParser_RET:
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbXmlParser__InstanceInit__:
+ LINK 0
+ LD   udint $FFFFFFFF    ; nil
+ WRX  src
+ LD   udint $FFFFFFFF    ; nil
+ WRX  end
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'C:\TECOLIBSRC\XMLLIBEX\XMLLIBEX\FBXMLFILEPARSER.ST'
+#pou fbXmlFileParser
+#srcline 2 ;FUNCTION_BLOCK fbXmlFileParser
+
+#struct fbXmlFileParser__temp__
+  TFileInfo fInfo,  ; kvuli zjisteni velikosti souboru
+  string[82] PS0__st__
+#data byte _str_fbXmlFileParser_0 = 
+  '',0
+P     61
+fbXmlFileParser_L0:
+ LINK __SizeOf(fbXmlFileParser__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 47 ;  done := 0; start := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  start
+#debug_left bool start
+#srcline 48 ;  trgExecOn(CLK := exec);
+ LDX  exec
+#debug bool exec
+ WRX  trgExecOn~CLK
+#debug_left bool trgExecOn~CLK
+ LEAX trgExecOn
+ CAL  R_TRIG_L0
+#srcline 49 ;  IF exec THEN
+ LDX  exec
+#debug bool exec
+ JMC  fbXmlFileParser_L1
+#srcline 50 ;    IF trgExecOn.Q THEN
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ JMC  fbXmlFileParser_L3
+#srcline 51 ;      // odstartovat cteni XML dokumentu
+#srcline 52 ;      rqInit := 0; busy := 1; err := 0; start := 1; errTxt := '';
+ LD   bool 0       ; false
+ WRX  rqInit
+#debug_left bool rqInit
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  err
+#debug_left bool err
+ LD   bool -1      ; true
+ WRX  start
+#debug_left bool start
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlFileParser_0
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 53 ;      rqFile := 0; rqParse := 0; fileSize := 0; restLen := 0; sumaLen := 0; line := 0;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   udint 0
+ WRX  fileSize
+#debug_left udint fileSize
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+ LD   udint 0
+ WRX  sumaLen
+#debug_left udint sumaLen
+ LD   udint 0
+ WRX  line
+#debug_left udint line
+#srcline 54 ;      Memset(val := 0, length := sizeof(xmlInfo), dest := void(xmlInfo));
+ NXT
+ LD   udint 0
+ WR   __Instance__Memset~val
+#debug_left udint __Instance__Memset~val
+ LD   3788  ; SizeOf()
+ WR   __Instance__Memset~length
+#debug_left uint __Instance__Memset~length
+ LDX  xmlInfo
+ WR   __Instance__Memset~dest
+#debug_left pointer __Instance__Memset.dest
+ PRV
+ LEA  __Instance__Memset
+ CAL  Memset_L0
+#srcline 55 ;      ReadFile( exec := 0, fileName := fileName, dstVar := void(xmlBuffer), size := 0);
+ LD   0
+ WRX  ReadFile~exec
+#debug_left bool ReadFile~exec
+ LDX  fileName
+ WRX  ReadFile~fileName
+#debug_left pointer ReadFile.fileName
+ LEAX xmlBuffer
+ WRX  ReadFile~dstVar
+#debug_left pointer ReadFile.dstVar
+ LD   udint 0
+ WRX  ReadFile~size
+#debug_left udint ReadFile~size
+ LEAX ReadFile
+ CAL  ReadFromFile_L0
+#srcline 56 ;    END_IF;
+fbXmlFileParser_L3:
+#srcline 57 ;    IF NOT rqInit THEN
+ LDX  rqInit
+#debug bool rqInit
+ NEG
+ JMC  fbXmlFileParser_L5
+#srcline 58 ;      rqInit := FileInfo( fileName := fileName, fileDesc := fInfo);    // kolik budu cist
+ NXT
+ LDX  fileName
+ WR   __Instance__FileInfo~fileName
+#debug_left pointer __Instance__FileInfo.fileName
+ LEAY fInfo
+ WR   __Instance__FileInfo~fileDesc
+#debug_left pointer __Instance__FileInfo.fileDesc
+ PRV
+ LEA  __Instance__FileInfo
+ CAL  FileInfo_L0
+ WRX  rqInit
+#debug_left bool rqInit
+#srcline 59 ;      IF rqInit THEN
+ LDX  rqInit
+#debug bool rqInit
+ JMC  fbXmlFileParser_L7
+#srcline 60 ;        rqFile := 1; rqStart := 1; fileSize := fInfo.fileSize;
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool -1      ; true
+ WRX  rqStart
+#debug_left bool rqStart
+ LDY  fInfo~fileSize
+#debug udint fInfo.fileSize
+ WRX  fileSize
+#debug_left udint fileSize
+#srcline 61 ;      ELSE
+ JMP  fbXmlFileParser_L8
+fbXmlFileParser_L7:
+#srcline 62 ;        err := 1; busy := 0;                     // chyba pri cteni souboru
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 63 ;        GetLastErrTxt( errCode := GetLastErr(), errMessage := errTxt);  // popis chyby
+ NXT
+ LEA  __Instance__GetLastErr
+ CAL  GetLastErr_L0
+ WR   __Instance__GetLastErrTxt~errCode
+#debug_left udint __Instance__GetLastErrTxt~errCode
+ LEAX errTxt
+ WR   __Instance__GetLastErrTxt~errMessage
+#debug_left pointer __Instance__GetLastErrTxt.errMessage
+ PRV
+ LEA  __Instance__GetLastErrTxt
+ CAL  GetLastErrTxt_L0
+#srcline 64 ;      END_IF;
+fbXmlFileParser_L8:
+#srcline 65 ;    END_IF;
+fbXmlFileParser_L5:
+#srcline 67 ;    // nacitat v kazdem cyklu pokud mozno max. 512 bytu
+#srcline 68 ;    ReadFile( exec := rqFile, fileName := fileName, dstVar := void(xmlBuffer[restLen]), seek := sumaLen, size := UINT_TO_UDINT(XML_BUFFER_SIZE - restLen));
+ LDX  rqFile
+#debug bool rqFile
+ WRX  ReadFile~exec
+#debug_left bool ReadFile~exec
+ LDX  fileName
+ WRX  ReadFile~fileName
+#debug_left pointer ReadFile.fileName
+ LEAX xmlBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  ReadFile~dstVar
+#debug_left pointer ReadFile.dstVar
+ LDX  sumaLen
+#debug udint sumaLen
+ WRX  ReadFile~seek
+#debug_left udint ReadFile~seek
+ LD   uint 768
+ LDX  restLen
+#debug uint restLen
+ SUB
+ AND  $FFFF
+ WRX  ReadFile~size
+#debug_left udint ReadFile~size
+ LEAX ReadFile
+ CAL  ReadFromFile_L0
+#srcline 69 ;    IF rqFile THEN
+ LDX  rqFile
+#debug bool rqFile
+ JMC  fbXmlFileParser_L9
+#srcline 70 ;      busy := 1;
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 71 ;      IF ReadFile.done THEN
+ LDX  ReadFile~done
+#debug bool ReadFile.done
+ JMC  fbXmlFileParser_L11
+#srcline 72 ;        actLen  := UINT_TO_UDINT(restLen) + ReadFile.actSize;      // aktualni velikost xml bufferu
+ LDX  restLen
+#debug uint restLen
+ LDX  ReadFile~actSize
+#debug udint ReadFile.actSize
+ ADD
+ WRX  actLen
+#debug_left udint actLen
+#srcline 73 ;        sumaLen := sumaLen + ReadFile.actSize;                     // celkove jiz nacteno ze souboru
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  ReadFile~actSize
+#debug udint ReadFile.actSize
+ ADD
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 74 ;        rqFile := 0; rqParse := 1;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 75 ;        // shodit nabeznou hranu ReadFile.exec
+#srcline 76 ;        ReadFile( exec := 0, fileName := fileName, dstVar := void(xmlBuffer), size := 0);
+ LD   0
+ WRX  ReadFile~exec
+#debug_left bool ReadFile~exec
+ LDX  fileName
+ WRX  ReadFile~fileName
+#debug_left pointer ReadFile.fileName
+ LEAX xmlBuffer
+ WRX  ReadFile~dstVar
+#debug_left pointer ReadFile.dstVar
+ LD   udint 0
+ WRX  ReadFile~size
+#debug_left udint ReadFile~size
+ LEAX ReadFile
+ CAL  ReadFromFile_L0
+#srcline 77 ;        RETURN;                                                      // 1 cyklus po nacteni pockat (aby po nacteni bylo na vystupu busy)
+ JMP  fbXmlFileParser_RET
+#srcline 78 ;      ELSIF ReadFile.err THEN
+ JMP  fbXmlFileParser_L12
+fbXmlFileParser_L11:
+ LDX  ReadFile~err
+#debug bool ReadFile.err
+ JMC  fbXmlFileParser_L13
+#srcline 79 ;        err := 1; busy := 0; rqFile := 0;                               // chyba pri cteni souboru
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 80 ;        GetLastErrTxt(errCode :=  GetLastErr(), errMessage := errTxt);  // popis chyby
+ NXT
+ LEA  __Instance__GetLastErr
+ CAL  GetLastErr_L0
+ WR   __Instance__GetLastErrTxt~errCode
+#debug_left udint __Instance__GetLastErrTxt~errCode
+ LEAX errTxt
+ WR   __Instance__GetLastErrTxt~errMessage
+#debug_left pointer __Instance__GetLastErrTxt.errMessage
+ PRV
+ LEA  __Instance__GetLastErrTxt
+ CAL  GetLastErrTxt_L0
+#srcline 81 ;      END_IF;
+ JMP  fbXmlFileParser_L12
+fbXmlFileParser_L13:
+fbXmlFileParser_L12:
+#srcline 82 ;    END_IF;
+fbXmlFileParser_L9:
+#srcline 84 ;    // parsovat dokument
+#srcline 85 ;    IF rqParse THEN
+ LDX  rqParse
+#debug bool rqParse
+ JMC  fbXmlFileParser_L14
+#srcline 86 ;      // parsovani dat v XML souboru
+#srcline 87 ;      XmlParser( start := rqStart, shrink := 0, size := actLen, sourceXML := void( xmlBuffer), xmlItem := xmlInfo.Item, xmlStack := xmlInfo.Stack);
+ LDX  rqStart
+#debug bool rqStart
+ WRX  XmlParser~start
+#debug_left bool XmlParser~start
+ LD   0
+ WRX  XmlParser~shrink
+#debug_left bool XmlParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  XmlParser~size
+#debug_left udint XmlParser~size
+ LEAX xmlBuffer
+ WRX  XmlParser~sourceXML
+#debug_left pointer XmlParser.sourceXML
+ LDX  xmlInfo
+ WRX  XmlParser~xmlItem
+#debug_left pointer XmlParser.xmlItem
+ LDX  xmlInfo
+ ADD  2930  ; + offset 
+ WRX  XmlParser~xmlStack
+#debug_left pointer XmlParser.xmlStack
+ LEAX XmlParser
+ CAL  fbXmlParser_L0
+#srcline 88 ;      rqStart := 0; restLen := XmlParser.restLen;          // nastavit, kolik jeste zbyva zpracovat
+ LD   bool 0       ; false
+ WRX  rqStart
+#debug_left bool rqStart
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 89 ;      busy := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 90 ;      IF XmlParser.done THEN
+ LDX  XmlParser~done
+#debug bool XmlParser.done
+ JMC  fbXmlFileParser_L16
+#srcline 91 ;        done := 1;
+ LD   bool -1      ; true
+ WRX  done
+#debug_left bool done
+#srcline 92 ;      ELSIF XmlParser.error <> 0 THEN
+ JMP  fbXmlFileParser_L17
+fbXmlFileParser_L16:
+ LDX  XmlParser~error
+#debug usint XmlParser.error
+ LD   usint 0
+ EQ
+ NEG
+ JMC  fbXmlFileParser_L18
+#srcline 93 ;        err := 1; rqParse := 0;
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 94 ;        errTxt := xmlInfo.Stack.errTxt;
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LDX  xmlInfo
+ ADD  2933  ; + offset 
+#debug string xmlInfo.Stack.errTxt
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 95 ;      END_IF;
+ JMP  fbXmlFileParser_L17
+fbXmlFileParser_L18:
+fbXmlFileParser_L17:
+#srcline 97 ;      IF sumaLen < fileSize THEN
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  fileSize
+#debug udint fileSize
+ LT
+ JMC  fbXmlFileParser_L19
+#srcline 98 ;        IF XmlParser.restLen <= XML_BUMBER THEN
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ LD   uint 512
+ GT
+ NEG
+ JMC  fbXmlFileParser_L21
+#srcline 99 ;          // shrink buffer s xml dokumentem
+#srcline 100 ;          XmlParser( start := 0, shrink := 1, size := actLen, sourceXML := void( xmlBuffer), xmlItem := xmlInfo.Item, xmlStack := xmlInfo.Stack);
+ LD   0
+ WRX  XmlParser~start
+#debug_left bool XmlParser~start
+ LD   1
+ WRX  XmlParser~shrink
+#debug_left bool XmlParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  XmlParser~size
+#debug_left udint XmlParser~size
+ LEAX xmlBuffer
+ WRX  XmlParser~sourceXML
+#debug_left pointer XmlParser.sourceXML
+ LDX  xmlInfo
+ WRX  XmlParser~xmlItem
+#debug_left pointer XmlParser.xmlItem
+ LDX  xmlInfo
+ ADD  2930  ; + offset 
+ WRX  XmlParser~xmlStack
+#debug_left pointer XmlParser.xmlStack
+ LEAX XmlParser
+ CAL  fbXmlParser_L0
+#srcline 101 ;          restLen := XmlParser.restLen;       // nastavit, kolik jeste zbyva zpracovat
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 102 ;          rqFile := 1; rqParse := 0;          // nacist dalsi cast dokumentu
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 103 ;          busy := 1;                          // signalizovat ukonceni parsovani
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 104 ;        END_IF;
+fbXmlFileParser_L21:
+#srcline 105 ;      END_IF;
+fbXmlFileParser_L19:
+#srcline 106 ;      IF XmlParser.eod THEN
+ LDX  XmlParser~eod
+#debug bool XmlParser.eod
+ JMC  fbXmlFileParser_L23
+#srcline 107 ;        rqParse := 0; busy := 0; done := 0;   // konec dokumentu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+#srcline 108 ;      END_IF;
+fbXmlFileParser_L23:
+#srcline 109 ;      line := XmlParser.line;
+ LDX  XmlParser~line
+#debug udint XmlParser.line
+ WRX  line
+#debug_left udint line
+#srcline 110 ;    END_IF;
+fbXmlFileParser_L14:
+#srcline 112 ;    eof := xmlInfo.stack.eod;                 // nastavit priznak konec souboru
+ LDX  xmlInfo
+ ADD  2931  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlInfo.stack.eod
+ WRX  eof
+#debug_left bool eof
+#srcline 113 ;    processed := sumaLen - UINT_TO_UDINT(restLen);
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  restLen
+#debug uint restLen
+ SUB
+ WRX  processed
+#debug_left udint processed
+#srcline 114 ;  ELSE
+ JMP  fbXmlFileParser_L2
+fbXmlFileParser_L1:
+#srcline 115 ;    busy := 0; eof := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  eof
+#debug_left bool eof
+#srcline 116 ;  END_IF;
+fbXmlFileParser_L2:
+#srcline 118 ;  break := eof OR err OR busy OR NOT exec;    // prerusit zpracovani
+ LDX  eof
+#debug bool eof
+ LDX  err
+#debug bool err
+ OR  
+ LDX  busy
+#debug bool busy
+ OR  
+ LDX  exec
+#debug bool exec
+ NEG
+ OR  
+ WRX  break
+#debug_left bool break
+#srcline 119 ;END_FUNCTION_BLOCK
+fbXmlFileParser_RET:
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbXmlFileParser__InstanceInit__:
+ LINK 0
+ LEAX XmlParser
+ CAL  fbXmlParser__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'C:\TECOLIBSRC\XMLLIBEX\XMLLIBEX\FBXMLPAGEPARSER.ST'
+#pou fbXmlPageParser
+#srcline 1 ;FUNCTION_BLOCK fbXmlPageParser
+
+#struct fbXmlPageParser__temp__
+  string[82] PS0__st__,
+  string[82] PSC__st__
+#data byte _str_fbXmlPageParser_0 = 
+  '',0
+#data byte _str_fbXmlPageParser_1 = 
+  'D','N','S',' ','r','e','q','u','e','s','t',' ','e','r','r','o','r',' ',':',' ',0
+#data byte _str_fbXmlPageParser_2 = 
+  'h','t','t','p','s',':','/','/',0
+#data byte _str_fbXmlPageParser_3 = 
+  'H','T','T','P',' ','r','e','q','u','e','s','t',' ','e','r','r','o','r',' ',':',
+  ' ',0
+#data byte _str_fbXmlPageParser_4 = 
+  'H','T','T','P',' ','s','e','r','v','e','r',' ','e','r','r','o','r',' ',':',' ',0
+P     61
+fbXmlPageParser_L0:
+ LINK __SizeOf(fbXmlPageParser__temp__)
+#srcline 59 ;  done := 0; start := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  start
+#debug_left bool start
+#srcline 60 ;  trgExecOn(CLK := exec);
+ LDX  exec
+#debug bool exec
+ WRX  trgExecOn~CLK
+#debug_left bool trgExecOn~CLK
+ LEAX trgExecOn
+ CAL  R_TRIG_L0
+#srcline 61 ;  IF exec THEN
+ LDX  exec
+#debug bool exec
+ JMC  fbXmlPageParser_L1
+#srcline 62 ;    IF trgExecOn.Q THEN
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ JMC  fbXmlPageParser_L3
+#srcline 63 ;      // odstartovat cteni XML dokumentu
+#srcline 64 ;      busy := 1; start := 1; err := 0; errTxt := '';
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  start
+#debug_left bool start
+ LD   bool 0       ; false
+ WRX  err
+#debug_left bool err
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlPageParser_0
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 65 ;      rqStart := 1; rqShrink := 1; rqFile := 0; rqParse := 0;
+ LD   bool -1      ; true
+ WRX  rqStart
+#debug_left bool rqStart
+ LD   bool -1      ; true
+ WRX  rqShrink
+#debug_left bool rqShrink
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 66 ;      fileSize := 0; restLen := 0; sumaLen := 0; line := 0;
+ LD   udint 0
+ WRX  fileSize
+#debug_left udint fileSize
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+ LD   udint 0
+ WRX  sumaLen
+#debug_left udint sumaLen
+ LD   udint 0
+ WRX  line
+#debug_left udint line
+#srcline 67 ;      Memset( val := 0, length := sizeof(xmlInfo), dest := void(xmlInfo));
+ NXT
+ LD   udint 0
+ WR   __Instance__Memset~val
+#debug_left udint __Instance__Memset~val
+ LD   3788  ; SizeOf()
+ WR   __Instance__Memset~length
+#debug_left uint __Instance__Memset~length
+ LDX  xmlInfo
+ WR   __Instance__Memset~dest
+#debug_left pointer __Instance__Memset.dest
+ PRV
+ LEA  __Instance__Memset
+ CAL  Memset_L0
+#srcline 68 ;      HttpRequest(Post := 0, Get := 0, Cancel := 1, Action := Action, Host := HttpName, Data := Empty, RecvData := void(xmlBuffer[0]));
+ LD   0
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LD   0
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   1
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX xmlBuffer
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+ CAL  fbHttpRequest_L0
+#srcline 69 ;    END_IF;
+fbXmlPageParser_L3:
+#srcline 71 ;    // prevest domainove jmeno na IP adresu (je-li to potreba)
+#srcline 72 ;    SplitUrlAddress( split := trgExecOn.Q, urlAddress := pageName, host := HttpName, action := Action, IPadr := HttpIP, port := HttpPort);
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ WRX  SplitUrlAddress~split
+#debug_left bool SplitUrlAddress~split
+ LDX  pageName
+ WRX  SplitUrlAddress~urlAddress
+#debug_left pointer SplitUrlAddress.urlAddress
+ LEAX HttpName
+ WRX  SplitUrlAddress~host
+#debug_left pointer SplitUrlAddress.host
+ LEAX Action
+ WRX  SplitUrlAddress~action
+#debug_left pointer SplitUrlAddress.action
+ LEAX HttpIP
+ WRX  SplitUrlAddress~IPadr
+#debug_left pointer SplitUrlAddress.IPadr
+ LEAX HttpPort
+ WRX  SplitUrlAddress~port
+#debug_left pointer SplitUrlAddress.port
+ LEAX SplitUrlAddress
+ CAL  fbSplitUrlAddress_L0
+#srcline 73 ;    IF SplitUrlAddress.Err THEN
+ LDX  SplitUrlAddress~Err
+#debug bool SplitUrlAddress.Err
+ JMC  fbXmlPageParser_L5
+#srcline 74 ;      err := 1; busy := 0; errTxt := 'DNS request error : ' + USINT_TO_STRING(SplitUrlAddress.ErrId);
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlPageParser_1
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  SplitUrlAddress~ErrId
+#debug usint SplitUrlAddress.ErrId
+ SCNV $0830;  IEC_USINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 75 ;    ELSIF SplitUrlAddress.Done THEN
+ JMP  fbXmlPageParser_L6
+fbXmlPageParser_L5:
+ LDX  SplitUrlAddress~Done
+#debug bool SplitUrlAddress.Done
+ JMC  fbXmlPageParser_L7
+#srcline 76 ;      rqFile := 1;                                                 // zahajit cteni souboru
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 77 ;      IF chanCode = ANY_uni THEN
+ LDX  chanCode
+#debug uint chanCode
+ LD   uint 224
+ EQ
+ JMC  fbXmlPageParser_L8
+#srcline 78 ;        closeSocket := true;
+ LD   bool -1       ; true
+ WRX  closeSocket
+#debug_left bool closeSocket
+#srcline 79 ;        IF FIND(pageName, 'https://') = 1 THEN
+ LDX  pageName
+#debug string pageName
+ LEA  _str_fbXmlPageParser_2
+ SFND 
+ LD   int 1
+ EQ
+ JMC  fbXmlPageParser_L10
+#srcline 80 ;          HttpRequest.chanCode := OpenUniSocket(protocol := UNI_SSL_CLIENT);
+ NXT
+ LD   usint 35
+ WR   __Instance__OpenUniSocket~protocol
+#debug_left usint __Instance__OpenUniSocket~protocol
+ LD  0
+ WR   udint __Instance__OpenUniSocket~myIP
+ WR   __Instance__OpenUniSocket~myPort
+ WR   udint __Instance__OpenUniSocket~hisIP
+ WR   __Instance__OpenUniSocket~hisPort
+ PRV
+ LEA  __Instance__OpenUniSocket
+ CAL  OpenUniSocket_L0
+ WRX  HttpRequest~chanCode
+#debug_left uint HttpRequest.chanCode
+#srcline 81 ;        ELSE
+ JMP  fbXmlPageParser_L11
+fbXmlPageParser_L10:
+#srcline 82 ;          HttpRequest.chanCode := OpenUniSocket(protocol := UNI_TCP_CLIENT);
+ NXT
+ LD   usint 33
+ WR   __Instance__OpenUniSocket~protocol
+#debug_left usint __Instance__OpenUniSocket~protocol
+ LD  0
+ WR   udint __Instance__OpenUniSocket~myIP
+ WR   __Instance__OpenUniSocket~myPort
+ WR   udint __Instance__OpenUniSocket~hisIP
+ WR   __Instance__OpenUniSocket~hisPort
+ PRV
+ LEA  __Instance__OpenUniSocket
+ CAL  OpenUniSocket_L0
+ WRX  HttpRequest~chanCode
+#debug_left uint HttpRequest.chanCode
+#srcline 83 ;        END_IF;
+fbXmlPageParser_L11:
+#srcline 84 ;      ELSE
+ JMP  fbXmlPageParser_L9
+fbXmlPageParser_L8:
+#srcline 85 ;        HttpRequest.chanCode := chanCode;
+ LDX  chanCode
+#debug uint chanCode
+ WRX  HttpRequest~chanCode
+#debug_left uint HttpRequest.chanCode
+#srcline 86 ;      END_IF;
+fbXmlPageParser_L9:
+#srcline 87 ;    END_IF;
+ JMP  fbXmlPageParser_L6
+fbXmlPageParser_L7:
+fbXmlPageParser_L6:
+#srcline 89 ;    // cist soubor z web stranky
+#srcline 90 ;    IF rqFile THEN
+ LDX  rqFile
+#debug bool rqFile
+ JMC  fbXmlPageParser_L12
+#srcline 91 ;      HttpRequest(Get := 1, Cancel := 0, IPadr := HttpIP, port := HttpPort,
+ LD   1
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   0
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX HttpIP
+#debug pointer HttpIP
+ SRC  %IB0
+ LEAX HttpRequest~IPadr
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDX  HttpPort
+#debug uint HttpPort
+ WRX  HttpRequest~port
+#debug_left uint HttpRequest~port
+#srcline 92 ;                  Action := Action, Host := HttpName, Data := Empty, RecvData := void(xmlBuffer[restLen]));
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX xmlBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+ CAL  fbHttpRequest_L0
+#srcline 94 ;      IF HttpRequest.Result = 200 AND HttpRequest.DataReady THEN                 // prijata dalsi cast xml
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ LD   int 200
+ EQ
+ LDX  HttpRequest~DataReady
+#debug bool HttpRequest.DataReady
+ AND
+ JMC  fbXmlPageParser_L14
+#srcline 95 ;        actLen  := UINT_TO_UDINT(restLen) + UINT_TO_UDINT(HttpRequest.DataLen);  // aktualni velikost xml bufferu
+ LDX  restLen
+#debug uint restLen
+ LDX  HttpRequest~DataLen
+#debug uint HttpRequest.DataLen
+ ADD
+ WRX  actLen
+#debug_left udint actLen
+#srcline 96 ;        restLen := UDINT_TO_UINT(actLen);
+ LDX  actLen
+#debug udint actLen
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+#srcline 97 ;        sumaLen := sumaLen + UINT_TO_UDINT(HttpRequest.DataLen);                 // celkove jiz nacteno ze souboru
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  HttpRequest~DataLen
+#debug uint HttpRequest.DataLen
+ ADD
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 98 ;        IF restLen > XML_BUMBER THEN
+ LDX  restLen
+#debug uint restLen
+ LD   uint 256
+ GT
+ JMC  fbXmlPageParser_L16
+#srcline 99 ;          rqFile := 0; rqParse := 1; busy := 0;      // kdyz mame dost dat, tak muzeme zase parsovat
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 100 ;        END_IF;
+fbXmlPageParser_L16:
+#srcline 101 ;      END_IF;
+fbXmlPageParser_L14:
+#srcline 102 ;      IF HttpRequest.Err THEN                                        // blok HttpRequest hlasi chybu
+ LDX  HttpRequest~Err
+#debug bool HttpRequest.Err
+ JMC  fbXmlPageParser_L18
+#srcline 103 ;        busy := 0; err := 1; rqFile := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 104 ;        errTxt := 'HTTP request error : ' + USINT_TO_STRING(HttpRequest.ErrId);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlPageParser_3
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  HttpRequest~ErrId
+#debug usint HttpRequest.ErrId
+ SCNV $0830;  IEC_USINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 105 ;        HttpRequest(Post := 0, Get := 0, Cancel := 1, Action := Action, Host := HttpName, Data := Empty, RecvData := void(xmlBuffer[0]));
+ LD   0
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LD   0
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   1
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX xmlBuffer
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+ CAL  fbHttpRequest_L0
+#srcline 106 ;      END_IF;
+fbXmlPageParser_L18:
+#srcline 107 ;      IF HttpRequest.Done THEN
+ LDX  HttpRequest~Done
+#debug bool HttpRequest.Done
+ JMC  fbXmlPageParser_L20
+#srcline 108 ;        // po nacteni celeho dokumentu jeste jednou zavolat HttpRequest, aby presel do stavu Idle
+#srcline 109 ;        HttpRequest(Get := 1, Cancel := 0, IPadr := HttpIP, port := HttpPort,
+ LD   1
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   0
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX HttpIP
+#debug pointer HttpIP
+ SRC  %IB0
+ LEAX HttpRequest~IPadr
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDX  HttpPort
+#debug uint HttpPort
+ WRX  HttpRequest~port
+#debug_left uint HttpRequest~port
+#srcline 110 ;                    Action := Action, Host := HttpName, Data := Empty, RecvData := void(xmlBuffer[restLen]));
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX xmlBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+ CAL  fbHttpRequest_L0
+#srcline 111 ;        rqFile := 0; busy := 0;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 112 ;        IF HttpRequest.Result = 200 THEN                             // cely xml dokument prijaty OK
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ LD   int 200
+ EQ
+ JMC  fbXmlPageParser_L22
+#srcline 113 ;          rqShrink := 0;                                             // zpracovat buffer az do konce, uz nic dalsiho nebude
+ LD   bool 0       ; false
+ WRX  rqShrink
+#debug_left bool rqShrink
+#srcline 114 ;          fileSize := sumaLen;                                       // velikost prijateho dokumentu
+ LDX  sumaLen
+#debug udint sumaLen
+ WRX  fileSize
+#debug_left udint fileSize
+#srcline 115 ;          actLen := UINT_TO_UDINT(restLen);                          // aktualni velikost xml bufferu (co zbyva zpracovat)
+ LDX  restLen
+#debug uint restLen
+ WRX  actLen
+#debug_left udint actLen
+#srcline 116 ;          IF actLen > 0 THEN
+ LDX  actLen
+#debug udint actLen
+ LD   udint 0
+ GT
+ JMC  fbXmlPageParser_L24
+#srcline 117 ;            rqParse := 1;                                            // jeste neco zbyva, tak parsovat
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 118 ;          END_IF;
+fbXmlPageParser_L24:
+#srcline 119 ;        ELSE                                                         // HTTP server hlasi chybu
+ JMP  fbXmlPageParser_L23
+fbXmlPageParser_L22:
+#srcline 120 ;          busy := 0; err := 1; rqFile := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 121 ;          errTxt := 'HTTP server error : ' + INT_TO_STRING(HttpRequest.Result); // for example 302 : redirected page
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlPageParser_4
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ SCNV $0B30;  IEC_INT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 122 ;        END_IF;
+fbXmlPageParser_L23:
+#srcline 123 ;      END_IF;
+fbXmlPageParser_L20:
+#srcline 124 ;    END_IF;
+fbXmlPageParser_L12:
+#srcline 126 ;    // parsovat dokument
+#srcline 127 ;    IF rqParse THEN
+ LDX  rqParse
+#debug bool rqParse
+ JMC  fbXmlPageParser_L26
+#srcline 128 ;      // parsovani dat v XML souboru
+#srcline 129 ;      XmlParser( start := rqStart, shrink := 0, size := actLen, sourceXML := void( xmlBuffer), xmlItem := xmlInfo.Item, xmlStack := xmlInfo.Stack);
+ LDX  rqStart
+#debug bool rqStart
+ WRX  XmlParser~start
+#debug_left bool XmlParser~start
+ LD   0
+ WRX  XmlParser~shrink
+#debug_left bool XmlParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  XmlParser~size
+#debug_left udint XmlParser~size
+ LEAX xmlBuffer
+ WRX  XmlParser~sourceXML
+#debug_left pointer XmlParser.sourceXML
+ LDX  xmlInfo
+ WRX  XmlParser~xmlItem
+#debug_left pointer XmlParser.xmlItem
+ LDX  xmlInfo
+ ADD  2930  ; + offset 
+ WRX  XmlParser~xmlStack
+#debug_left pointer XmlParser.xmlStack
+ LEAX XmlParser
+ CAL  fbXmlParser_L0
+#srcline 130 ;      rqStart := 0; restLen := XmlParser.restLen;          // nastavit, kolik jeste zbyva zpracovat
+ LD   bool 0       ; false
+ WRX  rqStart
+#debug_left bool rqStart
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 132 ;      IF XmlParser.done THEN
+ LDX  XmlParser~done
+#debug bool XmlParser.done
+ JMC  fbXmlPageParser_L28
+#srcline 133 ;        done := 1; // busy := 0;
+ LD   bool -1      ; true
+ WRX  done
+#debug_left bool done
+#srcline 134 ;      ELSIF XmlParser.error <> 0 THEN
+ JMP  fbXmlPageParser_L29
+fbXmlPageParser_L28:
+ LDX  XmlParser~error
+#debug usint XmlParser.error
+ LD   usint 0
+ EQ
+ NEG
+ JMC  fbXmlPageParser_L30
+#srcline 135 ;        // uzavrit spojeni se serverem
+#srcline 136 ;        HttpRequest(Post := 0, Get := 0, Cancel := 1, Action := Action, Host := HttpName, Data := Empty, RecvData := void(xmlBuffer[0]));
+ LD   0
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LD   0
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   1
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX xmlBuffer
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+ CAL  fbHttpRequest_L0
+#srcline 137 ;        err := 1; rqParse := 0; //busy := 0;
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 138 ;        errTxt := xmlInfo.Stack.errTxt;
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LDX  xmlInfo
+ ADD  2933  ; + offset 
+#debug string xmlInfo.Stack.errTxt
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 139 ;      END_IF;
+ JMP  fbXmlPageParser_L29
+fbXmlPageParser_L30:
+fbXmlPageParser_L29:
+#srcline 141 ;      IF rqShrink THEN
+ LDX  rqShrink
+#debug bool rqShrink
+ JMC  fbXmlPageParser_L31
+#srcline 142 ;        IF XmlParser.restLen <= XML_BUMBER THEN
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ LD   uint 256
+ GT
+ NEG
+ JMC  fbXmlPageParser_L33
+#srcline 143 ;          // shrink buffer s xml dokumentem
+#srcline 144 ;          XmlParser( start := 0, shrink := 1, size := actLen, sourceXML := void( xmlBuffer), xmlItem := xmlInfo.Item, xmlStack := xmlInfo.Stack);
+ LD   0
+ WRX  XmlParser~start
+#debug_left bool XmlParser~start
+ LD   1
+ WRX  XmlParser~shrink
+#debug_left bool XmlParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  XmlParser~size
+#debug_left udint XmlParser~size
+ LEAX xmlBuffer
+ WRX  XmlParser~sourceXML
+#debug_left pointer XmlParser.sourceXML
+ LDX  xmlInfo
+ WRX  XmlParser~xmlItem
+#debug_left pointer XmlParser.xmlItem
+ LDX  xmlInfo
+ ADD  2930  ; + offset 
+ WRX  XmlParser~xmlStack
+#debug_left pointer XmlParser.xmlStack
+ LEAX XmlParser
+ CAL  fbXmlParser_L0
+#srcline 145 ;          restLen := XmlParser.restLen;       // nastavit, kolik jeste zbyva zpracovat
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 146 ;          rqFile := 1; rqParse := 0;          // nacist dalsi cast dokumentu
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 147 ;          busy := 1;                          // signalizovat ukonceni parsovani
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 148 ;        END_IF;
+fbXmlPageParser_L33:
+#srcline 149 ;      END_IF;
+fbXmlPageParser_L31:
+#srcline 150 ;      IF XmlParser.eod THEN
+ LDX  XmlParser~eod
+#debug bool XmlParser.eod
+ JMC  fbXmlPageParser_L35
+#srcline 151 ;        rqParse := 0; busy := 0; done := 0;   // konec dokumentu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+#srcline 152 ;      END_IF;
+fbXmlPageParser_L35:
+#srcline 153 ;      line := XmlParser.line;
+ LDX  XmlParser~line
+#debug udint XmlParser.line
+ WRX  line
+#debug_left udint line
+#srcline 154 ;    END_IF;
+fbXmlPageParser_L26:
+#srcline 156 ;    eof := xmlInfo.stack.eod;                 // nastavit priznak konec souboru
+ LDX  xmlInfo
+ ADD  2931  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlInfo.stack.eod
+ WRX  eof
+#debug_left bool eof
+#srcline 157 ;    processed := sumaLen - UINT_TO_UDINT(restLen);
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  restLen
+#debug uint restLen
+ SUB
+ WRX  processed
+#debug_left udint processed
+#srcline 158 ;  ELSE
+ JMP  fbXmlPageParser_L2
+fbXmlPageParser_L1:
+#srcline 159 ;    busy := 0; eof := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  eof
+#debug_left bool eof
+#srcline 160 ;  END_IF;
+fbXmlPageParser_L2:
+#srcline 162 ;  IF closeSocket THEN
+ LDX  closeSocket
+#debug bool closeSocket
+ JMC  fbXmlPageParser_L37
+#srcline 163 ;    IF NOT HttpRequest.Busy THEN
+ LDX  HttpRequest~Busy
+#debug bool HttpRequest.Busy
+ NEG
+ JMC  fbXmlPageParser_L39
+#srcline 164 ;      CloseUniSocket(chanHandle := HttpRequest.chanCode);
+ NXT
+ LEAX HttpRequest
+ ADD  1  ; + offset 
+ WR   __Instance__CloseUniSocket~chanHandle
+#debug_left pointer __Instance__CloseUniSocket.chanHandle
+ PRV
+ LEA  __Instance__CloseUniSocket
+ CAL  CloseUniSocket_L0
+#srcline 165 ;      closeSocket := false;
+ LD   bool 0       ; false
+ WRX  closeSocket
+#debug_left bool closeSocket
+#srcline 166 ;    END_IF;
+fbXmlPageParser_L39:
+#srcline 167 ;  END_IF;
+fbXmlPageParser_L37:
+#srcline 169 ;  break := eof OR err OR busy OR NOT exec;    // prerusit zpracovani
+ LDX  eof
+#debug bool eof
+ LDX  err
+#debug bool err
+ OR  
+ LDX  busy
+#debug bool busy
+ OR  
+ LDX  exec
+#debug bool exec
+ NEG
+ OR  
+ WRX  break
+#debug_left bool break
+#srcline 170 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbXmlPageParser__InstanceInit__:
+ LINK 0
+ LEAX XmlParser
+ CAL  fbXmlParser__InstanceInit__
+ LEAX SplitUrlAddress
+ CAL  fbSplitUrlAddress__InstanceInit__
+ LEAX HttpRequest
+ CAL  fbHttpRequest__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'C:\TECOLIBSRC\XMLLIBEX\XMLLIBEX\FBXMLFILEPARSERFINDTAG.ST'
+#pou fbXmlFileParserFindTag
+#srcline 1 ;FUNCTION_BLOCK fbXmlFileParserFindTag
+
+#struct fbXmlFileParserFindTag__temp__
+  TFileInfo fInfo,  ; kvuli zjisteni velikosti souboru
+  string[82] PS0__st__
+#data byte _str_fbXmlFileParserFindTag_0 = 
+  '',0
+#data byte _str_fbXmlFileParserFindTag_1 = 
+  'H','l','e','d','a','n','ý',' ','t','a','g',' ','n','e','b','y','l',' ','n','a',
+  'l','e','z','e','n',' ','v',' ','s','o','u','b','o','r','u','.',0
+P     61
+fbXmlFileParserFindTag_L0:
+ LINK __SizeOf(fbXmlFileParserFindTag__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 56 ;  done := 0; start := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  start
+#debug_left bool start
+#srcline 57 ;  trgExecOn(CLK := exec);
+ LDX  exec
+#debug bool exec
+ WRX  trgExecOn~CLK
+#debug_left bool trgExecOn~CLK
+ LEAX trgExecOn
+ CAL  R_TRIG_L0
+#srcline 58 ;  IF exec THEN
+ LDX  exec
+#debug bool exec
+ JMC  fbXmlFileParserFindTag_L1
+#srcline 59 ;    IF trgExecOn.Q THEN
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ JMC  fbXmlFileParserFindTag_L3
+#srcline 60 ;      // odstartovat cteni XML dokumentu
+#srcline 61 ;      TagFindTrue := 0; FindTagFinish := 0;  //nulovani promennych
+ LD   bool 0       ; false
+ WRX  TagFindTrue
+#debug_left bool TagFindTrue
+ LD   bool 0       ; false
+ WRX  FindTagFinish
+#debug_left bool FindTagFinish
+#srcline 62 ;      memoryFindTag := MAX( orderFindTag, 1);// pamatovat si kolikáteho tagu si má všimat
+ LDX  orderFindTag
+#debug uint orderFindTag
+ LD   uint 1
+ MAX
+ WRX  memoryFindTag
+#debug_left uint memoryFindTag
+#srcline 63 ;      rqInit := 0; busy := 1; err := 0; start := 1; errTxt := '';
+ LD   bool 0       ; false
+ WRX  rqInit
+#debug_left bool rqInit
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  err
+#debug_left bool err
+ LD   bool -1      ; true
+ WRX  start
+#debug_left bool start
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlFileParserFindTag_0
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 64 ;      rqFile := 0; rqParse := 0; fileSize := 0; restLen := 0; sumaLen := 0; line := 0;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   udint 0
+ WRX  fileSize
+#debug_left udint fileSize
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+ LD   udint 0
+ WRX  sumaLen
+#debug_left udint sumaLen
+ LD   udint 0
+ WRX  line
+#debug_left udint line
+#srcline 65 ;      Memset(val := 0, length := sizeof(xmlInfo), dest := void(xmlInfo));
+ NXT
+ LD   udint 0
+ WR   __Instance__Memset~val
+#debug_left udint __Instance__Memset~val
+ LD   3788  ; SizeOf()
+ WR   __Instance__Memset~length
+#debug_left uint __Instance__Memset~length
+ LDX  xmlInfo
+ WR   __Instance__Memset~dest
+#debug_left pointer __Instance__Memset.dest
+ PRV
+ LEA  __Instance__Memset
+ CAL  Memset_L0
+#srcline 66 ;      ReadFile( exec := 0, fileName := fileName, dstVar := void(xmlBuffer), size := 0);
+ LD   0
+ WRX  ReadFile~exec
+#debug_left bool ReadFile~exec
+ LDX  fileName
+ WRX  ReadFile~fileName
+#debug_left pointer ReadFile.fileName
+ LEAX xmlBuffer
+ WRX  ReadFile~dstVar
+#debug_left pointer ReadFile.dstVar
+ LD   udint 0
+ WRX  ReadFile~size
+#debug_left udint ReadFile~size
+ LEAX ReadFile
+ CAL  ReadFromFile_L0
+#srcline 67 ;    END_IF;
+fbXmlFileParserFindTag_L3:
+#srcline 68 ;    IF NOT FindTagFinish THEN       //ošetrení aby již nedocházelo k naèitání dat ze souboru
+ LDX  FindTagFinish
+#debug bool FindTagFinish
+ NEG
+ JMC  fbXmlFileParserFindTag_L5
+#srcline 69 ;      IF NOT rqInit THEN
+ LDX  rqInit
+#debug bool rqInit
+ NEG
+ JMC  fbXmlFileParserFindTag_L7
+#srcline 70 ;        rqInit := FileInfo( fileName := fileName, fileDesc := fInfo);    // kolik budu cist
+ NXT
+ LDX  fileName
+ WR   __Instance__FileInfo~fileName
+#debug_left pointer __Instance__FileInfo.fileName
+ LEAY fInfo
+ WR   __Instance__FileInfo~fileDesc
+#debug_left pointer __Instance__FileInfo.fileDesc
+ PRV
+ LEA  __Instance__FileInfo
+ CAL  FileInfo_L0
+ WRX  rqInit
+#debug_left bool rqInit
+#srcline 71 ;        IF rqInit AND (NOT eof) THEN
+ LDX  rqInit
+#debug bool rqInit
+ LDX  eof
+#debug bool eof
+ NEG
+ AND
+ JMC  fbXmlFileParserFindTag_L9
+#srcline 72 ;          rqFile := 1; rqStart := 1; fileSize := fInfo.fileSize;
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool -1      ; true
+ WRX  rqStart
+#debug_left bool rqStart
+ LDY  fInfo~fileSize
+#debug udint fInfo.fileSize
+ WRX  fileSize
+#debug_left udint fileSize
+#srcline 73 ;        ELSE
+ JMP  fbXmlFileParserFindTag_L10
+fbXmlFileParserFindTag_L9:
+#srcline 74 ;          err := 1; busy := 0;                     // chyba pri cteni souboru
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 75 ;          GetLastErrTxt( errCode := GetLastErr(), errMessage := errTxt);  // popis chyby
+ NXT
+ LEA  __Instance__GetLastErr
+ CAL  GetLastErr_L0
+ WR   __Instance__GetLastErrTxt~errCode
+#debug_left udint __Instance__GetLastErrTxt~errCode
+ LEAX errTxt
+ WR   __Instance__GetLastErrTxt~errMessage
+#debug_left pointer __Instance__GetLastErrTxt.errMessage
+ PRV
+ LEA  __Instance__GetLastErrTxt
+ CAL  GetLastErrTxt_L0
+#srcline 76 ;        END_IF;
+fbXmlFileParserFindTag_L10:
+#srcline 77 ;      END_IF;
+fbXmlFileParserFindTag_L7:
+#srcline 78 ;    END_IF;
+fbXmlFileParserFindTag_L5:
+#srcline 79 ;    // nacitat v kazdem cyklu pokud mozno max. 512 bytu
+#srcline 80 ;    ReadFile( exec := rqFile, fileName := fileName, dstVar := void(xmlBuffer[restLen]), seek := sumaLen, size := UINT_TO_UDINT(XML_BUFFER_SIZE - restLen));
+ LDX  rqFile
+#debug bool rqFile
+ WRX  ReadFile~exec
+#debug_left bool ReadFile~exec
+ LDX  fileName
+ WRX  ReadFile~fileName
+#debug_left pointer ReadFile.fileName
+ LEAX xmlBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  ReadFile~dstVar
+#debug_left pointer ReadFile.dstVar
+ LDX  sumaLen
+#debug udint sumaLen
+ WRX  ReadFile~seek
+#debug_left udint ReadFile~seek
+ LD   uint 768
+ LDX  restLen
+#debug uint restLen
+ SUB
+ AND  $FFFF
+ WRX  ReadFile~size
+#debug_left udint ReadFile~size
+ LEAX ReadFile
+ CAL  ReadFromFile_L0
+#srcline 81 ;    IF rqFile THEN
+ LDX  rqFile
+#debug bool rqFile
+ JMC  fbXmlFileParserFindTag_L11
+#srcline 82 ;      busy := 1;
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 83 ;      IF ReadFile.done THEN
+ LDX  ReadFile~done
+#debug bool ReadFile.done
+ JMC  fbXmlFileParserFindTag_L13
+#srcline 84 ;        actLen  := UINT_TO_UDINT(restLen) + ReadFile.actSize;      // aktualni velikost xml bufferu
+ LDX  restLen
+#debug uint restLen
+ LDX  ReadFile~actSize
+#debug udint ReadFile.actSize
+ ADD
+ WRX  actLen
+#debug_left udint actLen
+#srcline 85 ;        sumaLen := sumaLen + ReadFile.actSize;                     // celkove jiz nacteno ze souboru
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  ReadFile~actSize
+#debug udint ReadFile.actSize
+ ADD
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 86 ;        rqFile := 0; rqParse := 1;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 87 ;        // shodit nabeznou hranu ReadFile.exec
+#srcline 88 ;        ReadFile( exec := 0, fileName := fileName, dstVar := void(xmlBuffer), size := 0);
+ LD   0
+ WRX  ReadFile~exec
+#debug_left bool ReadFile~exec
+ LDX  fileName
+ WRX  ReadFile~fileName
+#debug_left pointer ReadFile.fileName
+ LEAX xmlBuffer
+ WRX  ReadFile~dstVar
+#debug_left pointer ReadFile.dstVar
+ LD   udint 0
+ WRX  ReadFile~size
+#debug_left udint ReadFile~size
+ LEAX ReadFile
+ CAL  ReadFromFile_L0
+#srcline 89 ;        //vyhledavani v bufferu pozadovane tag
+#srcline 90 ;        IF NOT TagFindTrue THEN
+ LDX  TagFindTrue
+#debug bool TagFindTrue
+ NEG
+ JMC  fbXmlFileParserFindTag_L15
+#srcline 91 ;          PTRxmlBuffer    := ADR(xmlBuffer);
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LEAX PTRxmlBuffer
+ WRIL 
+#debug_left pointer PTRxmlBuffer
+#srcline 92 ;          indexFindTag    := FIND(IN1 := PTRxmlBuffer^, IN2 :=findTag);   //najít požadovaný tag v xml souboru
+ LEAX PTRxmlBuffer
+ LDIL    ; dereference 
+#debug string PTRxmlBuffer^
+ LEAX findTag
+#debug string findTag
+ SFND 
+ WRX  indexFindTag
+#debug_left int indexFindTag
+#srcline 93 ;          IF indexFindTag > 0 THEN
+ LDX  indexFindTag
+#debug int indexFindTag
+ EXTW 
+ LD   int 0
+ GTS
+ JMC  fbXmlFileParserFindTag_L17
+#srcline 94 ;             memoryFindTag := memoryFindTag - 1;
+ LDX  memoryFindTag
+#debug uint memoryFindTag
+ LD   uint 1
+ SUB
+ AND  $FFFF
+ WRX  memoryFindTag
+#debug_left uint memoryFindTag
+#srcline 95 ;             IF memoryFindTag = 0 THEN                                    //nenalezen /nalezen požadovaní tag v zavisloti na poøadí
+ LDX  memoryFindTag
+#debug uint memoryFindTag
+ LD   uint 0
+ EQ
+ JMC  fbXmlFileParserFindTag_L19
+#srcline 96 ;               indexFindTag := indexFindTag - 1;
+ LDX  indexFindTag
+#debug int indexFindTag
+ EXTW 
+ LD   int 1
+ SUB
+ EXTW
+ WRX  indexFindTag
+#debug_left int indexFindTag
+#srcline 97 ;               TagFindTrue := 1; rqParse := 0; rqFile:=1;                 // nalezeno, nacist dalsi cast dokumentu a pak parsovat
+ LD   bool -1      ; true
+ WRX  TagFindTrue
+#debug_left bool TagFindTrue
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 98 ;               src := ADR(xmlBuffer) + INT_TO_UDINT(indexFindTag);
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LDX  indexFindTag
+#debug int indexFindTag
+ EXTW 
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 99 ;               end := ADR(xmlBuffer) +  UINT_TO_UDINT( XML_BUFFER_SIZE);  // nastavit aktualni konec dat
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LD   uint 768
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+#srcline 100 ;               IF PTR_TO_UDINT(end) > PTR_TO_UDINT(src) THEN
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ GT
+ JMC  fbXmlFileParserFindTag_L21
+#srcline 101 ;                   restLen := UDINT_TO_UINT( PTR_TO_UDINT(end) - PTR_TO_UDINT(src)); // pocet bytu do konce bufferu
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ SUB
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+#srcline 102 ;                   IF PTR_TO_UDINT(src) <> PTR_TO_UDINT( ADR(xmlBuffer)) THEN
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ EQ
+ NEG
+ JMC  fbXmlFileParserFindTag_L23
+#srcline 103 ;                         MemcpyPtr( source := src, dest := ADR(xmlBuffer), length := UINT_TO_UDINT(restLen));
+ NXT
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ LDX  restLen
+#debug uint restLen
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ PRV
+ LEA  __Instance__MemcpyPtr
+ CAL  MemcpyPtr_L0
+#srcline 104 ;                   END_IF;
+fbXmlFileParserFindTag_L23:
+#srcline 105 ;               END_IF;
+fbXmlFileParserFindTag_L21:
+#srcline 106 ;              ELSE
+ JMP  fbXmlFileParserFindTag_L20
+fbXmlFileParserFindTag_L19:
+#srcline 107 ;               rqParse := 0; rqFile:=1;         // nacist dalsi cast dokumentu  , posouvá posledních 256 bajtu na zacatek bufferu,zbytek se doète v další cyklu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 108 ;               src := ADR(xmlBuffer) + UINT_TO_UDINT(XML_BUFFER_SIZE-XML_BUMBER);
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LD   uint 768
+ LD   uint 256
+ SUB
+ AND  $FFFF
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 109 ;               end := ADR(xmlBuffer) + UINT_TO_UDINT(XML_BUFFER_SIZE);
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LD   uint 768
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+#srcline 110 ;               restLen := XML_BUMBER;
+ LD   uint 256
+ WRX  restLen
+#debug_left uint restLen
+#srcline 111 ;               MemcpyPtr( source := src, dest := ADR(xmlBuffer), length := UINT_TO_UDINT(restLen));
+ NXT
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ LDX  restLen
+#debug uint restLen
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ PRV
+ LEA  __Instance__MemcpyPtr
+ CAL  MemcpyPtr_L0
+#srcline 112 ;             END_IF;
+fbXmlFileParserFindTag_L20:
+#srcline 113 ;          ELSE
+ JMP  fbXmlFileParserFindTag_L18
+fbXmlFileParserFindTag_L17:
+#srcline 114 ;           rqParse := 0;
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 115 ;           rqFile:=1;         // nacist dalsi cast dokumentu  , posouvá posledních 256 bajtu na zacatek bufferu,zbytek se doète v další cyklu
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 116 ;           src := ADR(xmlBuffer) + UINT_TO_UDINT(XML_BUFFER_SIZE-XML_BUMBER);
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LD   uint 768
+ LD   uint 256
+ SUB
+ AND  $FFFF
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 117 ;           end := ADR(xmlBuffer) + UINT_TO_UDINT(XML_BUFFER_SIZE);
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LD   uint 768
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+#srcline 118 ;           restLen := XML_BUMBER;
+ LD   uint 256
+ WRX  restLen
+#debug_left uint restLen
+#srcline 119 ;           MemcpyPtr( source := src, dest := ADR(xmlBuffer), length := UINT_TO_UDINT(restLen));
+ NXT
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ LDX  restLen
+#debug uint restLen
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ PRV
+ LEA  __Instance__MemcpyPtr
+ CAL  MemcpyPtr_L0
+#srcline 120 ;          END_IF;
+fbXmlFileParserFindTag_L18:
+#srcline 121 ;          IF (sumaLen = fileSize) THEN
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  fileSize
+#debug udint fileSize
+ EQ
+ JMC  fbXmlFileParserFindTag_L25
+#srcline 122 ;            err:=1;
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+#srcline 123 ;            errTxt:='Hledaný tag nebyl nalezen v souboru.';
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlFileParserFindTag_1
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 124 ;          END_IF;
+fbXmlFileParserFindTag_L25:
+#srcline 125 ;        END_IF;
+fbXmlFileParserFindTag_L15:
+#srcline 126 ;        RETURN;                                                      // 1 cyklus po nacteni pockat (aby po nacteni bylo na vystupu busy)
+ JMP  fbXmlFileParserFindTag_RET
+#srcline 127 ;      ELSIF ReadFile.err THEN
+ JMP  fbXmlFileParserFindTag_L14
+fbXmlFileParserFindTag_L13:
+ LDX  ReadFile~err
+#debug bool ReadFile.err
+ JMC  fbXmlFileParserFindTag_L27
+#srcline 128 ;        err := 1; busy := 0; rqFile := 0;                               // chyba pri cteni souboru
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 129 ;        GetLastErrTxt(errCode :=  GetLastErr(), errMessage := errTxt);  // popis chyby
+ NXT
+ LEA  __Instance__GetLastErr
+ CAL  GetLastErr_L0
+ WR   __Instance__GetLastErrTxt~errCode
+#debug_left udint __Instance__GetLastErrTxt~errCode
+ LEAX errTxt
+ WR   __Instance__GetLastErrTxt~errMessage
+#debug_left pointer __Instance__GetLastErrTxt.errMessage
+ PRV
+ LEA  __Instance__GetLastErrTxt
+ CAL  GetLastErrTxt_L0
+#srcline 130 ;      END_IF;
+ JMP  fbXmlFileParserFindTag_L14
+fbXmlFileParserFindTag_L27:
+fbXmlFileParserFindTag_L14:
+#srcline 131 ;    END_IF;
+fbXmlFileParserFindTag_L11:
+#srcline 133 ;    // parsovat dokument
+#srcline 134 ;    IF rqParse and TagFindTrue AND (NOT  FindTagFinish)  THEN
+ LDX  rqParse
+#debug bool rqParse
+ LDX  TagFindTrue
+#debug bool TagFindTrue
+ AND
+ LDX  FindTagFinish
+#debug bool FindTagFinish
+ NEG
+ AND
+ JMC  fbXmlFileParserFindTag_L28
+#srcline 135 ;      // parsovani dat v XML souboru
+#srcline 136 ;      XmlParser( start := rqStart, shrink := 0, size := actLen, sourceXML := void( xmlBuffer), xmlItem := xmlInfo.Item, xmlStack := xmlInfo.Stack);
+ LDX  rqStart
+#debug bool rqStart
+ WRX  XmlParser~start
+#debug_left bool XmlParser~start
+ LD   0
+ WRX  XmlParser~shrink
+#debug_left bool XmlParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  XmlParser~size
+#debug_left udint XmlParser~size
+ LEAX xmlBuffer
+ WRX  XmlParser~sourceXML
+#debug_left pointer XmlParser.sourceXML
+ LDX  xmlInfo
+ WRX  XmlParser~xmlItem
+#debug_left pointer XmlParser.xmlItem
+ LDX  xmlInfo
+ ADD  2930  ; + offset 
+ WRX  XmlParser~xmlStack
+#debug_left pointer XmlParser.xmlStack
+ LEAX XmlParser
+ CAL  fbXmlParser_L0
+#srcline 137 ;      rqStart  := 0;
+ LD   bool 0       ; false
+ WRX  rqStart
+#debug_left bool rqStart
+#srcline 138 ;      restLen  := XmlParser.restLen;
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 139 ;      FindTagFinish := true;
+ LD   bool -1       ; true
+ WRX  FindTagFinish
+#debug_left bool FindTagFinish
+#srcline 140 ;     // nastavit, kolik jeste zbyva zpracovat
+#srcline 141 ;      IF XmlParser.done THEN
+ LDX  XmlParser~done
+#debug bool XmlParser.done
+ JMC  fbXmlFileParserFindTag_L30
+#srcline 142 ;        done := 1; busy := 0;
+ LD   bool -1      ; true
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 143 ;      ELSIF XmlParser.error <> 0 THEN
+ JMP  fbXmlFileParserFindTag_L31
+fbXmlFileParserFindTag_L30:
+ LDX  XmlParser~error
+#debug usint XmlParser.error
+ LD   usint 0
+ EQ
+ NEG
+ JMC  fbXmlFileParserFindTag_L32
+#srcline 144 ;        err := 1; busy := 0; rqParse := 0;
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 145 ;        errTxt := xmlInfo.Stack.errTxt;
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LDX  xmlInfo
+ ADD  2933  ; + offset 
+#debug string xmlInfo.Stack.errTxt
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 146 ;      END_IF;
+ JMP  fbXmlFileParserFindTag_L31
+fbXmlFileParserFindTag_L32:
+fbXmlFileParserFindTag_L31:
+#srcline 147 ;      IF sumaLen < fileSize THEN
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  fileSize
+#debug udint fileSize
+ LT
+ JMC  fbXmlFileParserFindTag_L33
+#srcline 148 ;        IF xmlInfo.stack.level = 1   THEN
+ LDX  xmlInfo
+ ADD  2967  ; + offset 
+ LDI  
+#debug sint xmlInfo.stack.level
+ EXTB 
+ LD   sint 1
+ EQ
+ JMC  fbXmlFileParserFindTag_L35
+#srcline 149 ;           layersZerou_One := true;
+ LD   bool -1       ; true
+ WRX  layersZerou_One
+#debug_left bool layersZerou_One
+#srcline 150 ;        END_IF;
+fbXmlFileParserFindTag_L35:
+#srcline 151 ;        IF xmlInfo.stack.level = 0   THEN
+ LDX  xmlInfo
+ ADD  2967  ; + offset 
+ LDI  
+#debug sint xmlInfo.stack.level
+ EXTB 
+ LD   sint 0
+ EQ
+ JMC  fbXmlFileParserFindTag_L37
+#srcline 152 ;           layersZerou_One := false;
+ LD   bool 0       ; false
+ WRX  layersZerou_One
+#debug_left bool layersZerou_One
+#srcline 153 ;        END_IF;
+fbXmlFileParserFindTag_L37:
+#srcline 154 ;        layerZerou(CLK := layersZerou_One,Q =>FindTagFinish);
+ LDX  layersZerou_One
+#debug bool layersZerou_One
+ WRX  layerZerou~CLK
+#debug_left bool layerZerou~CLK
+ LEAX layerZerou
+ CAL  F_TRIG_L0
+; output assigment 
+ LDX  layerZerou~Q
+#debug bool layerZerou~Q
+ WRX  FindTagFinish
+#debug_left bool FindTagFinish
+#srcline 155 ;        IF FindTagFinish   THEN       // našel nenašl se koneèný tag musí ležet v 0 vrstvì
+ LDX  FindTagFinish
+#debug bool FindTagFinish
+ JMC  fbXmlFileParserFindTag_L39
+#srcline 156 ;           xmlInfo.stack.eod := 1; actLen := 0; rqInit := 0;
+ LD   bool -1      ; true
+ LDX  xmlInfo
+ ADD  2931  ; + offset 
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlInfo.stack.eod
+ LD   udint 0
+ WRX  actLen
+#debug_left udint actLen
+ LD   bool 0       ; false
+ WRX  rqInit
+#debug_left bool rqInit
+#srcline 157 ;           sumaLen:=0;
+ LD   udint 0
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 158 ;           rqParse := 0; busy := 0; done := 0;   // konec dokumentu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+#srcline 159 ;        ELSE
+ JMP  fbXmlFileParserFindTag_L40
+fbXmlFileParserFindTag_L39:
+#srcline 160 ;          IF XmlParser.restLen <= XML_BUMBER  THEN
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ LD   uint 256
+ GT
+ NEG
+ JMC  fbXmlFileParserFindTag_L41
+#srcline 161 ;              // shrink buffer s xml dokumentem
+#srcline 162 ;              XmlParser( start := 0, shrink := 1, size := actLen, sourceXML := void( xmlBuffer), xmlItem := xmlInfo.Item, xmlStack := xmlInfo.Stack);
+ LD   0
+ WRX  XmlParser~start
+#debug_left bool XmlParser~start
+ LD   1
+ WRX  XmlParser~shrink
+#debug_left bool XmlParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  XmlParser~size
+#debug_left udint XmlParser~size
+ LEAX xmlBuffer
+ WRX  XmlParser~sourceXML
+#debug_left pointer XmlParser.sourceXML
+ LDX  xmlInfo
+ WRX  XmlParser~xmlItem
+#debug_left pointer XmlParser.xmlItem
+ LDX  xmlInfo
+ ADD  2930  ; + offset 
+ WRX  XmlParser~xmlStack
+#debug_left pointer XmlParser.xmlStack
+ LEAX XmlParser
+ CAL  fbXmlParser_L0
+#srcline 163 ;              restLen := XmlParser.restLen;       // nastavit, kolik jeste zbyva zpracovat
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 164 ;              rqFile := 1; rqParse := 0;          // nacist dalsi cast dokumentu
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 165 ;              busy := 1;                          // signalizovat ukonceni parsovani
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 166 ;          END_IF;
+fbXmlFileParserFindTag_L41:
+#srcline 167 ;        END_IF;
+fbXmlFileParserFindTag_L40:
+#srcline 168 ;      END_IF;
+fbXmlFileParserFindTag_L33:
+#srcline 169 ;      IF XmlParser.eod THEN
+ LDX  XmlParser~eod
+#debug bool XmlParser.eod
+ JMC  fbXmlFileParserFindTag_L43
+#srcline 170 ;         rqParse := 0; busy := 0; done := 0;   // konec dokumentu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+#srcline 171 ;      END_IF;
+fbXmlFileParserFindTag_L43:
+#srcline 172 ;      line := XmlParser.line;
+ LDX  XmlParser~line
+#debug udint XmlParser.line
+ WRX  line
+#debug_left udint line
+#srcline 173 ;    END_IF;
+fbXmlFileParserFindTag_L28:
+#srcline 175 ;    eof := xmlInfo.stack.eod;                 // nastavit priznak konec souboru
+ LDX  xmlInfo
+ ADD  2931  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlInfo.stack.eod
+ WRX  eof
+#debug_left bool eof
+#srcline 176 ;    processed := sumaLen - UINT_TO_UDINT(restLen);
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  restLen
+#debug uint restLen
+ SUB
+ WRX  processed
+#debug_left udint processed
+#srcline 177 ;  ELSE
+ JMP  fbXmlFileParserFindTag_L2
+fbXmlFileParserFindTag_L1:
+#srcline 178 ;    busy := 0; eof := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  eof
+#debug_left bool eof
+#srcline 179 ;  END_IF;
+fbXmlFileParserFindTag_L2:
+#srcline 181 ;  break := eof OR err OR busy OR NOT exec;    // prerusit zpracovani
+ LDX  eof
+#debug bool eof
+ LDX  err
+#debug bool err
+ OR  
+ LDX  busy
+#debug bool busy
+ OR  
+ LDX  exec
+#debug bool exec
+ NEG
+ OR  
+ WRX  break
+#debug_left bool break
+#srcline 182 ;END_FUNCTION_BLOCK
+fbXmlFileParserFindTag_RET:
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbXmlFileParserFindTag__InstanceInit__:
+ LINK 0
+ LD   uint 1
+ WRX  orderFindTag
+ LEAX XmlParser
+ CAL  fbXmlParser__InstanceInit__
+ LD   udint $FFFFFFFF    ; nil
+ WRX  src
+ LD   udint $FFFFFFFF    ; nil
+ WRX  end
+ LD   udint $FFFFFFFF    ; nil
+ WRX  PTRxmlBuffer
+ LEAX layerZerou
+ CAL  F_TRIG__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'C:\TECOLIBSRC\XMLLIBEX\XMLLIBEX\FBXMLPAGEPARSERFINDTAG.ST'
+#pou fbXmlPageParserFindTag
+#srcline 1 ;FUNCTION_BLOCK fbXmlPageParserFindTag
+
+#struct fbXmlPageParserFindTag__temp__
+  string[82] PS0__st__,
+  string[82] PSC__st__
+#data byte _str_fbXmlPageParserFindTag_0 = 
+  '',0
+#data byte _str_fbXmlPageParserFindTag_1 = 
+  'D','N','S',' ','r','e','q','u','e','s','t',' ','e','r','r','o','r',' ',':',' ',0
+#data byte _str_fbXmlPageParserFindTag_2 = 
+  'h','t','t','p','s',':','/','/',0
+#data byte _str_fbXmlPageParserFindTag_3 = 
+  'H','T','T','P',' ','r','e','q','u','e','s','t',' ','e','r','r','o','r',' ',':',
+  ' ',0
+#data byte _str_fbXmlPageParserFindTag_4 = 
+  'n','e','n','a','l','e','z','e','n',' ','h','l','e','d','a','n','y',' ','t','a',
+  'g',' ','v','e',' ','w','e','b','o','v','é',' ','s','t','r','á','n','c','e',0
+#data byte _str_fbXmlPageParserFindTag_5 = 
+  'H','T','T','P',' ','s','e','r','v','e','r',' ','e','r','r','o','r',' ',':',' ',0
+P     61
+fbXmlPageParserFindTag_L0:
+ LINK __SizeOf(fbXmlPageParserFindTag__temp__)
+#srcline 72 ;  done := 0; start := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  start
+#debug_left bool start
+#srcline 73 ;  trgExecOn(CLK := exec);
+ LDX  exec
+#debug bool exec
+ WRX  trgExecOn~CLK
+#debug_left bool trgExecOn~CLK
+ LEAX trgExecOn
+ CAL  R_TRIG_L0
+#srcline 74 ;  IF exec THEN
+ LDX  exec
+#debug bool exec
+ JMC  fbXmlPageParserFindTag_L1
+#srcline 75 ;    IF trgExecOn.Q THEN
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ JMC  fbXmlPageParserFindTag_L3
+#srcline 76 ;      // odstartovat cteni XML dokumentu
+#srcline 77 ;      memoryFindTag := MAX( orderFindTag, 1);   // pamatovat si kolikáteho tagu si má všimat
+ LDX  orderFindTag
+#debug uint orderFindTag
+ LD   uint 1
+ MAX
+ WRX  memoryFindTag
+#debug_left uint memoryFindTag
+#srcline 78 ;      busy := 1; start := 1; err := 0; errTxt := '';
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  start
+#debug_left bool start
+ LD   bool 0       ; false
+ WRX  err
+#debug_left bool err
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlPageParserFindTag_0
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 79 ;      rqStart := 1; rqShrink := 1; rqFile := 0; rqParse := 0;
+ LD   bool -1      ; true
+ WRX  rqStart
+#debug_left bool rqStart
+ LD   bool -1      ; true
+ WRX  rqShrink
+#debug_left bool rqShrink
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 80 ;      TagFindTrue := 0; FindTagFinish := 0; FinishCommServer := 0;
+ LD   bool 0       ; false
+ WRX  TagFindTrue
+#debug_left bool TagFindTrue
+ LD   bool 0       ; false
+ WRX  FindTagFinish
+#debug_left bool FindTagFinish
+ LD   bool 0       ; false
+ WRX  FinishCommServer
+#debug_left bool FinishCommServer
+#srcline 81 ;      fileSize := 0; restLen := 0; sumaLen := 0; line := 0;
+ LD   udint 0
+ WRX  fileSize
+#debug_left udint fileSize
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+ LD   udint 0
+ WRX  sumaLen
+#debug_left udint sumaLen
+ LD   udint 0
+ WRX  line
+#debug_left udint line
+#srcline 82 ;      Memset( val := 0, length := sizeof(xmlInfo), dest := void(xmlInfo));
+ NXT
+ LD   udint 0
+ WR   __Instance__Memset~val
+#debug_left udint __Instance__Memset~val
+ LD   3788  ; SizeOf()
+ WR   __Instance__Memset~length
+#debug_left uint __Instance__Memset~length
+ LDX  xmlInfo
+ WR   __Instance__Memset~dest
+#debug_left pointer __Instance__Memset.dest
+ PRV
+ LEA  __Instance__Memset
+ CAL  Memset_L0
+#srcline 83 ;      HttpRequest(Post := 0, Get := 0, Cancel := 1, Action := Action, Host := HttpName, Data := Empty, RecvData := void(xmlBuffer[0]));
+ LD   0
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LD   0
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   1
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX xmlBuffer
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+ CAL  fbHttpRequest_L0
+#srcline 84 ;    END_IF;
+fbXmlPageParserFindTag_L3:
+#srcline 86 ;    // prevest domainove jmeno na IP adresu (je-li to potreba)
+#srcline 87 ;    SplitUrlAddress( split := trgExecOn.Q, urlAddress := pageName, host := HttpName, action := Action, IPadr := HttpIP, port := HttpPort);
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ WRX  SplitUrlAddress~split
+#debug_left bool SplitUrlAddress~split
+ LDX  pageName
+ WRX  SplitUrlAddress~urlAddress
+#debug_left pointer SplitUrlAddress.urlAddress
+ LEAX HttpName
+ WRX  SplitUrlAddress~host
+#debug_left pointer SplitUrlAddress.host
+ LEAX Action
+ WRX  SplitUrlAddress~action
+#debug_left pointer SplitUrlAddress.action
+ LEAX HttpIP
+ WRX  SplitUrlAddress~IPadr
+#debug_left pointer SplitUrlAddress.IPadr
+ LEAX HttpPort
+ WRX  SplitUrlAddress~port
+#debug_left pointer SplitUrlAddress.port
+ LEAX SplitUrlAddress
+ CAL  fbSplitUrlAddress_L0
+#srcline 88 ;    IF SplitUrlAddress.Err THEN
+ LDX  SplitUrlAddress~Err
+#debug bool SplitUrlAddress.Err
+ JMC  fbXmlPageParserFindTag_L5
+#srcline 89 ;      err := 1; busy := 0; errTxt := 'DNS request error : ' + USINT_TO_STRING(SplitUrlAddress.ErrId);
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlPageParserFindTag_1
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  SplitUrlAddress~ErrId
+#debug usint SplitUrlAddress.ErrId
+ SCNV $0830;  IEC_USINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 90 ;    ELSIF SplitUrlAddress.Done THEN
+ JMP  fbXmlPageParserFindTag_L6
+fbXmlPageParserFindTag_L5:
+ LDX  SplitUrlAddress~Done
+#debug bool SplitUrlAddress.Done
+ JMC  fbXmlPageParserFindTag_L7
+#srcline 91 ;      findTagLen := LEN(findTag);
+ LEAX findTag
+#debug string findTag
+ SLEN 
+ WRX  findTagLen
+#debug_left uint findTagLen
+#srcline 92 ;      rqFile := 1;                                                 // zahajit cteni souboru
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 93 ;      IF chanCode = ANY_uni THEN
+ LDX  chanCode
+#debug uint chanCode
+ LD   uint 224
+ EQ
+ JMC  fbXmlPageParserFindTag_L8
+#srcline 94 ;        closeSocket := true;
+ LD   bool -1       ; true
+ WRX  closeSocket
+#debug_left bool closeSocket
+#srcline 95 ;        IF FIND(pageName, 'https://') = 1 THEN
+ LDX  pageName
+#debug string pageName
+ LEA  _str_fbXmlPageParserFindTag_2
+ SFND 
+ LD   int 1
+ EQ
+ JMC  fbXmlPageParserFindTag_L10
+#srcline 96 ;          HttpRequest.chanCode := OpenUniSocket(protocol := UNI_SSL_CLIENT);
+ NXT
+ LD   usint 35
+ WR   __Instance__OpenUniSocket~protocol
+#debug_left usint __Instance__OpenUniSocket~protocol
+ LD  0
+ WR   udint __Instance__OpenUniSocket~myIP
+ WR   __Instance__OpenUniSocket~myPort
+ WR   udint __Instance__OpenUniSocket~hisIP
+ WR   __Instance__OpenUniSocket~hisPort
+ PRV
+ LEA  __Instance__OpenUniSocket
+ CAL  OpenUniSocket_L0
+ WRX  HttpRequest~chanCode
+#debug_left uint HttpRequest.chanCode
+#srcline 97 ;        ELSE
+ JMP  fbXmlPageParserFindTag_L11
+fbXmlPageParserFindTag_L10:
+#srcline 98 ;          HttpRequest.chanCode := OpenUniSocket(protocol := UNI_TCP_CLIENT);
+ NXT
+ LD   usint 33
+ WR   __Instance__OpenUniSocket~protocol
+#debug_left usint __Instance__OpenUniSocket~protocol
+ LD  0
+ WR   udint __Instance__OpenUniSocket~myIP
+ WR   __Instance__OpenUniSocket~myPort
+ WR   udint __Instance__OpenUniSocket~hisIP
+ WR   __Instance__OpenUniSocket~hisPort
+ PRV
+ LEA  __Instance__OpenUniSocket
+ CAL  OpenUniSocket_L0
+ WRX  HttpRequest~chanCode
+#debug_left uint HttpRequest.chanCode
+#srcline 99 ;        END_IF;
+fbXmlPageParserFindTag_L11:
+#srcline 100 ;      ELSE
+ JMP  fbXmlPageParserFindTag_L9
+fbXmlPageParserFindTag_L8:
+#srcline 101 ;        HttpRequest.chanCode := chanCode;
+ LDX  chanCode
+#debug uint chanCode
+ WRX  HttpRequest~chanCode
+#debug_left uint HttpRequest.chanCode
+#srcline 102 ;      END_IF;
+fbXmlPageParserFindTag_L9:
+#srcline 103 ;    END_IF;
+ JMP  fbXmlPageParserFindTag_L6
+fbXmlPageParserFindTag_L7:
+fbXmlPageParserFindTag_L6:
+#srcline 105 ;    // cist soubor z web stranky
+#srcline 106 ;    IF rqFile  THEN
+ LDX  rqFile
+#debug bool rqFile
+ JMC  fbXmlPageParserFindTag_L12
+#srcline 107 ;      HttpRequest(Get := 1, Cancel := 0, IPadr := HttpIP, port := HttpPort,
+ LD   1
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   0
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX HttpIP
+#debug pointer HttpIP
+ SRC  %IB0
+ LEAX HttpRequest~IPadr
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDX  HttpPort
+#debug uint HttpPort
+ WRX  HttpRequest~port
+#debug_left uint HttpRequest~port
+#srcline 108 ;                  Action := Action, Host := HttpName, Data := Empty, RecvData := void(xmlBuffer[restLen]));
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX xmlBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+ CAL  fbHttpRequest_L0
+#srcline 109 ;      IF HttpRequest.Result = 200 AND HttpRequest.DataReady THEN                 // prijata dalsi cast xml
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ LD   int 200
+ EQ
+ LDX  HttpRequest~DataReady
+#debug bool HttpRequest.DataReady
+ AND
+ JMC  fbXmlPageParserFindTag_L14
+#srcline 110 ;        actLen  := UINT_TO_UDINT(restLen) + UINT_TO_UDINT(HttpRequest.DataLen);  // aktualni velikost xml bufferu
+ LDX  restLen
+#debug uint restLen
+ LDX  HttpRequest~DataLen
+#debug uint HttpRequest.DataLen
+ ADD
+ WRX  actLen
+#debug_left udint actLen
+#srcline 111 ;        sumaLen := sumaLen + UINT_TO_UDINT(HttpRequest.DataLen);                 // celkove jiz nacteno ze souboru
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  HttpRequest~DataLen
+#debug uint HttpRequest.DataLen
+ ADD
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 112 ;        IF (NOT HttpRequest.Done) AND actLen < UINT_TO_UDINT(XML_BUFFER_SIZE) - 512 THEN  //nacist vice dat
+ LDX  HttpRequest~Done
+#debug bool HttpRequest.Done
+ NEG
+ LDX  actLen
+#debug udint actLen
+ LD   uint 768
+ LD   udint 512
+ SUB
+ LT
+ AND
+ JMC  fbXmlPageParserFindTag_L16
+#srcline 113 ;          restLen := UDINT_TO_UINT(actLen);
+ LDX  actLen
+#debug udint actLen
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+#srcline 114 ;          RETURN;
+ JMP  fbXmlPageParserFindTag_RET
+#srcline 115 ;        END_IF;
+fbXmlPageParserFindTag_L16:
+#srcline 116 ;        rqFile := 0; rqParse := 1;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 117 ;        IF NOT TagFindTrue THEN
+ LDX  TagFindTrue
+#debug bool TagFindTrue
+ NEG
+ JMC  fbXmlPageParserFindTag_L18
+#srcline 118 ;            PTRxmlBuffer    := ADR(xmlBuffer);
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LEAX PTRxmlBuffer
+ WRIL 
+#debug_left pointer PTRxmlBuffer
+#srcline 119 ;            indexFindTag    := FIND(IN1 := PTRxmlBuffer^, IN2 :=findTag);  // najít požadovaný tag v xml souboru
+ LEAX PTRxmlBuffer
+ LDIL    ; dereference 
+#debug string PTRxmlBuffer^
+ LEAX findTag
+#debug string findTag
+ SFND 
+ WRX  indexFindTag
+#debug_left int indexFindTag
+#srcline 120 ;            IF indexFindTag > 0 AND indexFindTag <= UDINT_TO_INT(actLen) - UINT_TO_INT(findTagLen) THEN // musi se najit v aktivni casti mimo bumper
+ LDX  indexFindTag
+#debug int indexFindTag
+ EXTW 
+ LD   int 0
+ GTS
+ LDX  indexFindTag
+#debug int indexFindTag
+ EXTW 
+ LDX  actLen
+#debug udint actLen
+ EXTW
+ LDX  findTagLen
+#debug uint findTagLen
+ EXTW
+ SUB
+ EXTW
+ GTS
+ NEG
+ AND
+ JMC  fbXmlPageParserFindTag_L20
+#srcline 121 ;               memoryFindTag := memoryFindTag - 1;
+ LDX  memoryFindTag
+#debug uint memoryFindTag
+ LD   uint 1
+ SUB
+ AND  $FFFF
+ WRX  memoryFindTag
+#debug_left uint memoryFindTag
+#srcline 122 ;               IF memoryFindTag = 0 THEN
+ LDX  memoryFindTag
+#debug uint memoryFindTag
+ LD   uint 0
+ EQ
+ JMC  fbXmlPageParserFindTag_L22
+#srcline 123 ;                 indexFindTag := indexFindTag - 1;
+ LDX  indexFindTag
+#debug int indexFindTag
+ EXTW 
+ LD   int 1
+ SUB
+ EXTW
+ WRX  indexFindTag
+#debug_left int indexFindTag
+#srcline 124 ;                 TagFindTrue := 1;                                           // nalezeno
+ LD   bool -1      ; true
+ WRX  TagFindTrue
+#debug_left bool TagFindTrue
+#srcline 125 ;                 src := ADR(xmlBuffer) + INT_TO_UDINT(indexFindTag);
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LDX  indexFindTag
+#debug int indexFindTag
+ EXTW 
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 126 ;                 end := ADR(xmlBuffer) +  actLen;   // nastavit aktualni konec dat
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LDX  actLen
+#debug udint actLen
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+#srcline 127 ;                 restLen := UDINT_TO_UINT( PTR_TO_UDINT(end) - PTR_TO_UDINT(src)); // pocet bytu do konce bufferu
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ SUB
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+#srcline 128 ;                 IF PTR_TO_UDINT(src) <> PTR_TO_UDINT( ADR(xmlBuffer)) THEN
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ EQ
+ NEG
+ JMC  fbXmlPageParserFindTag_L24
+#srcline 129 ;                   MemcpyPtr0( source := src, dest := ADR(xmlBuffer), length := UINT_TO_UDINT(restLen));
+ NXT
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEA  __Instance__MemcpyPtr0~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr0~source
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LEA  __Instance__MemcpyPtr0~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr0~dest
+ LDX  restLen
+#debug uint restLen
+ WR   __Instance__MemcpyPtr0~length
+#debug_left udint __Instance__MemcpyPtr0~length
+ PRV
+ LEA  __Instance__MemcpyPtr0
+ CAL  MemcpyPtr0_L0
+#srcline 130 ;                 END_IF;
+fbXmlPageParserFindTag_L24:
+#srcline 131 ;                 actLen := UINT_TO_UDINT(restLen);
+ LDX  restLen
+#debug uint restLen
+ WRX  actLen
+#debug_left udint actLen
+#srcline 132 ;                 IF XML_BUFFER_SIZE - Restlen > 512 THEN  // pokud je dost mista
+ LD   uint 768
+ LDX  Restlen
+#debug uint Restlen
+ SUB
+ AND  $FFFF
+ LD   uint 512
+ GT
+ JMC  fbXmlPageParserFindTag_L26
+#srcline 133 ;                   rqParse := 0; rqFile:=1;               // nacist dalsi cast dokumentu a pak parsovat
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 134 ;                 END_IF;
+fbXmlPageParserFindTag_L26:
+#srcline 135 ;               ELSE
+ JMP  fbXmlPageParserFindTag_L23
+fbXmlPageParserFindTag_L22:
+#srcline 136 ;                 restLen := findTagLen;
+ LDX  findTagLen
+#debug uint findTagLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 137 ;                 src := ADR(xmlBuffer) + actLen - UINT_TO_UDINT(restLen);
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LDX  actLen
+#debug udint actLen
+ ADD
+ LDX  restLen
+#debug uint restLen
+ SUB
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 138 ;                 end := ADR(xmlBuffer) + actLen;
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LDX  actLen
+#debug udint actLen
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+#srcline 139 ;                 MemcpyPtr0( source := src, dest := ADR(xmlBuffer), length := UINT_TO_UDINT(restLen));
+ NXT
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEA  __Instance__MemcpyPtr0~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr0~source
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LEA  __Instance__MemcpyPtr0~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr0~dest
+ LDX  restLen
+#debug uint restLen
+ WR   __Instance__MemcpyPtr0~length
+#debug_left udint __Instance__MemcpyPtr0~length
+ PRV
+ LEA  __Instance__MemcpyPtr0
+ CAL  MemcpyPtr0_L0
+#srcline 140 ;                 rqParse := 0; rqFile:=1;         // nacist dalsi cast dokumentu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 141 ;               END_IF;
+fbXmlPageParserFindTag_L23:
+#srcline 142 ;            ELSE
+ JMP  fbXmlPageParserFindTag_L21
+fbXmlPageParserFindTag_L20:
+#srcline 143 ;               restLen := findTagLen;
+ LDX  findTagLen
+#debug uint findTagLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 144 ;               src := ADR(xmlBuffer) + actLen - UINT_TO_UDINT(restLen);
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LDX  actLen
+#debug udint actLen
+ ADD
+ LDX  restLen
+#debug uint restLen
+ SUB
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 145 ;               end := ADR(xmlBuffer) + actLen;
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LDX  actLen
+#debug udint actLen
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+#srcline 146 ;               MemcpyPtr0( source := src, dest := ADR(xmlBuffer), length := UINT_TO_UDINT(restLen));
+ NXT
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEA  __Instance__MemcpyPtr0~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr0~source
+ LEAX xmlBuffer
+#debug pointer xmlBuffer
+ LEA  __Instance__MemcpyPtr0~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr0~dest
+ LDX  restLen
+#debug uint restLen
+ WR   __Instance__MemcpyPtr0~length
+#debug_left udint __Instance__MemcpyPtr0~length
+ PRV
+ LEA  __Instance__MemcpyPtr0
+ CAL  MemcpyPtr0_L0
+#srcline 147 ;               rqParse := 0; rqFile:=1;         // nacist dalsi cast dokumentu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 148 ;            END_IF;
+fbXmlPageParserFindTag_L21:
+#srcline 149 ;          END_IF;
+fbXmlPageParserFindTag_L18:
+#srcline 150 ;      END_IF;
+fbXmlPageParserFindTag_L14:
+#srcline 151 ;      IF HttpRequest.Err THEN                                        // blok HttpRequest hlasi chybu
+ LDX  HttpRequest~Err
+#debug bool HttpRequest.Err
+ JMC  fbXmlPageParserFindTag_L28
+#srcline 152 ;        busy := 0; err := 1; rqFile := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 153 ;        errTxt := 'HTTP request error : ' + USINT_TO_STRING(HttpRequest.ErrId);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlPageParserFindTag_3
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  HttpRequest~ErrId
+#debug usint HttpRequest.ErrId
+ SCNV $0830;  IEC_USINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 154 ;      END_IF;
+fbXmlPageParserFindTag_L28:
+#srcline 155 ;      IF HttpRequest.Done THEN
+ LDX  HttpRequest~Done
+#debug bool HttpRequest.Done
+ JMC  fbXmlPageParserFindTag_L30
+#srcline 156 ;        // po nacteni celeho dikumentu jeste jednou zavolat HttpRequest, aby presel do stavu Idle
+#srcline 157 ;        HttpRequest(Get := 1, Cancel := 0, IPadr := HttpIP, port := HttpPort,
+ LD   1
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   0
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX HttpIP
+#debug pointer HttpIP
+ SRC  %IB0
+ LEAX HttpRequest~IPadr
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDX  HttpPort
+#debug uint HttpPort
+ WRX  HttpRequest~port
+#debug_left uint HttpRequest~port
+#srcline 158 ;                    Action := Action, Host := HttpName, Data := Empty, RecvData := void(xmlBuffer[restLen]));
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX xmlBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+ CAL  fbHttpRequest_L0
+#srcline 159 ;        rqFile := 0; busy := 0;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 160 ;        IF HttpRequest.Result = 200 THEN  // cely xml dokument prijaty OK
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ LD   int 200
+ EQ
+ JMC  fbXmlPageParserFindTag_L32
+#srcline 161 ;          IF NOT TagFindTrue OR FinishCommServer THEN
+ LDX  TagFindTrue
+#debug bool TagFindTrue
+ NEG
+ LDX  FinishCommServer
+#debug bool FinishCommServer
+ OR  
+ JMC  fbXmlPageParserFindTag_L34
+#srcline 162 ;             xmlInfo.stack.eod := 1; actLen := 0;
+ LD   bool -1      ; true
+ LDX  xmlInfo
+ ADD  2931  ; + offset 
+ MUL  8   ; -> bool pointer 
+ WRIB 
+#debug_left bool xmlInfo.stack.eod
+ LD   udint 0
+ WRX  actLen
+#debug_left udint actLen
+#srcline 163 ;          END_IF;
+fbXmlPageParserFindTag_L34:
+#srcline 164 ;          IF NOT TagFindTrue THEN
+ LDX  TagFindTrue
+#debug bool TagFindTrue
+ NEG
+ JMC  fbXmlPageParserFindTag_L36
+#srcline 165 ;            err := 1;
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+#srcline 166 ;            errTxt := 'nenalezen hledany tag ve webové stránce';
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlPageParserFindTag_4
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 167 ;          END_IF;
+fbXmlPageParserFindTag_L36:
+#srcline 168 ;          rqShrink := 0;                                             // zpracovat buffer az do konce, uz nic dalsiho nebude
+ LD   bool 0       ; false
+ WRX  rqShrink
+#debug_left bool rqShrink
+#srcline 169 ;          fileSize := sumaLen;                                       // velikost prijateho dokumentu
+ LDX  sumaLen
+#debug udint sumaLen
+ WRX  fileSize
+#debug_left udint fileSize
+#srcline 170 ;          actLen := UINT_TO_UDINT(restLen);                          // aktualni velikost xml bufferu (co zbyva zpracovat)
+ LDX  restLen
+#debug uint restLen
+ WRX  actLen
+#debug_left udint actLen
+#srcline 171 ;          IF actLen > 0 THEN
+ LDX  actLen
+#debug udint actLen
+ LD   udint 0
+ GT
+ JMC  fbXmlPageParserFindTag_L38
+#srcline 172 ;            rqParse := 1;                                            // jeste neco zbyva, tak parsovat
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 173 ;          END_IF;
+fbXmlPageParserFindTag_L38:
+#srcline 174 ;        ELSE                                                         // HTTP server hlasi chybu
+ JMP  fbXmlPageParserFindTag_L33
+fbXmlPageParserFindTag_L32:
+#srcline 175 ;          busy := 0; err := 1; rqFile := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 176 ;          errTxt := 'HTTP server error : ' + INT_TO_STRING(HttpRequest.Result); // for example 302 : redirected page
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbXmlPageParserFindTag_5
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ SCNV $0B30;  IEC_INT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 177 ;        END_IF;
+fbXmlPageParserFindTag_L33:
+#srcline 178 ;      END_IF;
+fbXmlPageParserFindTag_L30:
+#srcline 179 ;    END_IF;
+fbXmlPageParserFindTag_L12:
+#srcline 180 ;    // parsovat dokument
+#srcline 181 ;    IF rqParse and TagFindTrue and (not FinishCommServer) THEN
+ LDX  rqParse
+#debug bool rqParse
+ LDX  TagFindTrue
+#debug bool TagFindTrue
+ AND
+ LDX  FinishCommServer
+#debug bool FinishCommServer
+ NEG
+ AND
+ JMC  fbXmlPageParserFindTag_L40
+#srcline 182 ;      // parsovani dat v XML souboru
+#srcline 183 ;      XmlParser( start := rqStart, shrink := 0, size := actLen, sourceXML := void( xmlBuffer), xmlItem := xmlInfo.Item, xmlStack := xmlInfo.Stack);
+ LDX  rqStart
+#debug bool rqStart
+ WRX  XmlParser~start
+#debug_left bool XmlParser~start
+ LD   0
+ WRX  XmlParser~shrink
+#debug_left bool XmlParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  XmlParser~size
+#debug_left udint XmlParser~size
+ LEAX xmlBuffer
+ WRX  XmlParser~sourceXML
+#debug_left pointer XmlParser.sourceXML
+ LDX  xmlInfo
+ WRX  XmlParser~xmlItem
+#debug_left pointer XmlParser.xmlItem
+ LDX  xmlInfo
+ ADD  2930  ; + offset 
+ WRX  XmlParser~xmlStack
+#debug_left pointer XmlParser.xmlStack
+ LEAX XmlParser
+ CAL  fbXmlParser_L0
+#srcline 184 ;      rqStart := 0; restLen := XmlParser.restLen;          // nastavit, kolik jeste zbyva zpracovat
+ LD   bool 0       ; false
+ WRX  rqStart
+#debug_left bool rqStart
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 185 ;      FindTagFinish:= 1;
+ LD   bool -1      ; true
+ WRX  FindTagFinish
+#debug_left bool FindTagFinish
+#srcline 186 ;      IF XmlParser.done THEN
+ LDX  XmlParser~done
+#debug bool XmlParser.done
+ JMC  fbXmlPageParserFindTag_L42
+#srcline 187 ;        done := 1; busy := 0;
+ LD   bool -1      ; true
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 188 ;      ELSIF XmlParser.error <> 0 THEN
+ JMP  fbXmlPageParserFindTag_L43
+fbXmlPageParserFindTag_L42:
+ LDX  XmlParser~error
+#debug usint XmlParser.error
+ LD   usint 0
+ EQ
+ NEG
+ JMC  fbXmlPageParserFindTag_L44
+#srcline 189 ;        // uzavrit spojeni se serverem
+#srcline 190 ;        HttpRequest(Post := 0, Get := 0, Cancel := 1, Action := Action, Host := HttpName, Data := Empty, RecvData := void(xmlBuffer[0]));
+ LD   0
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LD   0
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   1
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX xmlBuffer
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+ CAL  fbHttpRequest_L0
+#srcline 191 ;        err := 1; busy := 0; rqParse := 0;
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 192 ;        errTxt := xmlInfo.Stack.errTxt;
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LDX  xmlInfo
+ ADD  2933  ; + offset 
+#debug string xmlInfo.Stack.errTxt
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 193 ;      END_IF;
+ JMP  fbXmlPageParserFindTag_L43
+fbXmlPageParserFindTag_L44:
+fbXmlPageParserFindTag_L43:
+#srcline 194 ;      IF rqShrink THEN
+ LDX  rqShrink
+#debug bool rqShrink
+ JMC  fbXmlPageParserFindTag_L45
+#srcline 195 ;        IF xmlInfo.stack.level = 1   THEN
+ LDX  xmlInfo
+ ADD  2967  ; + offset 
+ LDI  
+#debug sint xmlInfo.stack.level
+ EXTB 
+ LD   sint 1
+ EQ
+ JMC  fbXmlPageParserFindTag_L47
+#srcline 196 ;           layersZerou_One := true;
+ LD   bool -1       ; true
+ WRX  layersZerou_One
+#debug_left bool layersZerou_One
+#srcline 197 ;        END_IF;
+fbXmlPageParserFindTag_L47:
+#srcline 198 ;        IF xmlInfo.stack.level = 0   THEN
+ LDX  xmlInfo
+ ADD  2967  ; + offset 
+ LDI  
+#debug sint xmlInfo.stack.level
+ EXTB 
+ LD   sint 0
+ EQ
+ JMC  fbXmlPageParserFindTag_L49
+#srcline 199 ;           layersZerou_One := false;
+ LD   bool 0       ; false
+ WRX  layersZerou_One
+#debug_left bool layersZerou_One
+#srcline 200 ;        END_IF;
+fbXmlPageParserFindTag_L49:
+#srcline 201 ;        layerZerou(CLK := layersZerou_One,Q =>FindTagFinish);
+ LDX  layersZerou_One
+#debug bool layersZerou_One
+ WRX  layerZerou~CLK
+#debug_left bool layerZerou~CLK
+ LEAX layerZerou
+ CAL  F_TRIG_L0
+; output assigment 
+ LDX  layerZerou~Q
+#debug bool layerZerou~Q
+ WRX  FindTagFinish
+#debug_left bool FindTagFinish
+#srcline 202 ;        IF FindTagFinish   THEN       // našel nenašel se koneèný tag musí ležet v 0 vrstvì
+ LDX  FindTagFinish
+#debug bool FindTagFinish
+ JMC  fbXmlPageParserFindTag_L51
+#srcline 203 ;          rqParse := 0; busy := 1;              // uz mame vsechno vyparsovane
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 204 ;          rqFile := 1; restLen := 0;
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+#srcline 205 ;          FinishCommServer := 1;
+ LD   bool -1      ; true
+ WRX  FinishCommServer
+#debug_left bool FinishCommServer
+#srcline 206 ;        ELSE
+ JMP  fbXmlPageParserFindTag_L52
+fbXmlPageParserFindTag_L51:
+#srcline 207 ;          IF XmlParser.restLen <= XML_BUMBER  THEN
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ LD   uint 256
+ GT
+ NEG
+ JMC  fbXmlPageParserFindTag_L53
+#srcline 208 ;              // shrink buffer s xml dokumentem
+#srcline 209 ;            XmlParser( start := 0, shrink := 1, size := actLen, sourceXML := void( xmlBuffer), xmlItem := xmlInfo.Item, xmlStack := xmlInfo.Stack);
+ LD   0
+ WRX  XmlParser~start
+#debug_left bool XmlParser~start
+ LD   1
+ WRX  XmlParser~shrink
+#debug_left bool XmlParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  XmlParser~size
+#debug_left udint XmlParser~size
+ LEAX xmlBuffer
+ WRX  XmlParser~sourceXML
+#debug_left pointer XmlParser.sourceXML
+ LDX  xmlInfo
+ WRX  XmlParser~xmlItem
+#debug_left pointer XmlParser.xmlItem
+ LDX  xmlInfo
+ ADD  2930  ; + offset 
+ WRX  XmlParser~xmlStack
+#debug_left pointer XmlParser.xmlStack
+ LEAX XmlParser
+ CAL  fbXmlParser_L0
+#srcline 210 ;            restLen := XmlParser.restLen;       // nastavit, kolik jeste zbyva zpracovat
+ LDX  XmlParser~restLen
+#debug uint XmlParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 211 ;            rqFile := 1; rqParse := 0;          // nacist dalsi cast dokumentu
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 212 ;            busy := 1;                          // signalizovat ukonceni parsovani
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 213 ;          END_IF;
+fbXmlPageParserFindTag_L53:
+#srcline 214 ;        END_IF;
+fbXmlPageParserFindTag_L52:
+#srcline 215 ;      END_IF;
+fbXmlPageParserFindTag_L45:
+#srcline 216 ;      IF XmlParser.eod THEN
+ LDX  XmlParser~eod
+#debug bool XmlParser.eod
+ JMC  fbXmlPageParserFindTag_L55
+#srcline 217 ;        rqParse := 0; busy := 0; done := 0;   // konec dokumentu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+#srcline 218 ;      END_IF;
+fbXmlPageParserFindTag_L55:
+#srcline 219 ;      line := XmlParser.line;
+ LDX  XmlParser~line
+#debug udint XmlParser.line
+ WRX  line
+#debug_left udint line
+#srcline 220 ;    ELSE
+ JMP  fbXmlPageParserFindTag_L41
+fbXmlPageParserFindTag_L40:
+#srcline 221 ;      IF FinishCommServer THEN
+ LDX  FinishCommServer
+#debug bool FinishCommServer
+ JMC  fbXmlPageParserFindTag_L57
+#srcline 222 ;        rqFile := 1; rqParse := 0;            // docist zbytek dokumentu
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 223 ;      END_IF;
+fbXmlPageParserFindTag_L57:
+#srcline 224 ;    END_IF;
+fbXmlPageParserFindTag_L41:
+#srcline 225 ;    eof := xmlInfo.stack.eod;                 // nastavit priznak konec souboru
+ LDX  xmlInfo
+ ADD  2931  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool xmlInfo.stack.eod
+ WRX  eof
+#debug_left bool eof
+#srcline 226 ;    processed := sumaLen - UINT_TO_UDINT(restLen);
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  restLen
+#debug uint restLen
+ SUB
+ WRX  processed
+#debug_left udint processed
+#srcline 227 ;  ELSE
+ JMP  fbXmlPageParserFindTag_L2
+fbXmlPageParserFindTag_L1:
+#srcline 228 ;    busy := 0; eof := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  eof
+#debug_left bool eof
+#srcline 229 ;  END_IF;
+fbXmlPageParserFindTag_L2:
+#srcline 231 ;  break := eof OR err OR busy OR NOT exec;    // prerusit zpracovani
+ LDX  eof
+#debug bool eof
+ LDX  err
+#debug bool err
+ OR  
+ LDX  busy
+#debug bool busy
+ OR  
+ LDX  exec
+#debug bool exec
+ NEG
+ OR  
+ WRX  break
+#debug_left bool break
+#srcline 232 ;END_FUNCTION_BLOCK
+fbXmlPageParserFindTag_RET:
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbXmlPageParserFindTag__InstanceInit__:
+ LINK 0
+ LD   uint 1
+ WRX  orderFindTag
+ LEAX XmlParser
+ CAL  fbXmlParser__InstanceInit__
+ LEAX SplitUrlAddress
+ CAL  fbSplitUrlAddress__InstanceInit__
+ LEAX HttpRequest
+ CAL  fbHttpRequest__InstanceInit__
+ LD   udint $FFFFFFFF    ; nil
+ WRX  src
+ LD   udint $FFFFFFFF    ; nil
+ WRX  end
+ LD   udint $FFFFFFFF    ; nil
+ WRX  PTRxmlBuffer
+ LEAX layerZerou
+ CAL  F_TRIG__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+®c  i  

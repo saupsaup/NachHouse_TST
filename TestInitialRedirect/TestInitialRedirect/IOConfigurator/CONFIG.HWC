@@ -1,0 +1,147 @@
+;Upozornení
+;Soubor je automaticky regenerován a všechny rucní modifikace budou ztracené.
+
+#struct _TTS_Head
+        UINT ModulID,
+        BYTE Stat0,
+        BYTE Stat1
+
+#struct _TTS_EnbCHAI
+        BYTE ESTAT,
+        BYTE EFS,
+        BYTE EENG,
+        BYTE EPCT
+
+#struct _TTS_SPE4
+        BOOL SPE0,
+        BOOL SPE1,
+        BOOL SPE2,
+        BOOL SPE3,
+        BOOL dummy4,
+        BOOL dummy5,
+        BOOL dummy6,
+        BOOL dummy7
+
+#struct _TTS_SPP4
+        BOOL SPP0,
+        BOOL SPP1,
+        BOOL SPP2,
+        BOOL SPP3,
+        BOOL dummy4,
+        BOOL dummy5,
+        BOOL dummy6,
+        BOOL dummy7
+
+#struct _TTS_IniCHAI
+        BYTE Mode,
+        USINT Filter,
+        REAL Offset,
+        REAL Gain
+
+#struct _TTS_IR2553
+        _TTS_Head Head,
+        USINT NUMVARI,
+        USINT NUMVARO,
+        USINT EDIS,
+        USINT EDIP,
+        _TTS_EnbCHAI[4] EAI,
+        USINT ESTPW,
+        USINT EUSRC,
+        USINT ESACU,
+        USINT EIACU,
+        USINT EDOS,
+        _TTS_SPE4 SPE,
+        _TTS_SPP4 SPP,
+        _TTS_IniCHAI[4] SetAI
+
+#struct _TTS_OI2872
+        _TTS_Head Head,
+        USINT NUMVARI,
+        USINT NUMVARO,
+        BYTE EKEY,
+        BYTE EDISP0,
+        BYTE EDISP1,
+        BYTE EDISP2,
+        BYTE EDISP3,
+        BYTE ECDPG,
+        UINT CDPG,
+        USINT AREP,
+        BYTE MARK,
+        UINT LIGHTTIME,
+        DWORD MODE
+
+#struct TModulE2
+        USINT version,
+        UDINT hwCode,
+        DWORD busId,
+        UDINT address,
+        UDINT port,
+        UINT lenInputs,
+        UINT lenOutputs,
+        DINT offsetInputs,
+        DINT offsetOutputs,
+        INT initTable,
+        INT driverInitTable
+
+;CP-2000 - Inicializacní tabulka IO desky CP-2000
+#table _TTS_IR2553 r16_p6_IO_Table = 2553,$00,$01,
+                                     22,
+                                     1,
+                                     128,
+                                     0,
+                                     $00,$00,$00,$00,
+                                     $00,$00,$00,$00,
+                                     $00,$00,$00,$00,
+                                     $00,$00,$00,$00,
+                                     128,
+                                     0,
+                                     0,
+                                     0,
+                                     128,
+                                     0,0,0,0,0,0,0,0,
+                                     1,1,1,1,0,0,0,0,
+                                     $2C,0,0,1,
+                                     $2C,0,0,1,
+                                     $2C,0,0,1,
+                                     $2C,0,0,1
+
+;CP-2000 - Inicializacní tabulka desky OI-2872
+#table _TTS_OI2872 r16_p7_DISP_Table = 2872,$02,$01,
+                                       1,
+                                       5,
+                                       $80,
+                                       $80,
+                                       $80,
+                                       $80,
+                                       $80,
+                                       $00,
+                                       1250,
+                                       15,
+                                       $80,
+                                       60,
+                                       $00040014
+
+;CP-2000 - Deklarace virtuálního rozhraní ITCL
+#module TModulE2 $02,0,$0,0,$C9,__sizeof(r0_p0_ITCL_DIAG),__sizeof(r0_p0_ITCL_CONTROL),__offset(r0_p0_ITCL_DIAG),__offset(r0_p0_ITCL_CONTROL),-1,-1
+
+;CP-2000 - Deklarace rozhraní TCL2
+#module TModulE2 $02,2190,$10,1,$C1,__sizeof(r16_p1_TCL2_DIAG),__sizeof(r16_p1_TCL2_CONTROL),__offset(r16_p1_TCL2_DIAG),__offset(r16_p1_TCL2_CONTROL),-1,-1
+
+;CP-2000 - Deklarace rozhraní CIB
+#module TModulE2 $02,2190,$10,1,$E2,__sizeof(r16_p1_CIB_DIAG),__sizeof(r16_p1_CIB_CONTROL),__offset(r16_p1_CIB_DIAG),__offset(r16_p1_CIB_CONTROL),-1,-1
+
+;CP-2000 - Deklarace rozhraní CIB
+#module TModulE2 $02,2191,$10,2,$E2,__sizeof(r16_p2_CIB_DIAG),__sizeof(r16_p2_CIB_CONTROL),__offset(r16_p2_CIB_DIAG),__offset(r16_p2_CIB_CONTROL),-1,-1
+
+;CP-2000 - Deklarace I/O rozhraní
+#module TModulE2 $02,2553,$10,6,$09,__sizeof(r16_p6_IO_IN),__sizeof(r16_p6_IO_OUT),__offset(r16_p6_IO_IN),__offset(r16_p6_IO_OUT),__indx(r16_p6_IO_Table),-1
+
+;CP-2000 - Deklarace rozhraní pro uživatelský displej
+#module TModulE2 $02,2872,$10,7,$4A,__sizeof(r16_p7_DISP_IN),__sizeof(r16_p7_DISP_OUT),__offset(r16_p7_DISP_IN),__offset(r16_p7_DISP_OUT),__indx(r16_p7_DISP_Table),-1
+
+;CP-2000 - Deklarace CPU modulu
+#module TModulE2 $02,2000,$0,0,$0,0,0,0,0,-1,-1
+
+;*******************************************************************************
+;Generováno programem Mosaic
+;© 2001-2025 Teco a.s.

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<web version="8.1" propfont="true" foot="© 2026" dwMode="1" flat="true" autosel="true" MaxUid="6818" height="560" width="980" menu="true" title="true" border="true" flatcolor="16771043" top="8" left="8" iniScale="100" maxScale="100" useIniScale="false" useMaxScale="false" userScale="true" webApp="false" bgdupl="false" bgcolor="16777215" icon="" id18="0" author="Teco a.s." encoding="windows-1250">
+	<panels></panels>
+	<Grid Enable="1" X="5" Y="5" />
+	<globalset newdim="1" noxslt="1" maxvar="0" />
+	<group caption="" Uid="6807">
+		<page caption="Index" name="PAGE1.XML" ajax="true" pause="1000" default="true" Uid="6808" ucid="1787754859" width="581" height="273">
+			<object caption="" X="25" Y="11" xoff="3" yoff="0" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="18" transparent="false" visneg="false" Uid="6809">
+				<edit variable="ApiConfig.Rooms[1].Name" type="STRING[32]" intf="0" timf="" align="left" zero="false" prec="-1" size="32" global="true" border="true" width="362" height="28" tabindex="1" />
+			</object>
+			<object caption="Name" X="13" Y="11" xoff="4" yoff="5" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="6810">
+				<label />
+			</object>
+			<object caption="" X="25" Y="14" xoff="3" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="18" transparent="false" visneg="false" Uid="6811">
+				<edit variable="ApiConfig.Rooms[1].FloorId" type="USINT" intf="0" timf="" align="left" zero="false" prec="-1" size="3" global="true" border="true" width="43" height="28" tabindex="3" />
+			</object>
+			<object caption="Floor ID" X="13" Y="15" xoff="4" yoff="3" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="6812">
+				<label />
+			</object>
+			<object caption="Submit" X="56" Y="31" xoff="5" yoff="5" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="6813">
+				<submit width="136" height="28" border="true" tabindex="5" />
+			</object>
+			<object caption="" X="25" Y="20" xoff="3" yoff="3" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="18" transparent="false" visneg="false" Uid="6814">
+				<edit variable="ApiConfig.Rooms[2].Name" type="STRING[32]" intf="0" timf="" align="left" zero="false" prec="-1" size="32" global="true" border="true" width="362" height="28" tabindex="2" />
+			</object>
+			<object caption="Name" X="13" Y="21" xoff="4" yoff="0" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="6815">
+				<label />
+			</object>
+			<object caption="" X="25" Y="24" xoff="3" yoff="1" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="18" transparent="false" visneg="false" Uid="6816">
+				<edit variable="ApiConfig.Rooms[2].FloorId" type="USINT" intf="0" timf="" align="left" zero="false" prec="-1" size="3" global="true" border="true" width="43" height="28" tabindex="4" />
+			</object>
+			<object caption="Floor ID" X="13" Y="24" xoff="4" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="6817">
+				<label />
+			</object>
+		</page>
+	</group>
+	<images></images>
+	<Languages>
+		<Language Code="5" Editor="1" />
+	</Languages>
+	<Layers active="0" pasteMode="0">
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+	</Layers>
+	<security crypt="1" count="10">
+		<user level="-1" name="0" pass="CF" />
+		<user level="-1" name="1" pass="CE" />
+		<user level="-1" name="2" pass="CD" />
+		<user level="-1" name="3" pass="CC" />
+		<user level="-1" name="4" pass="CB" />
+		<user level="-1" name="5" pass="CA" />
+		<user level="-1" name="6" pass="C9" />
+		<user level="-1" name="7" pass="C8" />
+		<user level="-1" name="8" pass="C7" />
+		<user level="-1" name="9" pass="C6" />
+	</security>
+	<autologin count="10">
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+	</autologin>
+	<tecoapi count="10">
+		<api level="0" name="" pass="" />
+		<api level="0" name="tecoapi" pass="8B25C151E07E14" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+	</tecoapi>
+</web>

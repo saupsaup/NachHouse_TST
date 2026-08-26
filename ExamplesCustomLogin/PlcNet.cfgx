@@ -1,0 +1,11 @@
+[PlcNetGroupConfig]
+Version="xPRO","4.3.00"
+[/PlcNetGroupConfig]
+
+[projects]
+project1="CustomLogin\CustomLogin.nex",0,"",4294967295
+project2="SimpleCustomLogin\SimpleCustomLogin.nex",0,"",4294967295
+project3="SimpleCustomLoginWithKeys\SimpleCustomLoginWithKeys.nex",0,"",4294967295
+project4="AutoLogin\AutoLogin.nex",0,"",4294967295
+[/projects]
+

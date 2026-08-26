@@ -1,0 +1,34 @@
+ Default: všetky textové súbory checkoutuj ako CRLF
+* text eol=crlf
+
+# Mosaic / PLC zdrojáky (explicitne, aby bolo jasné)
+*.ST  text eol=crlf
+*.st  text eol=crlf
+*.prg text eol=crlf
+*.ttr text eol=crlf
+*.mlb text eol=crlf
+*.mak text eol=crlf
+
+# Unix skripty musia byť LF
+*.sh   text eol=lf
+*.bash text eol=lf
+*.zsh  text eol=lf
+
+# Ak chceš JS ako LF (ako máš teraz)
+*.js   text eol=lf
+
+# Markdown (môže byť CRLF, necháme podľa tvojho štýlu)
+*.md  text eol=crlf diff=markdown
+
+# Binárne súbory
+*.exe  binary
+*.dll  binary
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.pdf  binary
+
+
+# Lock súbory nech vyhráva naša verzia
+*.lock merge=ours

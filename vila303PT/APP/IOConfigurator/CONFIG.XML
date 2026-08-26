@@ -1,0 +1,1611 @@
+<TecoConfiguration xmlns="http://www.tecomat.com">
+  <Configuration version="2022.2" system="FOXTROT2">
+    <Global>
+      <Editor left="-8" top="-8" width="1486" height="848" maximized="true">
+        <ProcessData AliasColWidth="120" NoteColWidth="170"/>
+      </Editor>
+      <Selector left="459" top="164" width="1003" height="713" maximized="false" params="0"/>
+    </Global>
+    <Device xmlns="http://www.tecomat.com" alias="Centrální jednotka" enabled="true" rack="0" position="0" expanded="true">
+      <Info>
+        <ProductCode>2000</ProductCode>
+        <ProductName>CP-2000</ProductName>
+        <VendorID>00000000</VendorID>
+        <DeviceGroup>CPU</DeviceGroup>
+        <Descriptor>2000_CP-2000.tdd</Descriptor>
+      </Info>
+      <Mount>11NDNN</Mount>
+      <Objects>
+        <Data/>
+        <Tags xmlns="http://www.tecomat.com"/>
+      </Objects>
+      <SerialChannels>
+        <Channel xmlns="http://www.tecomat.com" Mode="UNI" Alias="Obecný kanál" enabled="true" Ports="0x89" Name="COM1" LAddr="0101" SysMap="CH1" SysMapCode="0101" SysMapObject="RFox2.IntfID[0]" Mount="?????A" Port="0x89">
+          <Info>
+            <Descriptor>UNI_SC.tdd</Descriptor>
+          </Info>
+          <Objects xmlns="http://www.tecomat.com">
+            <Data>
+              <ObjectData name="r{RACK}_p{POSITION}_Settings_UNI_{CHANNEL}.BaudRate_FOXTROT">0C000000</ObjectData>
+              <ObjectData name="r{RACK}_p{POSITION}_Settings_UNI_{CHANNEL}.TransmitZoneSize">3200</ObjectData>
+              <ObjectData name="r{RACK}_p{POSITION}_Table_UNI_{CHANNEL}.speed">0C</ObjectData>
+              <ObjectData name="r{RACK}_p{POSITION}_Table_UNI_{CHANNEL}.lendo">3600</ObjectData>
+            </Data>
+            <Notes>
+              <ObjectNote name="r{RACK}_p{POSITION}_Table_UNI_{CHANNEL}">Initialization table of UNI channel mode</ObjectNote>
+              <ObjectNote name="r{RACK}_p{POSITION}_Module_UNI_{CHANNEL}">UNI_SC declaration</ObjectNote>
+            </Notes>
+            <Tags xmlns="http://www.tecomat.com"/>
+          </Objects>
+          <Interfaces/>
+          <Editor/>
+        </Channel>
+      </SerialChannels>
+      <Ethernets>
+        <Ethernet Name="ETH_INTF1" SysMap="ETH1" SysMapCode="E1" SysMapObject="Ethernets.IntfID[0]" Icon="eth_interface" excluded="false">
+          <Channel Options="UNI" Ports="-1" Name="SOCK0" SysMap="UNI0" SysMapCode="07" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK1" SysMap="UNI1" SysMapCode="17" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK2" SysMap="UNI2" SysMapCode="27" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK3" SysMap="UNI3" SysMapCode="37" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK4" SysMap="UNI4" SysMapCode="47" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK5" SysMap="UNI5" SysMapCode="57" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK6" SysMap="UNI6" SysMapCode="67" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK7" SysMap="UNI7" SysMapCode="77" excluded="false"/>
+          <Channel Options="PLC" Ports="-1" Name="SOCK8" SysMap="PLC0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLD" Ports="-1" Name="SOCK9" SysMap="PLD0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLCx" Ports="-1" Name="SOCK10" SysMap="PLCx0" SysMapCode="06" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK11" SysMap="HMI0" SysMapCode="00" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK12" SysMap="HMI1" SysMapCode="10" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK13" SysMap="HMI2" SysMapCode="20" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK14" SysMap="HMI3" SysMapCode="30" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK15" SysMap="HMI4" SysMapCode="40" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK16" SysMap="HMI5" SysMapCode="50" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK17" SysMap="HMI6" SysMapCode="60" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK18" SysMap="HMI7" SysMapCode="70" excluded="false"/>
+        </Ethernet>
+        <Ethernet Name="ETH_INTF2" SysMap="ETH2" SysMapCode="E2" SysMapObject="Ethernets.IntfID[1]" Icon="eth_interface" excluded="false">
+          <Channel Options="UNI" Ports="-1" Name="SOCK0" SysMap="UNI0" SysMapCode="07" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK1" SysMap="UNI1" SysMapCode="17" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK2" SysMap="UNI2" SysMapCode="27" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK3" SysMap="UNI3" SysMapCode="37" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK4" SysMap="UNI4" SysMapCode="47" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK5" SysMap="UNI5" SysMapCode="57" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK6" SysMap="UNI6" SysMapCode="67" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK7" SysMap="UNI7" SysMapCode="77" excluded="false"/>
+          <Channel Options="PLC" Ports="-1" Name="SOCK8" SysMap="PLC0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLD" Ports="-1" Name="SOCK9" SysMap="PLD0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLCx" Ports="-1" Name="SOCK10" SysMap="PLCx0" SysMapCode="06" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK11" SysMap="HMI0" SysMapCode="00" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK12" SysMap="HMI1" SysMapCode="10" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK13" SysMap="HMI2" SysMapCode="20" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK14" SysMap="HMI3" SysMapCode="30" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK15" SysMap="HMI4" SysMapCode="40" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK16" SysMap="HMI5" SysMapCode="50" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK17" SysMap="HMI6" SysMapCode="60" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK18" SysMap="HMI7" SysMapCode="70" excluded="false"/>
+        </Ethernet>
+        <Ethernet Name="ETH_INTF3" SysMap="WLAN1" SysMapCode="E8" SysMapObject="Wifi.IntfID[0]" Mount="??W???" Icon="wifi_interface" excluded="false">
+          <Channel Options="UNI" Ports="-1" Name="SOCK0" SysMap="UNI0" SysMapCode="07" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK1" SysMap="UNI1" SysMapCode="17" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK2" SysMap="UNI2" SysMapCode="27" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK3" SysMap="UNI3" SysMapCode="37" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK4" SysMap="UNI4" SysMapCode="47" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK5" SysMap="UNI5" SysMapCode="57" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK6" SysMap="UNI6" SysMapCode="67" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK7" SysMap="UNI7" SysMapCode="77" excluded="false"/>
+          <Channel Options="PLC" Ports="-1" Name="SOCK8" SysMap="PLC0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLD" Ports="-1" Name="SOCK9" SysMap="PLD0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLCx" Ports="-1" Name="SOCK10" SysMap="PLCx0" SysMapCode="06" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK11" SysMap="HMI0" SysMapCode="00" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK12" SysMap="HMI1" SysMapCode="10" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK13" SysMap="HMI2" SysMapCode="20" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK14" SysMap="HMI3" SysMapCode="30" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK15" SysMap="HMI4" SysMapCode="40" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK16" SysMap="HMI5" SysMapCode="50" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK17" SysMap="HMI6" SysMapCode="60" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK18" SysMap="HMI7" SysMapCode="70" excluded="false"/>
+        </Ethernet>
+        <Ethernet Name="ETH_INTF4" SysMap="LTE1" SysMapCode="EA" SysMapObject="LTE.IntfID[0]" Mount="????L?" Icon="lte_interface" excluded="false">
+          <Channel Options="UNI" Ports="-1" Name="SOCK0" SysMap="UNI0" SysMapCode="07" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK1" SysMap="UNI1" SysMapCode="17" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK2" SysMap="UNI2" SysMapCode="27" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK3" SysMap="UNI3" SysMapCode="37" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK4" SysMap="UNI4" SysMapCode="47" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK5" SysMap="UNI5" SysMapCode="57" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK6" SysMap="UNI6" SysMapCode="67" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK7" SysMap="UNI7" SysMapCode="77" excluded="false"/>
+        </Ethernet>
+      </Ethernets>
+      <Piggybacks/>
+      <Interfaces>
+        <Interface Class="ITCL" SubClass="UNDEF" alias="Submoduly" rackOffset="0" busID="10" Icon="ibus_interface" expanded="true">
+          <Peripheries>
+            <Device xmlns="http://www.tecomat.com" alias="Modul sériového kanálu" enabled="true" rack="16" position="2" default="true" expanded="true" statLoc="r0_p0_ITCL_DIAG.STAT[2,0]" validStat="A2" errLoc="r0_p0_ITCL_DIAG.ERR[2,0]">
+              <Info>
+                <ProductCode>2191</ProductCode>
+                <ProductName>SX-2191</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>PGB</DeviceGroup>
+                <Descriptor>2191_SX-2191.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data/>
+                <Aliases/>
+                <Notes/>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels>
+                <Channel xmlns="http://www.tecomat.com" Mode="UNI" Alias="Obecný kanál" enabled="true" Options="PC UNI MAS" Ports="0x89 0x89 0x89" Name="COM1" LAddr="0105" SysMap="CH5" SysMapCode="0105" SysMapObject="SerialChannels.IntfID[0]" Port="0x89" statLoc="r0_p0_ITCL_DIAG.STAT[2,1]" validStat="A2" errLoc="r0_p0_ITCL_DIAG.ERR[2,1]">
+                  <Info>
+                    <Descriptor>UNI_SC.tdd</Descriptor>
+                  </Info>
+                  <Objects xmlns="http://www.tecomat.com">
+                    <Data>
+                      <ObjectData name="r{RACK}_p{POSITION}_Settings_UNI_{CHANNEL}.BaudRate_FOXTROT2">0C000000</ObjectData>
+                      <ObjectData name="r{RACK}_p{POSITION}_Settings_UNI_{CHANNEL}.TransmitZoneSize">3200</ObjectData>
+                      <ObjectData name="r{RACK}_p{POSITION}_Table_UNI_{CHANNEL}.speed">0C</ObjectData>
+                      <ObjectData name="r{RACK}_p{POSITION}_Table_UNI_{CHANNEL}.lendo">3600</ObjectData>
+                    </Data>
+                    <Aliases/>
+                    <Notes/>
+                    <Tags xmlns="http://www.tecomat.com"/>
+                  </Objects>
+                  <Interfaces/>
+                  <Editor/>
+                </Channel>
+              </SerialChannels>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+          </Peripheries>
+        </Interface>
+        <Interface Class="TCL2" SubClass="UNDEF" alias="TCL2 sbernice" rackOffset="0" busID="1020" Icon="tcl2_interface" expanded="true" suppress="true">
+          <Peripheries>
+            <Device xmlns="http://www.tecomat.com" enabled="true" rack="4128" position="23" default="false" alias="IO.10" segmentation="16" statLoc="r16_p1_TCL2_DIAG.STAT[23]" validStat="A2" errLoc="r16_p1_TCL2_DIAG.ERR[23]">
+              <Info>
+                <ProductCode>1501</ProductCode>
+                <ProductName>IR-1501</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>IO</DeviceGroup>
+                <Descriptor>1501_IR-1501.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data/>
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">IO_10_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DIS.DI0" public="true" publicAPI="false" userDef="true">GAT_X01_Q</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">IO_10_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOS.DO0" public="true" publicAPI="false" userDef="true">TVE_010_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOS.DO1" public="true" publicAPI="false" userDef="true">TVE_005_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOS.DO2" public="true" publicAPI="false" userDef="true">TVE_107_0</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOS.DO0">Kúpelna_PP;010</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOS.DO1">Garáž;005</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOS.DO2">Izba 1.07;107</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_Table">Initialization table of IR-1501 module</ObjectNote>
+                </Notes>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+          </Peripheries>
+        </Interface>
+        <Interface Class="CIB" SubClass="1" alias="CIB sbernice" rackOffset="0" busID="1030" Icon="cib_interface" expanded="true">
+          <Peripheries>
+            <Device xmlns="http://www.tecomat.com" physAddr="356E" enabled="true" rack="4144" position="0" default="false" alias="WS.106.2" uuid="37c12c1e-c800-4172-9733-c298949cb187" statLoc="r16_p1_CIB_DIAG.STAT[0]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[0]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_106_2_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_1W6_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_1W6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_106_2_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_1W6_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Kúp_1P-WC;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Kúp_1P-WC 356E;106</ObjectNote>
+                </Notes>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="357B" enabled="true" rack="4144" position="1" default="false" alias="WS.206" uuid="4dd2ffd7-b6be-4f05-b99a-0f08218ab0af" statLoc="r16_p1_CIB_DIAG.STAT[1]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[1]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_206_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_206_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_206</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_206_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_206_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Izba 2.06;206</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Izba 2.06;206</ObjectNote>
+                </Notes>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="5EF0" enabled="true" rack="4144" position="2" default="false" alias="RQ6.01" uuid="f8d621c3-990f-44e6-b177-37cc2b011609" statLoc="r16_p1_CIB_DIAG.STAT[2]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[2]">
+              <Info>
+                <ProductCode>3361</ProductCode>
+                <ProductName>C-RQ-0600</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3361_C-RQ-0600.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">RQ6_01_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">RQ6_01_OUT</ObjectAlias>
+                </Aliases>
+                <Data>
+                  <ObjectData name="Devices.StateDevice">00</ObjectData>
+                  <ObjectData name="Devices.CO2Device">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_RQ_0600_init.Dev[1].typdev">00</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_RQ_0600_init.Dev[2].typdev">83</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9A7D" enabled="true" rack="4144" position="3" default="false" alias="WS.106.1" uuid="b4ea50d5-c0c7-4d6f-a070-01fa0c9a8cc1" statLoc="r16_p1_CIB_DIAG.STAT[3]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[3]">
+              <Info>
+                <ProductCode>3356</ProductCode>
+                <ProductName>C-WS-0200R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3356_C-WS-0200R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_106_1_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_106_2</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_106</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_106_1_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_106_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Kúpelna_1P;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Kúpelna_1P;106</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0200R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B1B" enabled="true" rack="4144" position="4" default="false" alias="WS.001.P" uuid="740565a4-3d75-4d92-87cd-3864dbbac446" statLoc="r16_p1_CIB_DIAG.STAT[4]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[4]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_001_P_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_0P1_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_001_P_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="false" publicAPI="false" userDef="true">WSB_0P1_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Vst.Hala-P;001</ObjectNote>
+                </Notes>
+                <Data/>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B1C" enabled="true" rack="4144" position="5" default="false" alias="WS.001.L" uuid="b565fa45-e984-4e29-8e1a-d567e48c790d" statLoc="r16_p1_CIB_DIAG.STAT[5]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[5]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_001_L_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_0L1_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_001</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_001_L_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_0L1_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Vst.Hala-L;001</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Vstup.hala;001</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B1D" enabled="true" rack="4144" position="6" default="false" alias="WS.007.1" uuid="0c148d67-caaf-478a-b8ae-2c0968f400a2" statLoc="r16_p1_CIB_DIAG.STAT[6]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[6]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_007_1_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_007_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_007</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_007_1_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_007_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Chodba-Fitko;007</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Chodba-PP;007</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B1E" enabled="true" rack="4144" position="7" default="false" alias="WS.007.2" uuid="1fdd1b1e-ce76-4e56-bff5-94a9736606e2" statLoc="r16_p1_CIB_DIAG.STAT[7]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[7]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_007_2_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_0B7_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_010</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_007_2_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_0B7_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Chodba_PP-WC;007</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Chodba_PP/WC/Kúp.;007</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B1F" enabled="true" rack="4144" position="8" default="false" alias="WS.021" uuid="0d138b11-504a-4662-aefe-4b0feedae1d2" statLoc="r16_p1_CIB_DIAG.STAT[8]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[8]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_021_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_021_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_021</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_021_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_021_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Kotolna;021</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Kotolna;021</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B20" enabled="true" rack="4144" position="9" default="false" alias="WS.020" uuid="f812c130-e4a9-45da-867b-3b58c461ed5d" statLoc="r16_p1_CIB_DIAG.STAT[9]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[9]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_020_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_020_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_020</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_020_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_020_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Show Room;020</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Show Room;020</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B21" enabled="true" rack="4144" position="10" default="false" alias="WS.104.2" uuid="6ddc2b28-63cf-4915-bfc0-0bde76c752ae" statLoc="r16_p1_CIB_DIAG.STAT[10]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[10]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_104_2_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_1P4_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_104_2_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_1P4_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Obýv.Schody-P;104</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.AnalogInput2Device.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[4].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B22" enabled="true" rack="4144" position="11" default="false" alias="WS.207" uuid="e7040bee-01ae-42a3-ac03-27be27b44a71" statLoc="r16_p1_CIB_DIAG.STAT[11]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[11]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_207_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_207_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_207</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_207_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_207_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Kúpelna_2P;207</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Kúpelna_2P;207</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B23" enabled="true" rack="4144" position="12" default="false" alias="WS.104.1" uuid="046623b7-54af-4f69-b970-8476e708d87e" statLoc="r16_p1_CIB_DIAG.STAT[12]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[12]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_104_1_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_104_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_104</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_104_1_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_104_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Obýv.Schody-L;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Obýv.-stred;104</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B24" enabled="true" rack="4144" position="13" default="false" alias="WS.104.3" uuid="2e2b12f4-25cc-4f86-92e0-22a10cb76958" statLoc="r16_p1_CIB_DIAG.STAT[13]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[13]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_104_3_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_1T4_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_104_3_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_1T4_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Obýv-Na terasu;104</ObjectNote>
+                </Notes>
+                <Data/>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B25" enabled="true" rack="4144" position="14" default="false" alias="WS.X11" uuid="20b57b30-1d5b-49d2-a304-c64b2ab6dff4" statLoc="r16_p1_CIB_DIAG.STAT[14]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[14]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_X11_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_X11_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_X11</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_X11_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_X11_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Terasa-velká;X11</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Terasa-velká;X11</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B26" enabled="true" rack="4144" position="15" default="false" alias="WS.104.4" uuid="049aa9a8-e26f-4d2f-9dac-f39305464b1e" statLoc="r16_p1_CIB_DIAG.STAT[15]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[15]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_104_4_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_1C4_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_1C4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_104_4_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_1C4_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Obyv-do chodby;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Obyv-do chodby;104</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B27" enabled="true" rack="4144" position="16" default="false" alias="WS.105" uuid="dcc7979e-d76c-4d9b-988b-bdd76521bd8f" statLoc="r16_p1_CIB_DIAG.STAT[16]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[16]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_105_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_105_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_105</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_105_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_105_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Chodba_1P;105</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Chodba_1P;105</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B28" enabled="true" rack="4144" position="17" default="false" alias="WS.107" uuid="ed597bf1-57f6-4afe-9c34-89f21342d92a" statLoc="r16_p1_CIB_DIAG.STAT[17]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[17]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_107_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_107_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_107</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_107_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_107_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Izba 1.07;107</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Izba 1.07;107</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B29" enabled="true" rack="4144" position="18" default="false" alias="WS.108" uuid="82f90866-d5bf-4385-b509-5a58cdeb323b" statLoc="r16_p1_CIB_DIAG.STAT[18]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[18]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_108_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_108_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_108</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_108_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_108_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Izba 1.08;108</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Izba 1.08;108</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B2A" enabled="true" rack="4144" position="19" default="false" alias="WS.204.2" uuid="03a994fa-d758-4f2b-b3f4-71cf55246641" statLoc="r16_p1_CIB_DIAG.STAT[19]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[19]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data/>
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_204_2_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_204_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_204_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Kuchyna-P;204</ObjectNote>
+                </Notes>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B2B" enabled="true" rack="4144" position="20" default="false" alias="WS.204.1" uuid="94d80aca-2f67-4048-8523-986f9ac2b6fe" statLoc="r16_p1_CIB_DIAG.STAT[20]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[20]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0400R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_204_1_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_2L4_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_2L4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_2L4_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Kuchyna-L;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Kuchyna;204</ObjectNote>
+                </Notes>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="9B2E" enabled="true" rack="4144" position="21" default="false" alias="WS.204.3" uuid="e2745d4b-9bcc-4f52-851a-3e10f0a2e2d9" statLoc="r16_p1_CIB_DIAG.STAT[21]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[21]">
+              <Info>
+                <ProductCode>3357</ProductCode>
+                <ProductName>C-WS-0400R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3357_C-WS-0400R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_204_3_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_2T4_4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_204_3_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_2T4_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Kuch-terasa;204</ObjectNote>
+                </Notes>
+                <Data/>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="AFC1" enabled="true" rack="4144" position="22" default="false" alias="WS.106.3" uuid="0c4f955f-9ab0-4b62-a9e3-95be418e7604" statLoc="r16_p1_CIB_DIAG.STAT[22]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[22]">
+              <Info>
+                <ProductCode>3356</ProductCode>
+                <ProductName>C-WS-0200R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3356_C-WS-0200R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_106_3_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_1A6_2</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_1A6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_106_3_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_1A6_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Kúp_106-Vana;106 </ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Kúp_106-Vana AFC1;106</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0200R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="BE1D" enabled="true" rack="4144" position="23" default="false" alias="WS.005" uuid="73a5f7dd-1c67-49a2-8973-07f03dd65e88" statLoc="r16_p1_CIB_DIAG.STAT[23]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[23]">
+              <Info>
+                <ProductCode>3356</ProductCode>
+                <ProductName>C-WS-0200R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3356_C-WS-0200R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0200R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_005_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_005_2</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.DI1" public="true" publicAPI="false" userDef="true">GAT_005_Q</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_005</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_005_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_005_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Garáž;005</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Garáž;005</ObjectNote>
+                </Notes>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="BE24" enabled="true" rack="4144" position="24" default="false" alias="WS.008" uuid="dc6cf452-35c2-4654-ae36-365c0a2b11b7" statLoc="r16_p1_CIB_DIAG.STAT[24]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[24]">
+              <Info>
+                <ProductCode>3356</ProductCode>
+                <ProductName>C-WS-0200R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3356_C-WS-0200R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_008_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_008_2</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_008</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_008_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_008_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Fitko;008</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Fitko;008</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0200R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="BE25" enabled="true" rack="4144" position="25" default="false" alias="WS.006" uuid="5d4d6e56-0289-4550-bb03-e46df264eb99" statLoc="r16_p1_CIB_DIAG.STAT[25]" validStat="87" errLoc="r16_p1_CIB_DIAG.ERR[25]">
+              <Info>
+                <ProductCode>3356</ProductCode>
+                <ProductName>C-WS-0200R-Logus</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3356_C-WS-0200R-Lo.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data>
+                  <ObjectData name="Devices.ThermDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_WS_0200R_Lo_init.Dev[2].typdev">80</ObjectData>
+                </Data>
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">WS_006_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DI.UP1" public="true" publicAPI="false" userDef="true">WSB_006_2</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM" public="true" publicAPI="false" userDef="true">TER_006</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">WS_006_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.LED.GREEN1" public="true" publicAPI="false" userDef="true">WSB_006_Q</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DI.UP1">Sklad;006</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM">Sklad;006</ObjectNote>
+                </Notes>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+          </Peripheries>
+        </Interface>
+        <Interface Class="CIB" SubClass="2" alias="CIB sbernice" rackOffset="0" busID="1032" Icon="cib_interface" expanded="false">
+          <Peripheries>
+            <Device xmlns="http://www.tecomat.com" physAddr="84AD" enabled="true" rack="4146" position="0" default="false" alias="IO.09" uuid="a3784b34-fc78-449d-9be2-a38175f66741" statLoc="r16_p2_CIB_DIAG.STAT[0]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[0]">
+              <Info>
+                <ProductCode>3367</ProductCode>
+                <ProductName>C-OR-0011M-800</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3367_C-OR-0011M800.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data>
+                  <ObjectData name="Devices.BinaryOutputsDevice.DO1_2.ManualModeDisable">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_OR_0011M_800_init.manDis">01</ObjectData>
+                </Data>
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">IO_09_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">IO_09_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1" public="true" publicAPI="false" userDef="true">TVE_002_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2" public="true" publicAPI="false" userDef="true">TVE_009_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3" public="true" publicAPI="false" userDef="true">TVE_R10_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4" public="true" publicAPI="false" userDef="true">TVE_001_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5" public="true" publicAPI="false" userDef="true">TVE_008_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6" public="true" publicAPI="false" userDef="true">TVE_006_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO7" public="true" publicAPI="false" userDef="true">TVE_020_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO8" public="true" publicAPI="false" userDef="true">TVE_2K4_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO9" public="true" publicAPI="false" userDef="true">TVE_204_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO10" public="true" publicAPI="false" userDef="true">TVE_2X4_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO11" public="true" publicAPI="false" userDef="true">GAT_005_0</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO1">Schody PP1;002</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO2">WC PP;009</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO3">Rebrík;010</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO4">Vstup.Hala;001</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO5">Fitko;008</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO6">Sklad;006</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO7">Show Room;020</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO8">Kuchyna-L;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO9">Kuchyna-S;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO10">Kuchyna-P;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO11">Brána-garáž;005</ObjectNote>
+                </Notes>
+                <Tags xmlns="http://www.tecomat.com">
+                  <Tag name="manual_mode">r4146_p0_IN.STAT.ManMode</Tag>
+                </Tags>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="84B0" enabled="true" rack="4146" position="1" default="false" alias="IO.02" uuid="1868f11e-85b2-4206-b378-59332feaa93a" statLoc="r16_p2_CIB_DIAG.STAT[1]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[1]">
+              <Info>
+                <ProductCode>3367</ProductCode>
+                <ProductName>C-OR-0011M-800</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3367_C-OR-0011M800.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">IO_02_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">IO_02_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1" public="true" publicAPI="false" userDef="true">SVD_1B4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2" public="true" publicAPI="false" userDef="true">SVD_1C4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3" public="true" publicAPI="false" userDef="true">SVD_1A6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4" public="true" publicAPI="false" userDef="true">SVD_1B6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5" public="true" publicAPI="false" userDef="true">SVD_1D4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6" public="true" publicAPI="false" userDef="true">SVD_Y01</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO7" public="true" publicAPI="false" userDef="true">SVD_107</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO8" public="true" publicAPI="false" userDef="true">SVD_1E4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO9" public="true" publicAPI="false" userDef="true">SVD_1F4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO10" public="true" publicAPI="false" userDef="true">SVD_1A7</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO11" public="true" publicAPI="false" userDef="true">SVD_108</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO1">Strop.2-obýv.;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO2">Strop.3-obýv.;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO3">Podhlad-Vana_1P;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO4">WC-podhlad;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO5">Chodba-obýv.;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO6">LP SP.30 ?</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO7">Podhlad 1.07;107</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO8">Štvorec.1;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO9">Štorec.2;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO10">Strop 1.07;107</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO11">Strop 1.08;108</ObjectNote>
+                </Notes>
+                <Data/>
+                <Tags xmlns="http://www.tecomat.com">
+                  <Tag name="manual_mode">r4146_p1_IN.STAT.ManMode</Tag>
+                </Tags>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="84B2" enabled="true" rack="4146" position="2" default="false" alias="IO.04" uuid="1408c4b3-8232-490b-ba1e-d23ba7b8c1aa" statLoc="r16_p2_CIB_DIAG.STAT[2]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[2]">
+              <Info>
+                <ProductCode>3367</ProductCode>
+                <ProductName>C-OR-0011M-800</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3367_C-OR-0011M800.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">IO_04_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">IO_04_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1" public="true" publicAPI="false" userDef="true">SVD_X01</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2" public="true" publicAPI="false" userDef="true">SVD_2B6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3" public="true" publicAPI="false" userDef="true">SVD_2B7</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4" public="true" publicAPI="false" userDef="true">SVD_2C7</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5" public="true" publicAPI="false" userDef="true">SVD_2H4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6" public="true" publicAPI="false" userDef="true">SVD_2I4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO7" public="true" publicAPI="false" userDef="true">SVD_0E1</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO8" public="true" publicAPI="false" userDef="true">SVD_0E0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO9" public="true" publicAPI="false" userDef="true">SVD_009</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO10" public="true" publicAPI="false" userDef="true">SVD_XY1</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO11" public="true" publicAPI="false" userDef="true">SVD_XZ1</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO1">Stena-parkovisko;X01</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO2">Strop 2.06;206</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO3">Strop kúp_2P;207</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO4">Zrkadlo;207</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO5">Štvorec.1;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO6">Štvorec.2;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO7">Stropná rampa;001</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO8">Strop-Kúp_PP;010</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO9">Strop-WC_PP;009</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO10">Bodovky;X11</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO11">Stena;X11</ObjectNote>
+                </Notes>
+                <Data/>
+                <Tags xmlns="http://www.tecomat.com">
+                  <Tag name="manual_mode">r4146_p2_IN.STAT.ManMode</Tag>
+                </Tags>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="8577" enabled="true" rack="4146" position="3" default="false" alias="IO.03" uuid="3d090173-d397-4cef-a0b2-b26175c6ba2f" statLoc="r16_p2_CIB_DIAG.STAT[3]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[3]">
+              <Info>
+                <ProductCode>3303</ProductCode>
+                <ProductName>C-OR-0008M</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3303_C-OR-0008M.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">IO_03_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">IO_03_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1" public="true" publicAPI="false" userDef="true">SVD_Y02</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2" public="true" publicAPI="false" userDef="true">SVD_1G4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3" public="true" publicAPI="false" userDef="true">SVD_204</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4" public="true" publicAPI="false" userDef="true">SVD_206</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5" public="true" publicAPI="false" userDef="true">SVD_207</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6" public="true" publicAPI="false" userDef="true">SVD_2A4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO7" public="true" publicAPI="false" userDef="true">SVD_2B4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO8" public="true" publicAPI="false" userDef="true">SVD_2C4</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO1">SP.32 ?</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO2">Podhlad/terasa;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO3">Podhlad;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO4">Podhlad 2.06;206</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO5">Sprcha;207</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO6">Bodovky-Terasa;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO7">Bodovky-stred;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO8">Luster;204</ObjectNote>
+                </Notes>
+                <Data/>
+                <Tags xmlns="http://www.tecomat.com">
+                  <Tag name="manual_mode">r4146_p3_IN.STAT.ManMode</Tag>
+                </Tags>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="857C" enabled="true" rack="4146" position="4" default="false" alias="IO.06" uuid="be1da888-d844-456c-b039-ec8bc4d056af" statLoc="r16_p2_CIB_DIAG.STAT[4]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[4]">
+              <Info>
+                <ProductCode>3303</ProductCode>
+                <ProductName>C-OR-0008M</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3303_C-OR-0008M.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data>
+                  <ObjectData name="Devices.StateDevice.Enabled">00</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_OR_0008M_init.Dev[0].typdev">00</ObjectData>
+                </Data>
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">IO_06_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">IO_06_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1" public="true" publicAPI="false" userDef="true">ROL_206_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2" public="true" publicAPI="false" userDef="true">ROL_206_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3" public="true" publicAPI="false" userDef="true">ROL_207_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4" public="true" publicAPI="false" userDef="true">ROL_207_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5" public="true" publicAPI="false" userDef="true">SVD_2R4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6" public="true" publicAPI="false" userDef="true">SVD_201</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO7" public="true" publicAPI="false" userDef="true">SVD_1M6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO8" public="true" publicAPI="false" userDef="true">GAT_X01_1</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO1">Izba 2.06;206</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO3">Kúpelna_2P;207</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO5">Kuch.Linka;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO6">Schodisko_2P;201</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO7">Chodbicka;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO8">Brána-hlavná;X01</ObjectNote>
+                </Notes>
+                <Tags xmlns="http://www.tecomat.com">
+                  <Tag name="manual_mode">r4146_p4_IN.STAT.ManMode</Tag>
+                </Tags>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="8984" enabled="true" rack="4146" position="5" default="false" alias="IO.05" uuid="63b85770-022b-42e3-a92f-d9959515f23a" statLoc="r16_p2_CIB_DIAG.STAT[5]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[5]">
+              <Info>
+                <ProductCode>3367</ProductCode>
+                <ProductName>C-OR-0011M-800</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3367_C-OR-0011M800.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">IO_05_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">IO_05_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1" public="true" publicAPI="false" userDef="true">SVD_X21</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2" public="true" publicAPI="false" userDef="true">SVD_1G6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3" public="true" publicAPI="false" userDef="true">SVD_1H6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4" public="true" publicAPI="false" userDef="true">SVD_1I6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5" public="true" publicAPI="false" userDef="true">SVD_1J6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6" public="true" publicAPI="false" userDef="true">SVD_1K6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO7" public="true" publicAPI="false" userDef="true">SVD_2E6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO8" public="true" publicAPI="false" userDef="true">SVD_1L4</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO9" public="true" publicAPI="false" userDef="true">SVD_XE1</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO10" public="true" publicAPI="false" userDef="true">SVD_XG1</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO11" public="true" publicAPI="false" userDef="true">SVD_XX1</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO1">Balkon-Vyhadzuje istic;X21</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO2">Vana-Zrkadlo;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO3">Strop-Sprcha;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO4">Strop-WC.2;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO5">Strop-Vana;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO6">Podhlad-WC.1;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO7">Podhlad 2.06;206</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO8">Chodba;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO9">Kvetinác;X11</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO10">Gabion;X11</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO11">Bodovky-parkovisko;X01</ObjectNote>
+                </Notes>
+                <Data/>
+                <Tags xmlns="http://www.tecomat.com">
+                  <Tag name="manual_mode">r4146_p5_IN.STAT.ManMode</Tag>
+                </Tags>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="898A" enabled="true" rack="4146" position="6" default="false" alias="IO.01" uuid="d5a757c8-1ee1-45c1-aeee-a48402cfdba4" statLoc="r16_p2_CIB_DIAG.STAT[6]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[6]">
+              <Info>
+                <ProductCode>3367</ProductCode>
+                <ProductName>C-OR-0011M-800</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3367_C-OR-0011M800.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">IO_01_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">IO_01_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1" public="true" publicAPI="false" userDef="true">SVD_001</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2" public="true" publicAPI="false" userDef="true">SVD_008</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3" public="true" publicAPI="false" userDef="true">SVD_010</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4" public="true" publicAPI="false" userDef="true">SVD_0A9</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5" public="true" publicAPI="false" userDef="true">SVD_021</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6" public="true" publicAPI="false" userDef="true">SVD_020</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO7" public="true" publicAPI="false" userDef="true">SVD_005</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO8" public="true" publicAPI="false" userDef="true">SVD_006</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO9" public="true" publicAPI="false" userDef="true">SVD_0A1</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO10" public="true" publicAPI="false" userDef="true">SVD_104</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO11" public="true" publicAPI="false" userDef="true">SVD_1M4</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO1">Luster-vst.h.;001</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO2">Strop-Fitko;008</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO3">LP-Sprcha_PP;010</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO4">LP-WC_PP;009</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO5">Kotolna;021</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO6">Show Room;020</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO7">Garáž;005</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO8">Sklad;006</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO9">Podhlad-vst.h.;001</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO10">Luster-obýv.;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO11">Strop.1-obýv.;104</ObjectNote>
+                </Notes>
+                <Data/>
+                <Tags xmlns="http://www.tecomat.com">
+                  <Tag name="manual_mode">r4146_p6_IN.STAT.ManMode</Tag>
+                </Tags>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="8A1D" enabled="true" rack="4146" position="7" default="false" alias="IO.07" uuid="55353560-acda-454e-a29c-67db5827c9c5" statLoc="r16_p2_CIB_DIAG.STAT[7]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[7]">
+              <Info>
+                <ProductCode>3368</ProductCode>
+                <ProductName>C-JC-0006M</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3368_C-JC-0006M.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">IO_07_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">IO_07_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1u" public="true" publicAPI="false" userDef="true">ROL_1D4_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1d" public="true" publicAPI="false" userDef="true">ROL_1D4_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2u" public="true" publicAPI="false" userDef="true">ROL_2D4_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2d" public="true" publicAPI="false" userDef="true">ROL_2D4_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3u" public="true" publicAPI="false" userDef="true">ROL_1E4_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3d" public="true" publicAPI="false" userDef="true">ROL_1E4_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4u" public="true" publicAPI="false" userDef="true">ROL_107_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4d" public="true" publicAPI="false" userDef="true">ROL_107_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5u" public="true" publicAPI="false" userDef="true">ROL_108_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5d" public="true" publicAPI="false" userDef="true">ROL_108_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6u" public="true" publicAPI="false" userDef="true">ROL_020_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6d" public="true" publicAPI="false" userDef="true">ROL_020_D</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO1u">Obýv-4;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO2u">Kuch-D;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO3u">Obýv-3;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO4u">Izba 1.07;107</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO5u">Izba 1.08;108</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO6u">Show Room;020</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.StateDevice">00</ObjectData>
+                  <ObjectData name="Devices.PulseDevice">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_JC_0006M_init.Dev1.typdev">00</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com">
+                  <Tag name="manual_mode">r4146_p7_IN.STAT.ManMode</Tag>
+                </Tags>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="8A20" enabled="true" rack="4146" position="8" default="false" alias="IO.08" uuid="c435deda-121d-448a-98fd-ade5cbadc299" statLoc="r16_p2_CIB_DIAG.STAT[8]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[8]">
+              <Info>
+                <ProductCode>3368</ProductCode>
+                <ProductName>C-JC-0006M</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3368_C-JC-0006M.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">IO_08_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">IO_08_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1u" public="true" publicAPI="false" userDef="true">ROL_104_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1d" public="true" publicAPI="false" userDef="true">ROL_104_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2u" public="true" publicAPI="false" userDef="true">ROL_1A4_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2d" public="true" publicAPI="false" userDef="true">ROL_1A4_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3u" public="true" publicAPI="false" userDef="true">ROL_1B4_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3d" public="true" publicAPI="false" userDef="true">ROL_1B4_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4u" public="true" publicAPI="false" userDef="true">ROL_204_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4d" public="true" publicAPI="false" userDef="true">ROL_204_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5u" public="true" publicAPI="false" userDef="true">ROL_2A4_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5d" public="true" publicAPI="false" userDef="true">ROL_2A4_D</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6u" public="true" publicAPI="false" userDef="true">ROL_2B4_U</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6d" public="true" publicAPI="false" userDef="true">ROL_2B4_D</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO1u">Obýv-5;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO2u">Obýv-1;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO3u">Obýv-2;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO4u">Kuchyna-1;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO5u">Kuchyna-2;204</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO6u">Kuchyna-3;204</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.StateDevice">00</ObjectData>
+                  <ObjectData name="Devices.PulseDevice">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_JC_0006M_init.Dev1.typdev">00</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com">
+                  <Tag name="manual_mode">r4146_p8_IN.STAT.ManMode</Tag>
+                </Tags>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="A9E2" enabled="true" rack="4146" position="9" default="false" alias="NH.11" uuid="724540d9-ffcd-4229-92aa-a5ebb734810e" statLoc="r16_p2_CIB_DIAG.STAT[9]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[9]">
+              <Info>
+                <ProductCode>3367</ProductCode>
+                <ProductName>C-OR-0011M-800</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3367_C-OR-0011M800.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">NH_11_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">NH_11_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO1" public="true" publicAPI="false" userDef="true">TVE_1R6_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO2" public="true" publicAPI="false" userDef="true">TVE_106_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO3" public="true" publicAPI="false" userDef="true">TVE_X12_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO4" public="true" publicAPI="false" userDef="true">TVE_108_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO5" public="true" publicAPI="false" userDef="true">TVE_1O4_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO6" public="true" publicAPI="false" userDef="true">TVE_104_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO7" public="true" publicAPI="false" userDef="true">TVE_1K4_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO8" public="true" publicAPI="false" userDef="true">TVE_101_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO9" public="true" publicAPI="false" userDef="true">TVE_206_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO10" public="true" publicAPI="false" userDef="true">TVE_2R7_0</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.DOs.DO11" public="true" publicAPI="false" userDef="true">TVE_207_0</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO1">Rebrík-Vana 1P;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO2">Kúpelna 1P;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO3">Terasa-malá;X12</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO4">Izba 1.08;108</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO5">Obývacka-P;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO6">Obývacka-S;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO7">Obývacka-L;104</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO8">Schody 1P;101</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO9">Izba 2.06;206</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO10">Rebrík-Kúp.2P;207</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.DOs.DO11">Kúpelna 2P;207</ObjectNote>
+                </Notes>
+                <Data/>
+                <Tags xmlns="http://www.tecomat.com">
+                  <Tag name="manual_mode">r4146_p9_IN.STAT.ManMode</Tag>
+                </Tags>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="E38B" enabled="true" rack="4146" position="10" default="false" alias="NH.10" uuid="ff107a70-c229-49cd-82bf-a171d13e62ce" statLoc="r16_p2_CIB_DIAG.STAT[10]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[10]">
+              <Info>
+                <ProductCode>3306</ProductCode>
+                <ProductName>C-IB-1800M</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3306_C-IB-1800M.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">NH_10_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DIs.DI.DI7" public="true" publicAPI="false" userDef="true">PIR_106</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DIs.DI.DI8" public="true" publicAPI="false" userDef="true">PIR_009</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DIs.DI.DI9" public="true" publicAPI="false" userDef="true">PIR_1A6</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DIs.DI.DI11" public="true" publicAPI="false" userDef="true">PIR_010</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.DIs.DI.DI12" public="true" publicAPI="false" userDef="true">PIR_207</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DIs.DI.DI7">Vana;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DIs.DI.DI8">WC_PP;009</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DIs.DI.DI9">Chodbicka;106</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DIs.DI.DI11">Kúpelna_PP;010</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.DIs.DI.DI12">Kúpelna_2P;207</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_C_IB_1800M_init">Initialization table of C-IB-1800M unit</ObjectNote>
+                </Notes>
+                <Data/>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="61C4" enabled="true" rack="4146" position="11" default="false" alias="NH.021" uuid="9b2eb2f2-f01d-4b06-ac76-6ec250c90b02" statLoc="r16_p2_CIB_DIAG.STAT[11]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[11]">
+              <Info>
+                <ProductCode>3326</ProductCode>
+                <ProductName>C-IT-0504S</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3326_C-IT-0504S.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">NH_021_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.AI.AI1" public="true" publicAPI="false" userDef="true">TEK_021</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">NH_021_OUT</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.AO.AO1" public="true" publicAPI="false" userDef="true">VEN_021_2</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT.AO.AO2" public="true" publicAPI="false" userDef="true">KOT_021_1</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.AI.AI1">Kotol;021</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.AO.AO1">Rekuperácia;021</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_OUT.AO.AO2">Kotol;021</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_C_IT_0504S_init">Initialization table of C-IT-0504S unit</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.BinaryInputsDevice.Enabled">00</ObjectData>
+                  <ObjectData name="Devices.AnalogInputs1_4Device.Enabled">01</ObjectData>
+                  <ObjectData name="Devices.AnalogInputs1_4Device.Type">28</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_IT_0504S_init.Dev[0].typdev">00</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_IT_0504S_init.Dev[3].typdev">80</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_IT_0504S_init.ai1_4type">28</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+            <Device xmlns="http://www.tecomat.com" physAddr="FA37" enabled="true" rack="4146" position="12" default="false" alias="NH.X22" uuid="82e86b8e-4771-4520-9440-03f786fc8209" statLoc="r16_p2_CIB_DIAG.STAT[12]" validStat="87" errLoc="r16_p2_CIB_DIAG.ERR[12]">
+              <Info>
+                <ProductCode>3347</ProductCode>
+                <ProductName>C-RI-0401S</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>CFOX</DeviceGroup>
+                <Descriptor>3347_C-RI-0401S.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Aliases>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN" public="false" publicAPI="false" userDef="false">NH_X22_IN</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.THERM.AI1" public="true" publicAPI="false" userDef="true">TER_X01</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_IN.LIGHT" public="true" publicAPI="false" userDef="true">LUX_X01_1</ObjectAlias>
+                  <ObjectAlias name="r{RACK}_p{POSITION}_OUT" public="false" publicAPI="false" userDef="false">NH_X22_OUT</ObjectAlias>
+                </Aliases>
+                <Notes>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.THERM.AI1">Vonk.teplota;X01</ObjectNote>
+                  <ObjectNote name="r{RACK}_p{POSITION}_IN.LIGHT">Súmrak vonku;X01</ObjectNote>
+                </Notes>
+                <Data>
+                  <ObjectData name="Devices.BinaryInputsDevice">00</ObjectData>
+                  <ObjectData name="Devices.StateDevice">00</ObjectData>
+                  <ObjectData name="Devices.AnalogInputsDevice.Enabled">01</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_RI_0401S_init.Dev[0].typdev">00</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_RI_0401S_init.Dev[1].typdev">80</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_RI_0401S_init.Dev[3].typdev">00</ObjectData>
+                  <ObjectData name="r{RACK}_p{POSITION}_C_RI_0401S_init.Dev[4].typdev">00</ObjectData>
+                </Data>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels/>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+          </Peripheries>
+        </Interface>
+        <Interface Class="RF2" SubClass="UNDEF" alias="RFox2 sbernice" rackOffset="0" busID="40" Icon="rf2_interface" ChannelRefOnly="true" DevGroupRefOnly="RFM2">
+          <Peripheries/>
+        </Interface>
+        <Interface Class="ETCL" SubClass="ETH1" alias="ETH1 sbernice" rackOffset="0" busID="51" Icon="ebus_interface" excluded="true" includingObject="Ethernets.ETCL.ActiveIntf &amp; 1">
+          <Peripheries/>
+        </Interface>
+        <Interface Class="ETCL" SubClass="ETH2" alias="ETH2 sbernice" rackOffset="0" busID="52" Icon="ebus_interface" excluded="true" includingObject="Ethernets.ETCL.ActiveIntf &amp; 2">
+          <Peripheries/>
+        </Interface>
+      </Interfaces>
+      <Editor xmlns="http://www.tecomat.com">
+        <ExpansionMaps>
+          <ExpansionMap name="r16_p1_TCL2_DIAG">101</ExpansionMap>
+          <ExpansionMap name="r16_p1_CIB_DIAG">10111</ExpansionMap>
+          <ExpansionMap name="r16_p2_CIB_DIAG">10111</ExpansionMap>
+        </ExpansionMaps>
+      </Editor>
+    </Device>
+  </Configuration>
+</TecoConfiguration>

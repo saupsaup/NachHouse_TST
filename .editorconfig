@@ -1,0 +1,31 @@
+root = true
+
+[*]
+indent_style = tab
+indent_size = 3
+insert_final_newline = true
+end_of_line = crlf
+charset = utf-8
+
+# Mosaic / PLC zdrojáky (drž CRLF)
+[*.{st,ST,prg,PRG,ttr,TTR,mlb,MLB,mak,MAK}]
+end_of_line = crlf
+
+# Windows skripty
+[*.{bat,cmd,ps1}]
+end_of_line = crlf
+
+# JSONy
+[*.json]
+indent_style = tab
+indent_size = 3
+end_of_line = crlf
+
+[*.jsonc]
+indent_style = tab
+indent_size = 3
+end_of_line = crlf
+
+# Unix skripty nech ostanú LF
+[*.{sh,bash,zsh}]
+end_of_line = lf

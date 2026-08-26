@@ -1,0 +1,13 @@
+VAR_GLOBAL CONSTANT
+    C_ROOM_MAX : USINT := 8;
+
+    CMD_NONE            : USINT := 0;
+    CMD_ROOM_LIGHTS_OFF : USINT := 1;
+    CMD_ROOM_LIGHTS_ON  : USINT := 2;
+
+    RESULT_OK               : INT := 0;
+    RESULT_UNKNOWN_COMMAND  : INT := -1;
+    RESULT_INVALID_ROOM     : INT := -2;
+    RESULT_INVALID_DEVICE   : INT := -3;
+    RESULT_INVALID_VALUE    : INT := -4;
+END_VAR

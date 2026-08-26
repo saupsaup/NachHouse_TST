@@ -1,0 +1,1817 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<web version="8.1" propfont="true" foot="" dwMode="1" MaxUid="4417" height="1219" width="610" menu="false" title="false" border="false" top="0" left="0" iniScale="100" maxScale="100" useIniScale="false" useMaxScale="true" userScale="true" webApp="true" bgdupl="true" bgcolor="16777215" icon="" id18="0" author="Au Media, s.r.o." encoding="windows-1250" flat="false" flatcolor="16771043">
+	<panels></panels>
+	<Grid Enable="1" X="5" Y="5" />
+	<globalset newdim="1" maxvar="0" />
+	<group caption="Index" level="1" locked="0" altdim="false" notforid="true" Uid="4179">
+		<page caption="Redir" name="REDIR.XML" background="" bgcolor="3548178" repeat="false" hidden="true" ajax="true" pause="1000" level="1" default="true" Uid="4178" ucid="1756933651" width="420" height="178">
+			<object caption="" X="4" Y="11" xoff="6" yoff="5" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="30" transparent="false" visneg="false" Uid="4125">
+				<edit variable="targetPage" type="STRING[20]" intf="0" timf="" align="left" zero="false" prec="-1" size="20" global="true" border="true" width="390" height="43" tabindex="1" />
+			</object>
+			<object caption="Submit" X="5" Y="19" xoff="3" yoff="6" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="4126">
+				<submit width="136" height="28" border="true" tabindex="2" />
+			</object>
+		</page>
+	</group>
+	<group caption="M" level="1" locked="0" altdim="false" notforid="true" Uid="4389">
+		<page caption="003_NHM" name="003_NHM.XML" background="" bgcolor="3548178" repeat="false" hidden="true" jsonmap="true" ajax="true" pause="100" level="1" ucid="1762670918" width="590" height="1199" Uid="4390">
+			<placeholders>
+				<alias name="web" type="NH_M" description="">aWeb.M[3]</alias>
+				<alias name="can" type="NH_CAN" description="">aWeb.A[3].can</alias>
+			</placeholders>
+			<object caption="" X="1" Y="1" xoff="0" yoff="0" level="1" readonly="false" front="0" back="0" strong="false" italic="false" size="13" transparent="true" visneg="false" clickxvar="{can}.touch.X" clickyvar="{can}.touch.Y" clickcol="{can}.touch.Color" Uid="4384">
+				<canvas width="590" height="1199" variable="{can}.bufHead" datavariable="{can}.buf">
+					<img longname="001.PNG" />
+					<img longname="002.PNG" />
+					<img longname="003.PNG" />
+					<img longname="004.PNG" />
+					<img longname="005.PNG" />
+					<img longname="006.PNG" />
+					<img longname="007.PNG" />
+					<img longname="008.PNG" />
+					<img longname="010.PNG" />
+					<img longname="011.PNG" />
+					<img longname="012.PNG" />
+					<img longname="013.PNG" />
+					<img longname="014.PNG" />
+					<img longname="015.PNG" />
+					<img longname="016.PNG" />
+					<img longname="017.PNG" />
+					<img longname="018.PNG" />
+					<img longname="019.PNG" />
+					<img longname="020.PNG" />
+					<img longname="021.PNG" />
+					<img longname="022.PNG" />
+					<img longname="023.PNG" />
+					<img longname="024.PNG" />
+					<img longname="025.PNG" />
+					<img longname="027.PNG" />
+					<img longname="028.PNG" />
+					<img longname="029.PNG" />
+					<img longname="030.PNG" />
+					<img longname="031.PNG" />
+					<img longname="032.PNG" />
+					<img longname="033.PNG" />
+					<img longname="034.PNG" />
+					<img longname="035.PNG" />
+					<img longname="036.PNG" />
+					<img longname="037.PNG" />
+					<img longname="038.PNG" />
+					<img longname="039.PNG" />
+					<img longname="040.PNG" />
+					<img longname="041.PNG" />
+					<img longname="042.PNG" />
+					<img longname="043.PNG" />
+					<img longname="044.PNG" />
+					<img longname="045.PNG" />
+					<img longname="046.PNG" />
+					<img longname="047.PNG" />
+					<img longname="048.PNG" />
+					<img longname="049.PNG" />
+					<img longname="050.PNG" />
+					<img longname="051.PNG" />
+					<img longname="052.PNG" />
+					<img longname="053.PNG" />
+					<img longname="054.PNG" />
+					<img longname="055.PNG" />
+					<img longname="056.PNG" />
+					<img longname="057.PNG" />
+					<img longname="058.PNG" />
+					<img longname="059.PNG" />
+					<img longname="060.PNG" />
+					<img longname="061.PNG" />
+					<img longname="062.PNG" />
+					<img longname="063.PNG" />
+					<img longname="064.PNG" />
+					<img longname="065.PNG" />
+					<img longname="066.PNG" />
+					<img longname="067.PNG" />
+					<img longname="068.PNG" />
+					<img longname="069.PNG" />
+					<img longname="070.PNG" />
+					<img longname="071.PNG" />
+					<img longname="072.PNG" />
+					<img longname="073.PNG" />
+					<img longname="074.PNG" />
+					<img longname="075.PNG" />
+					<img longname="076.PNG" />
+					<img longname="077.PNG" />
+					<img longname="078.PNG" />
+					<img longname="079.PNG" />
+					<img longname="080.PNG" />
+					<img longname="081.PNG" />
+					<img longname="082.PNG" />
+					<img longname="083.PNG" />
+					<img longname="084.PNG" />
+					<img longname="085.PNG" />
+					<img longname="086.PNG" />
+					<img longname="087.PNG" />
+					<img longname="088.PNG" />
+					<img longname="089.PNG" />
+					<img longname="090.PNG" />
+					<img longname="091.PNG" />
+					<img longname="092.PNG" />
+					<img longname="093.PNG" />
+					<img longname="095.PNG" />
+					<img longname="096.PNG" />
+					<img longname="097.PNG" />
+					<img longname="098.PNG" />
+					<img longname="099.PNG" />
+					<img longname="100.PNG" />
+					<img longname="101.PNG" />
+					<img longname="102.PNG" />
+					<img longname="103.PNG" />
+					<img longname="104.PNG" />
+					<img longname="105.PNG" />
+					<img longname="106.PNG" />
+					<img longname="107.PNG" />
+					<img longname="108.PNG" />
+					<img longname="109.PNG" />
+					<img longname="112.PNG" />
+					<img longname="113.PNG" />
+					<img longname="114.PNG" />
+					<img longname="115.PNG" />
+					<img longname="116.PNG" />
+					<img longname="117.PNG" />
+					<img longname="118.PNG" />
+					<img longname="119.PNG" />
+					<img longname="120.PNG" />
+					<img longname="121.PNG" />
+					<img longname="122.PNG" />
+					<img longname="123.PNG" />
+					<img longname="124.PNG" />
+					<img longname="125.PNG" />
+					<img longname="126.PNG" />
+					<img longname="127.PNG" />
+					<img longname="128.PNG" />
+					<img longname="129.PNG" />
+					<img longname="130.PNG" />
+					<img longname="131.PNG" />
+					<img longname="132.PNG" />
+					<img longname="133.PNG" />
+					<img longname="134.PNG" />
+					<img longname="135.PNG" />
+					<img longname="136.PNG" />
+					<img longname="137.PNG" />
+					<img longname="139.PNG" />
+					<img longname="140.PNG" />
+					<img longname="141.PNG" />
+					<img longname="142.PNG" />
+					<img longname="143.PNG" />
+					<img longname="144.PNG" />
+					<img longname="145.PNG" />
+					<img longname="146.PNG" />
+					<img longname="147.PNG" />
+					<img longname="148.PNG" />
+					<img longname="149.PNG" />
+					<img longname="151.PNG" />
+					<img longname="152.PNG" />
+					<img longname="153.PNG" />
+					<img longname="155.PNG" />
+					<img longname="156.PNG" />
+					<img longname="157.PNG" />
+					<img longname="158.PNG" />
+					<img longname="159.PNG" />
+					<img longname="160.PNG" />
+					<img longname="161.PNG" />
+					<img longname="162.PNG" />
+					<img longname="163.PNG" />
+					<img longname="164.PNG" />
+					<img longname="166.PNG" />
+					<img longname="170.PNG" />
+					<img longname="171.PNG" />
+					<img longname="172.PNG" />
+					<img longname="173.PNG" />
+					<img longname="174.PNG" />
+					<img longname="175.PNG" />
+					<img longname="176.PNG" />
+					<img longname="177.PNG" />
+					<img longname="178.PNG" />
+					<img longname="180.PNG" />
+					<img longname="182.PNG" />
+					<img longname="183.PNG" />
+					<img longname="184.PNG" />
+					<img longname="185.PNG" />
+					<img longname="186.PNG" />
+					<img longname="187.PNG" />
+					<img longname="190.PNG" />
+					<img longname="191.PNG" />
+					<img longname="192.PNG" />
+					<img longname="193.PNG" />
+					<img longname="194.PNG" />
+					<img longname="195.PNG" />
+					<img longname="196.PNG" />
+					<img longname="197.PNG" />
+					<img longname="198.PNG" />
+					<img longname="199.PNG" />
+					<img longname="200.PNG" />
+					<img longname="201.PNG" />
+					<img longname="202.PNG" />
+					<img longname="203.PNG" />
+					<img longname="204.PNG" />
+					<img longname="205.PNG" />
+					<img longname="206.PNG" />
+					<img longname="207.PNG" />
+					<img longname="208.PNG" />
+					<img longname="209.PNG" />
+					<img longname="210.PNG" />
+					<img longname="211.PNG" />
+					<img longname="212.PNG" />
+					<img longname="213.PNG" />
+					<img longname="214.PNG" />
+					<img longname="215.PNG" />
+					<img longname="216.PNG" />
+					<img longname="217.PNG" />
+					<img longname="218.PNG" />
+					<img longname="219.PNG" />
+					<img longname="220.PNG" />
+					<img longname="221.PNG" />
+					<img longname="222.PNG" />
+					<img longname="223.PNG" />
+					<img longname="224.PNG" />
+					<img longname="225.PNG" />
+					<img longname="226.PNG" />
+					<img longname="227.PNG" />
+					<img longname="228.PNG" />
+					<img longname="229.PNG" />
+					<img longname="230.PNG" />
+					<img longname="232.PNG" />
+					<img longname="233.PNG" />
+					<img longname="234.PNG" />
+					<img longname="235.PNG" />
+					<img longname="236.PNG" />
+					<img longname="237.PNG" />
+					<img longname="238.PNG" />
+					<img longname="252.PNG" />
+					<img longname="253.PNG" />
+					<img longname="254.PNG" />
+					<img longname="255.PNG" />
+					<img longname="256.PNG" />
+					<img longname="257.PNG" />
+					<img longname="258.PNG" />
+					<img longname="260.PNG" />
+					<img longname="261.PNG" />
+					<img longname="262.PNG" />
+					<img longname="263.PNG" />
+					<img longname="264.PNG" />
+					<img longname="265.PNG" />
+					<img longname="266.PNG" />
+					<img longname="269.PNG" />
+					<img longname="270.PNG" />
+					<img longname="271.PNG" />
+					<img longname="272.PNG" />
+					<img longname="273.PNG" />
+					<img longname="274.PNG" />
+					<img longname="275.PNG" />
+					<img longname="276.PNG" />
+					<img longname="277.PNG" />
+					<img longname="278.PNG" />
+					<img longname="279.PNG" />
+					<img longname="280.PNG" />
+					<img longname="281.PNG" />
+					<img longname="282.PNG" />
+					<img longname="283.PNG" />
+					<img longname="284.PNG" />
+					<img longname="285.PNG" />
+					<img longname="287.PNG" />
+					<img longname="289.PNG" />
+					<img longname="290.PNG" />
+					<img longname="291.PNG" />
+					<img longname="292.PNG" />
+					<img longname="293.PNG" />
+					<img longname="294.PNG" />
+					<img longname="295.PNG" />
+					<img longname="296.PNG" />
+					<img longname="297.PNG" />
+					<img longname="298.PNG" />
+					<img longname="300.PNG" />
+					<img longname="301.PNG" />
+					<img longname="302.PNG" />
+					<img longname="303.PNG" />
+					<img longname="310.PNG" />
+					<img longname="311.PNG" />
+					<img longname="312.PNG" />
+					<img longname="313.PNG" />
+					<img longname="314.PNG" />
+					<img longname="315.PNG" />
+					<img longname="316.PNG" />
+					<img longname="317.PNG" />
+					<img longname="318.PNG" />
+					<img longname="319.PNG" />
+					<img longname="320.PNG" />
+					<img longname="321.PNG" />
+					<img longname="322.PNG" />
+					<img longname="323.PNG" />
+					<img longname="324.PNG" />
+					<img longname="325.PNG" />
+					<img longname="326.PNG" />
+					<img longname="330.PNG" />
+					<img longname="331.PNG" />
+					<img longname="332.PNG" />
+					<img longname="333.PNG" />
+					<img longname="334.PNG" />
+					<img longname="335.PNG" />
+					<img longname="336.PNG" />
+					<img longname="339.PNG" />
+					<img longname="340.PNG" />
+					<img longname="341.PNG" />
+					<img longname="342.PNG" />
+					<img longname="343.PNG" />
+					<img longname="344.PNG" />
+					<img longname="345.PNG" />
+					<img longname="346.PNG" />
+					<img longname="347.PNG" />
+					<img longname="348.PNG" />
+					<img longname="351.PNG" />
+					<img longname="352.PNG" />
+					<img longname="353.PNG" />
+					<img longname="354.PNG" />
+					<img longname="355.PNG" />
+					<img longname="356.PNG" />
+					<img longname="357.PNG" />
+					<img longname="360.PNG" />
+					<img longname="361.PNG" />
+					<img longname="362.PNG" />
+					<img longname="363.PNG" />
+					<img longname="364.PNG" />
+					<img longname="365.PNG" />
+					<img longname="366.PNG" />
+					<img longname="367.PNG" />
+					<img longname="368.PNG" />
+					<img longname="369.PNG" />
+					<img longname="370.PNG" />
+					<img longname="371.PNG" />
+					<img longname="372.PNG" />
+					<img longname="374.PNG" />
+					<img longname="375.PNG" />
+					<img longname="376.PNG" />
+					<img longname="378.PNG" />
+					<img longname="379.PNG" />
+					<img longname="380.PNG" />
+					<img longname="381.PNG" />
+					<img longname="382.PNG" />
+					<img longname="383.PNG" />
+					<img longname="385.PNG" />
+					<img longname="386.PNG" />
+					<img longname="387.PNG" />
+					<img longname="388.PNG" />
+					<img longname="389.PNG" />
+					<img longname="390.PNG" />
+					<img longname="391.PNG" />
+					<img longname="392.PNG" />
+					<img longname="398.PNG" />
+					<img longname="399.PNG" />
+					<img longname="400.PNG" />
+					<img longname="401.PNG" />
+					<img longname="402.PNG" />
+					<img longname="403.PNG" />
+					<img longname="404.PNG" />
+					<img longname="405.PNG" />
+					<img longname="406.PNG" />
+					<img longname="410.PNG" />
+					<img longname="411.PNG" />
+					<img longname="412.PNG" />
+					<img longname="413.PNG" />
+					<img longname="415.PNG" />
+					<img longname="416.PNG" />
+					<img longname="417.PNG" />
+					<img longname="418.PNG" />
+					<img longname="498.PNG" />
+					<img longname="499.PNG" />
+					<img longname="500.PNG" />
+					<img longname="505.PNG" />
+					<img longname="507.PNG" />
+					<img longname="508.PNG" />
+					<img longname="509.PNG" />
+					<img longname="510.PNG" />
+					<img longname="ERROR.PNG" />
+					<img longname="LEFT.PNG" />
+					<img longname="OK0.PNG" />
+					<img longname="OK1.PNG" />
+					<img longname="STOP1.PNG" />
+				</canvas>
+			</object>
+			<object caption="" X="11" Y="4" xoff="6" yoff="6" level="1" readonly="false" front="4259584" back="3548178" strong="false" italic="true" size="32" transparent="false" visvar="{web}.edt" vistype="" visneg="false" Uid="4385" layer="1">
+				<edit variable="{web}.naz" type="" intf="0" timf="ss.zzz" align="center" zero="false" prec="-1" size="20" global="true" border="true" width="430" height="45" tabindex="1" />
+			</object>
+			<object caption="" X="1" Y="14" xoff="0" yoff="1" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="false" visvar="{web}.frm" vistype="" visneg="false" Uid="4386" layer="2">
+				<iframe variable="{web}.htt" type="" width="590" height="800" href="" noscroll="1"></iframe>
+			</object>
+			<object caption="" X="61" Y="141" xoff="5" yoff="5" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4387" layer="3">
+				<submit width="95" height="30" border="false" tabindex="2" />
+			</object>
+			<object caption="" X="3" Y="4" xoff="4" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visvar="SYSTEM_S.S2_2" vistype="BOOL" visneg="true" Uid="4388">
+				<image optcap="" variable="SYSTEM_S.S2_2" type="BOOL" on="OK1.PNG" off="ERROR.PNG" />
+			</object>
+		</page>
+		<page caption="002_NHM" name="002_NHM.XML" background="" bgcolor="3548178" repeat="false" hidden="true" jsonmap="true" ajax="true" pause="100" level="1" ucid="1762670921" width="590" height="1199" Uid="4391">
+			<placeholders>
+				<alias name="web" type="NH_M" description="">aWeb.M[2]</alias>
+				<alias name="can" type="NH_CAN" description="">aWeb.A[2].can</alias>
+			</placeholders>
+			<object caption="" X="1" Y="1" xoff="0" yoff="0" level="1" readonly="false" front="0" back="0" strong="false" italic="false" size="13" transparent="true" visneg="false" clickxvar="{can}.touch.X" clickyvar="{can}.touch.Y" clickcol="{can}.touch.Color" Uid="4392">
+				<canvas width="590" height="1199" variable="{can}.bufHead" datavariable="{can}.buf">
+					<img longname="001.PNG" />
+					<img longname="002.PNG" />
+					<img longname="003.PNG" />
+					<img longname="004.PNG" />
+					<img longname="005.PNG" />
+					<img longname="006.PNG" />
+					<img longname="007.PNG" />
+					<img longname="008.PNG" />
+					<img longname="010.PNG" />
+					<img longname="011.PNG" />
+					<img longname="012.PNG" />
+					<img longname="013.PNG" />
+					<img longname="014.PNG" />
+					<img longname="015.PNG" />
+					<img longname="016.PNG" />
+					<img longname="017.PNG" />
+					<img longname="018.PNG" />
+					<img longname="019.PNG" />
+					<img longname="020.PNG" />
+					<img longname="021.PNG" />
+					<img longname="022.PNG" />
+					<img longname="023.PNG" />
+					<img longname="024.PNG" />
+					<img longname="025.PNG" />
+					<img longname="027.PNG" />
+					<img longname="028.PNG" />
+					<img longname="029.PNG" />
+					<img longname="030.PNG" />
+					<img longname="031.PNG" />
+					<img longname="032.PNG" />
+					<img longname="033.PNG" />
+					<img longname="034.PNG" />
+					<img longname="035.PNG" />
+					<img longname="036.PNG" />
+					<img longname="037.PNG" />
+					<img longname="038.PNG" />
+					<img longname="039.PNG" />
+					<img longname="040.PNG" />
+					<img longname="041.PNG" />
+					<img longname="042.PNG" />
+					<img longname="043.PNG" />
+					<img longname="044.PNG" />
+					<img longname="045.PNG" />
+					<img longname="046.PNG" />
+					<img longname="047.PNG" />
+					<img longname="048.PNG" />
+					<img longname="049.PNG" />
+					<img longname="050.PNG" />
+					<img longname="051.PNG" />
+					<img longname="052.PNG" />
+					<img longname="053.PNG" />
+					<img longname="054.PNG" />
+					<img longname="055.PNG" />
+					<img longname="056.PNG" />
+					<img longname="057.PNG" />
+					<img longname="058.PNG" />
+					<img longname="059.PNG" />
+					<img longname="060.PNG" />
+					<img longname="061.PNG" />
+					<img longname="062.PNG" />
+					<img longname="063.PNG" />
+					<img longname="064.PNG" />
+					<img longname="065.PNG" />
+					<img longname="066.PNG" />
+					<img longname="067.PNG" />
+					<img longname="068.PNG" />
+					<img longname="069.PNG" />
+					<img longname="070.PNG" />
+					<img longname="071.PNG" />
+					<img longname="072.PNG" />
+					<img longname="073.PNG" />
+					<img longname="074.PNG" />
+					<img longname="075.PNG" />
+					<img longname="076.PNG" />
+					<img longname="077.PNG" />
+					<img longname="078.PNG" />
+					<img longname="079.PNG" />
+					<img longname="080.PNG" />
+					<img longname="081.PNG" />
+					<img longname="082.PNG" />
+					<img longname="083.PNG" />
+					<img longname="084.PNG" />
+					<img longname="085.PNG" />
+					<img longname="086.PNG" />
+					<img longname="087.PNG" />
+					<img longname="088.PNG" />
+					<img longname="089.PNG" />
+					<img longname="090.PNG" />
+					<img longname="091.PNG" />
+					<img longname="092.PNG" />
+					<img longname="093.PNG" />
+					<img longname="095.PNG" />
+					<img longname="096.PNG" />
+					<img longname="097.PNG" />
+					<img longname="098.PNG" />
+					<img longname="099.PNG" />
+					<img longname="100.PNG" />
+					<img longname="101.PNG" />
+					<img longname="102.PNG" />
+					<img longname="103.PNG" />
+					<img longname="104.PNG" />
+					<img longname="105.PNG" />
+					<img longname="106.PNG" />
+					<img longname="107.PNG" />
+					<img longname="108.PNG" />
+					<img longname="109.PNG" />
+					<img longname="112.PNG" />
+					<img longname="113.PNG" />
+					<img longname="114.PNG" />
+					<img longname="115.PNG" />
+					<img longname="116.PNG" />
+					<img longname="117.PNG" />
+					<img longname="118.PNG" />
+					<img longname="119.PNG" />
+					<img longname="120.PNG" />
+					<img longname="121.PNG" />
+					<img longname="122.PNG" />
+					<img longname="123.PNG" />
+					<img longname="124.PNG" />
+					<img longname="125.PNG" />
+					<img longname="126.PNG" />
+					<img longname="127.PNG" />
+					<img longname="128.PNG" />
+					<img longname="129.PNG" />
+					<img longname="130.PNG" />
+					<img longname="131.PNG" />
+					<img longname="132.PNG" />
+					<img longname="133.PNG" />
+					<img longname="134.PNG" />
+					<img longname="135.PNG" />
+					<img longname="136.PNG" />
+					<img longname="137.PNG" />
+					<img longname="139.PNG" />
+					<img longname="140.PNG" />
+					<img longname="141.PNG" />
+					<img longname="142.PNG" />
+					<img longname="143.PNG" />
+					<img longname="144.PNG" />
+					<img longname="145.PNG" />
+					<img longname="146.PNG" />
+					<img longname="147.PNG" />
+					<img longname="148.PNG" />
+					<img longname="149.PNG" />
+					<img longname="151.PNG" />
+					<img longname="152.PNG" />
+					<img longname="153.PNG" />
+					<img longname="155.PNG" />
+					<img longname="156.PNG" />
+					<img longname="157.PNG" />
+					<img longname="158.PNG" />
+					<img longname="159.PNG" />
+					<img longname="160.PNG" />
+					<img longname="161.PNG" />
+					<img longname="162.PNG" />
+					<img longname="163.PNG" />
+					<img longname="164.PNG" />
+					<img longname="166.PNG" />
+					<img longname="170.PNG" />
+					<img longname="171.PNG" />
+					<img longname="172.PNG" />
+					<img longname="173.PNG" />
+					<img longname="174.PNG" />
+					<img longname="175.PNG" />
+					<img longname="176.PNG" />
+					<img longname="177.PNG" />
+					<img longname="178.PNG" />
+					<img longname="180.PNG" />
+					<img longname="182.PNG" />
+					<img longname="183.PNG" />
+					<img longname="184.PNG" />
+					<img longname="185.PNG" />
+					<img longname="186.PNG" />
+					<img longname="187.PNG" />
+					<img longname="190.PNG" />
+					<img longname="191.PNG" />
+					<img longname="192.PNG" />
+					<img longname="193.PNG" />
+					<img longname="194.PNG" />
+					<img longname="195.PNG" />
+					<img longname="196.PNG" />
+					<img longname="197.PNG" />
+					<img longname="198.PNG" />
+					<img longname="199.PNG" />
+					<img longname="200.PNG" />
+					<img longname="201.PNG" />
+					<img longname="202.PNG" />
+					<img longname="203.PNG" />
+					<img longname="204.PNG" />
+					<img longname="205.PNG" />
+					<img longname="206.PNG" />
+					<img longname="207.PNG" />
+					<img longname="208.PNG" />
+					<img longname="209.PNG" />
+					<img longname="210.PNG" />
+					<img longname="211.PNG" />
+					<img longname="212.PNG" />
+					<img longname="213.PNG" />
+					<img longname="214.PNG" />
+					<img longname="215.PNG" />
+					<img longname="216.PNG" />
+					<img longname="217.PNG" />
+					<img longname="218.PNG" />
+					<img longname="219.PNG" />
+					<img longname="220.PNG" />
+					<img longname="221.PNG" />
+					<img longname="222.PNG" />
+					<img longname="223.PNG" />
+					<img longname="224.PNG" />
+					<img longname="225.PNG" />
+					<img longname="226.PNG" />
+					<img longname="227.PNG" />
+					<img longname="228.PNG" />
+					<img longname="229.PNG" />
+					<img longname="230.PNG" />
+					<img longname="232.PNG" />
+					<img longname="233.PNG" />
+					<img longname="234.PNG" />
+					<img longname="235.PNG" />
+					<img longname="236.PNG" />
+					<img longname="237.PNG" />
+					<img longname="238.PNG" />
+					<img longname="252.PNG" />
+					<img longname="253.PNG" />
+					<img longname="254.PNG" />
+					<img longname="255.PNG" />
+					<img longname="256.PNG" />
+					<img longname="257.PNG" />
+					<img longname="258.PNG" />
+					<img longname="260.PNG" />
+					<img longname="261.PNG" />
+					<img longname="262.PNG" />
+					<img longname="263.PNG" />
+					<img longname="264.PNG" />
+					<img longname="265.PNG" />
+					<img longname="266.PNG" />
+					<img longname="269.PNG" />
+					<img longname="270.PNG" />
+					<img longname="271.PNG" />
+					<img longname="272.PNG" />
+					<img longname="273.PNG" />
+					<img longname="274.PNG" />
+					<img longname="275.PNG" />
+					<img longname="276.PNG" />
+					<img longname="277.PNG" />
+					<img longname="278.PNG" />
+					<img longname="279.PNG" />
+					<img longname="280.PNG" />
+					<img longname="281.PNG" />
+					<img longname="282.PNG" />
+					<img longname="283.PNG" />
+					<img longname="284.PNG" />
+					<img longname="285.PNG" />
+					<img longname="287.PNG" />
+					<img longname="289.PNG" />
+					<img longname="290.PNG" />
+					<img longname="291.PNG" />
+					<img longname="292.PNG" />
+					<img longname="293.PNG" />
+					<img longname="294.PNG" />
+					<img longname="295.PNG" />
+					<img longname="296.PNG" />
+					<img longname="297.PNG" />
+					<img longname="298.PNG" />
+					<img longname="300.PNG" />
+					<img longname="301.PNG" />
+					<img longname="302.PNG" />
+					<img longname="303.PNG" />
+					<img longname="310.PNG" />
+					<img longname="311.PNG" />
+					<img longname="312.PNG" />
+					<img longname="313.PNG" />
+					<img longname="314.PNG" />
+					<img longname="315.PNG" />
+					<img longname="316.PNG" />
+					<img longname="317.PNG" />
+					<img longname="318.PNG" />
+					<img longname="319.PNG" />
+					<img longname="320.PNG" />
+					<img longname="321.PNG" />
+					<img longname="322.PNG" />
+					<img longname="323.PNG" />
+					<img longname="324.PNG" />
+					<img longname="325.PNG" />
+					<img longname="326.PNG" />
+					<img longname="330.PNG" />
+					<img longname="331.PNG" />
+					<img longname="332.PNG" />
+					<img longname="333.PNG" />
+					<img longname="334.PNG" />
+					<img longname="335.PNG" />
+					<img longname="336.PNG" />
+					<img longname="339.PNG" />
+					<img longname="340.PNG" />
+					<img longname="341.PNG" />
+					<img longname="342.PNG" />
+					<img longname="343.PNG" />
+					<img longname="344.PNG" />
+					<img longname="345.PNG" />
+					<img longname="346.PNG" />
+					<img longname="347.PNG" />
+					<img longname="348.PNG" />
+					<img longname="351.PNG" />
+					<img longname="352.PNG" />
+					<img longname="353.PNG" />
+					<img longname="354.PNG" />
+					<img longname="355.PNG" />
+					<img longname="356.PNG" />
+					<img longname="357.PNG" />
+					<img longname="360.PNG" />
+					<img longname="361.PNG" />
+					<img longname="362.PNG" />
+					<img longname="363.PNG" />
+					<img longname="364.PNG" />
+					<img longname="365.PNG" />
+					<img longname="366.PNG" />
+					<img longname="367.PNG" />
+					<img longname="368.PNG" />
+					<img longname="369.PNG" />
+					<img longname="370.PNG" />
+					<img longname="371.PNG" />
+					<img longname="372.PNG" />
+					<img longname="374.PNG" />
+					<img longname="375.PNG" />
+					<img longname="376.PNG" />
+					<img longname="378.PNG" />
+					<img longname="379.PNG" />
+					<img longname="380.PNG" />
+					<img longname="381.PNG" />
+					<img longname="382.PNG" />
+					<img longname="383.PNG" />
+					<img longname="385.PNG" />
+					<img longname="386.PNG" />
+					<img longname="387.PNG" />
+					<img longname="388.PNG" />
+					<img longname="389.PNG" />
+					<img longname="390.PNG" />
+					<img longname="391.PNG" />
+					<img longname="392.PNG" />
+					<img longname="398.PNG" />
+					<img longname="399.PNG" />
+					<img longname="400.PNG" />
+					<img longname="401.PNG" />
+					<img longname="402.PNG" />
+					<img longname="403.PNG" />
+					<img longname="404.PNG" />
+					<img longname="405.PNG" />
+					<img longname="406.PNG" />
+					<img longname="410.PNG" />
+					<img longname="411.PNG" />
+					<img longname="412.PNG" />
+					<img longname="413.PNG" />
+					<img longname="415.PNG" />
+					<img longname="416.PNG" />
+					<img longname="417.PNG" />
+					<img longname="418.PNG" />
+					<img longname="498.PNG" />
+					<img longname="499.PNG" />
+					<img longname="500.PNG" />
+					<img longname="505.PNG" />
+					<img longname="507.PNG" />
+					<img longname="508.PNG" />
+					<img longname="509.PNG" />
+					<img longname="510.PNG" />
+					<img longname="ERROR.PNG" />
+					<img longname="LEFT.PNG" />
+					<img longname="OK0.PNG" />
+					<img longname="OK1.PNG" />
+					<img longname="STOP1.PNG" />
+				</canvas>
+			</object>
+			<object caption="" X="11" Y="4" xoff="6" yoff="6" level="1" readonly="false" front="4259584" back="3548178" strong="false" italic="true" size="32" transparent="false" visvar="{web}.edt" vistype="BOOL" visneg="false" layer="1" Uid="4393">
+				<edit variable="{web}.naz" type="STRING[20]" intf="0" timf="ss.zzz" align="center" zero="false" prec="-1" size="20" global="true" border="true" width="430" height="45" tabindex="1" />
+			</object>
+			<object caption="" X="1" Y="14" xoff="0" yoff="1" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="false" visvar="{web}.frm" vistype="BOOL" visneg="false" layer="2" Uid="4394">
+				<iframe variable="{web}.htt" type="STRING" width="590" height="800" href="" noscroll="1"></iframe>
+			</object>
+			<object caption="" X="61" Y="141" xoff="5" yoff="5" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="true" visneg="false" layer="3" Uid="4395">
+				<submit width="95" height="30" border="false" tabindex="2" />
+			</object>
+			<object caption="" X="3" Y="4" xoff="4" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visvar="SYSTEM_S.S2_2" vistype="BOOL" visneg="true" Uid="4396">
+				<image optcap="" variable="SYSTEM_S.S2_2" type="BOOL" on="OK1.PNG" off="ERROR.PNG" />
+			</object>
+		</page>
+		<page caption="001_NHM" name="001_NHM.XML" background="" bgcolor="3548178" repeat="false" hidden="true" jsonmap="true" ajax="true" pause="100" level="1" ucid="1762670921" width="590" height="1199" Uid="4397">
+			<placeholders>
+				<alias name="web" type="NH_M" description="">aWeb.M[1]</alias>
+				<alias name="can" type="NH_CAN" description="">aWeb.A[1].can</alias>
+			</placeholders>
+			<object caption="" X="1" Y="1" xoff="0" yoff="0" level="1" readonly="false" front="0" back="0" strong="false" italic="false" size="13" transparent="true" visneg="false" clickxvar="{can}.touch.X" clickyvar="{can}.touch.Y" clickcol="{can}.touch.Color" Uid="4398">
+				<canvas width="590" height="1199" variable="{can}.bufHead" datavariable="{can}.buf">
+					<img longname="001.PNG" />
+					<img longname="002.PNG" />
+					<img longname="003.PNG" />
+					<img longname="004.PNG" />
+					<img longname="005.PNG" />
+					<img longname="006.PNG" />
+					<img longname="007.PNG" />
+					<img longname="008.PNG" />
+					<img longname="010.PNG" />
+					<img longname="011.PNG" />
+					<img longname="012.PNG" />
+					<img longname="013.PNG" />
+					<img longname="014.PNG" />
+					<img longname="015.PNG" />
+					<img longname="016.PNG" />
+					<img longname="017.PNG" />
+					<img longname="018.PNG" />
+					<img longname="019.PNG" />
+					<img longname="020.PNG" />
+					<img longname="021.PNG" />
+					<img longname="022.PNG" />
+					<img longname="023.PNG" />
+					<img longname="024.PNG" />
+					<img longname="025.PNG" />
+					<img longname="027.PNG" />
+					<img longname="028.PNG" />
+					<img longname="029.PNG" />
+					<img longname="030.PNG" />
+					<img longname="031.PNG" />
+					<img longname="032.PNG" />
+					<img longname="033.PNG" />
+					<img longname="034.PNG" />
+					<img longname="035.PNG" />
+					<img longname="036.PNG" />
+					<img longname="037.PNG" />
+					<img longname="038.PNG" />
+					<img longname="039.PNG" />
+					<img longname="040.PNG" />
+					<img longname="041.PNG" />
+					<img longname="042.PNG" />
+					<img longname="043.PNG" />
+					<img longname="044.PNG" />
+					<img longname="045.PNG" />
+					<img longname="046.PNG" />
+					<img longname="047.PNG" />
+					<img longname="048.PNG" />
+					<img longname="049.PNG" />
+					<img longname="050.PNG" />
+					<img longname="051.PNG" />
+					<img longname="052.PNG" />
+					<img longname="053.PNG" />
+					<img longname="054.PNG" />
+					<img longname="055.PNG" />
+					<img longname="056.PNG" />
+					<img longname="057.PNG" />
+					<img longname="058.PNG" />
+					<img longname="059.PNG" />
+					<img longname="060.PNG" />
+					<img longname="061.PNG" />
+					<img longname="062.PNG" />
+					<img longname="063.PNG" />
+					<img longname="064.PNG" />
+					<img longname="065.PNG" />
+					<img longname="066.PNG" />
+					<img longname="067.PNG" />
+					<img longname="068.PNG" />
+					<img longname="069.PNG" />
+					<img longname="070.PNG" />
+					<img longname="071.PNG" />
+					<img longname="072.PNG" />
+					<img longname="073.PNG" />
+					<img longname="074.PNG" />
+					<img longname="075.PNG" />
+					<img longname="076.PNG" />
+					<img longname="077.PNG" />
+					<img longname="078.PNG" />
+					<img longname="079.PNG" />
+					<img longname="080.PNG" />
+					<img longname="081.PNG" />
+					<img longname="082.PNG" />
+					<img longname="083.PNG" />
+					<img longname="084.PNG" />
+					<img longname="085.PNG" />
+					<img longname="086.PNG" />
+					<img longname="087.PNG" />
+					<img longname="088.PNG" />
+					<img longname="089.PNG" />
+					<img longname="090.PNG" />
+					<img longname="091.PNG" />
+					<img longname="092.PNG" />
+					<img longname="093.PNG" />
+					<img longname="095.PNG" />
+					<img longname="096.PNG" />
+					<img longname="097.PNG" />
+					<img longname="098.PNG" />
+					<img longname="099.PNG" />
+					<img longname="100.PNG" />
+					<img longname="101.PNG" />
+					<img longname="102.PNG" />
+					<img longname="103.PNG" />
+					<img longname="104.PNG" />
+					<img longname="105.PNG" />
+					<img longname="106.PNG" />
+					<img longname="107.PNG" />
+					<img longname="108.PNG" />
+					<img longname="109.PNG" />
+					<img longname="112.PNG" />
+					<img longname="113.PNG" />
+					<img longname="114.PNG" />
+					<img longname="115.PNG" />
+					<img longname="116.PNG" />
+					<img longname="117.PNG" />
+					<img longname="118.PNG" />
+					<img longname="119.PNG" />
+					<img longname="120.PNG" />
+					<img longname="121.PNG" />
+					<img longname="122.PNG" />
+					<img longname="123.PNG" />
+					<img longname="124.PNG" />
+					<img longname="125.PNG" />
+					<img longname="126.PNG" />
+					<img longname="127.PNG" />
+					<img longname="128.PNG" />
+					<img longname="129.PNG" />
+					<img longname="130.PNG" />
+					<img longname="131.PNG" />
+					<img longname="132.PNG" />
+					<img longname="133.PNG" />
+					<img longname="134.PNG" />
+					<img longname="135.PNG" />
+					<img longname="136.PNG" />
+					<img longname="137.PNG" />
+					<img longname="139.PNG" />
+					<img longname="140.PNG" />
+					<img longname="141.PNG" />
+					<img longname="142.PNG" />
+					<img longname="143.PNG" />
+					<img longname="144.PNG" />
+					<img longname="145.PNG" />
+					<img longname="146.PNG" />
+					<img longname="147.PNG" />
+					<img longname="148.PNG" />
+					<img longname="149.PNG" />
+					<img longname="151.PNG" />
+					<img longname="152.PNG" />
+					<img longname="153.PNG" />
+					<img longname="155.PNG" />
+					<img longname="156.PNG" />
+					<img longname="157.PNG" />
+					<img longname="158.PNG" />
+					<img longname="159.PNG" />
+					<img longname="160.PNG" />
+					<img longname="161.PNG" />
+					<img longname="162.PNG" />
+					<img longname="163.PNG" />
+					<img longname="164.PNG" />
+					<img longname="166.PNG" />
+					<img longname="170.PNG" />
+					<img longname="171.PNG" />
+					<img longname="172.PNG" />
+					<img longname="173.PNG" />
+					<img longname="174.PNG" />
+					<img longname="175.PNG" />
+					<img longname="176.PNG" />
+					<img longname="177.PNG" />
+					<img longname="178.PNG" />
+					<img longname="180.PNG" />
+					<img longname="182.PNG" />
+					<img longname="183.PNG" />
+					<img longname="184.PNG" />
+					<img longname="185.PNG" />
+					<img longname="186.PNG" />
+					<img longname="187.PNG" />
+					<img longname="190.PNG" />
+					<img longname="191.PNG" />
+					<img longname="192.PNG" />
+					<img longname="193.PNG" />
+					<img longname="194.PNG" />
+					<img longname="195.PNG" />
+					<img longname="196.PNG" />
+					<img longname="197.PNG" />
+					<img longname="198.PNG" />
+					<img longname="199.PNG" />
+					<img longname="200.PNG" />
+					<img longname="201.PNG" />
+					<img longname="202.PNG" />
+					<img longname="203.PNG" />
+					<img longname="204.PNG" />
+					<img longname="205.PNG" />
+					<img longname="206.PNG" />
+					<img longname="207.PNG" />
+					<img longname="208.PNG" />
+					<img longname="209.PNG" />
+					<img longname="210.PNG" />
+					<img longname="211.PNG" />
+					<img longname="212.PNG" />
+					<img longname="213.PNG" />
+					<img longname="214.PNG" />
+					<img longname="215.PNG" />
+					<img longname="216.PNG" />
+					<img longname="217.PNG" />
+					<img longname="218.PNG" />
+					<img longname="219.PNG" />
+					<img longname="220.PNG" />
+					<img longname="221.PNG" />
+					<img longname="222.PNG" />
+					<img longname="223.PNG" />
+					<img longname="224.PNG" />
+					<img longname="225.PNG" />
+					<img longname="226.PNG" />
+					<img longname="227.PNG" />
+					<img longname="228.PNG" />
+					<img longname="229.PNG" />
+					<img longname="230.PNG" />
+					<img longname="232.PNG" />
+					<img longname="233.PNG" />
+					<img longname="234.PNG" />
+					<img longname="235.PNG" />
+					<img longname="236.PNG" />
+					<img longname="237.PNG" />
+					<img longname="238.PNG" />
+					<img longname="252.PNG" />
+					<img longname="253.PNG" />
+					<img longname="254.PNG" />
+					<img longname="255.PNG" />
+					<img longname="256.PNG" />
+					<img longname="257.PNG" />
+					<img longname="258.PNG" />
+					<img longname="260.PNG" />
+					<img longname="261.PNG" />
+					<img longname="262.PNG" />
+					<img longname="263.PNG" />
+					<img longname="264.PNG" />
+					<img longname="265.PNG" />
+					<img longname="266.PNG" />
+					<img longname="269.PNG" />
+					<img longname="270.PNG" />
+					<img longname="271.PNG" />
+					<img longname="272.PNG" />
+					<img longname="273.PNG" />
+					<img longname="274.PNG" />
+					<img longname="275.PNG" />
+					<img longname="276.PNG" />
+					<img longname="277.PNG" />
+					<img longname="278.PNG" />
+					<img longname="279.PNG" />
+					<img longname="280.PNG" />
+					<img longname="281.PNG" />
+					<img longname="282.PNG" />
+					<img longname="283.PNG" />
+					<img longname="284.PNG" />
+					<img longname="285.PNG" />
+					<img longname="287.PNG" />
+					<img longname="289.PNG" />
+					<img longname="290.PNG" />
+					<img longname="291.PNG" />
+					<img longname="292.PNG" />
+					<img longname="293.PNG" />
+					<img longname="294.PNG" />
+					<img longname="295.PNG" />
+					<img longname="296.PNG" />
+					<img longname="297.PNG" />
+					<img longname="298.PNG" />
+					<img longname="300.PNG" />
+					<img longname="301.PNG" />
+					<img longname="302.PNG" />
+					<img longname="303.PNG" />
+					<img longname="310.PNG" />
+					<img longname="311.PNG" />
+					<img longname="312.PNG" />
+					<img longname="313.PNG" />
+					<img longname="314.PNG" />
+					<img longname="315.PNG" />
+					<img longname="316.PNG" />
+					<img longname="317.PNG" />
+					<img longname="318.PNG" />
+					<img longname="319.PNG" />
+					<img longname="320.PNG" />
+					<img longname="321.PNG" />
+					<img longname="322.PNG" />
+					<img longname="323.PNG" />
+					<img longname="324.PNG" />
+					<img longname="325.PNG" />
+					<img longname="326.PNG" />
+					<img longname="330.PNG" />
+					<img longname="331.PNG" />
+					<img longname="332.PNG" />
+					<img longname="333.PNG" />
+					<img longname="334.PNG" />
+					<img longname="335.PNG" />
+					<img longname="336.PNG" />
+					<img longname="339.PNG" />
+					<img longname="340.PNG" />
+					<img longname="341.PNG" />
+					<img longname="342.PNG" />
+					<img longname="343.PNG" />
+					<img longname="344.PNG" />
+					<img longname="345.PNG" />
+					<img longname="346.PNG" />
+					<img longname="347.PNG" />
+					<img longname="348.PNG" />
+					<img longname="351.PNG" />
+					<img longname="352.PNG" />
+					<img longname="353.PNG" />
+					<img longname="354.PNG" />
+					<img longname="355.PNG" />
+					<img longname="356.PNG" />
+					<img longname="357.PNG" />
+					<img longname="360.PNG" />
+					<img longname="361.PNG" />
+					<img longname="362.PNG" />
+					<img longname="363.PNG" />
+					<img longname="364.PNG" />
+					<img longname="365.PNG" />
+					<img longname="366.PNG" />
+					<img longname="367.PNG" />
+					<img longname="368.PNG" />
+					<img longname="369.PNG" />
+					<img longname="370.PNG" />
+					<img longname="371.PNG" />
+					<img longname="372.PNG" />
+					<img longname="374.PNG" />
+					<img longname="375.PNG" />
+					<img longname="376.PNG" />
+					<img longname="378.PNG" />
+					<img longname="379.PNG" />
+					<img longname="380.PNG" />
+					<img longname="381.PNG" />
+					<img longname="382.PNG" />
+					<img longname="383.PNG" />
+					<img longname="385.PNG" />
+					<img longname="386.PNG" />
+					<img longname="387.PNG" />
+					<img longname="388.PNG" />
+					<img longname="389.PNG" />
+					<img longname="390.PNG" />
+					<img longname="391.PNG" />
+					<img longname="392.PNG" />
+					<img longname="398.PNG" />
+					<img longname="399.PNG" />
+					<img longname="400.PNG" />
+					<img longname="401.PNG" />
+					<img longname="402.PNG" />
+					<img longname="403.PNG" />
+					<img longname="404.PNG" />
+					<img longname="405.PNG" />
+					<img longname="406.PNG" />
+					<img longname="410.PNG" />
+					<img longname="411.PNG" />
+					<img longname="412.PNG" />
+					<img longname="413.PNG" />
+					<img longname="415.PNG" />
+					<img longname="416.PNG" />
+					<img longname="417.PNG" />
+					<img longname="418.PNG" />
+					<img longname="498.PNG" />
+					<img longname="499.PNG" />
+					<img longname="500.PNG" />
+					<img longname="505.PNG" />
+					<img longname="507.PNG" />
+					<img longname="508.PNG" />
+					<img longname="509.PNG" />
+					<img longname="510.PNG" />
+					<img longname="ERROR.PNG" />
+					<img longname="LEFT.PNG" />
+					<img longname="OK0.PNG" />
+					<img longname="OK1.PNG" />
+					<img longname="STOP1.PNG" />
+				</canvas>
+			</object>
+			<object caption="" X="11" Y="5" xoff="6" yoff="3" level="1" readonly="false" front="4259584" back="3548178" strong="false" italic="true" size="32" transparent="false" visvar="{web}.edt" vistype="BOOL" visneg="false" layer="1" Uid="4399">
+				<edit variable="{web}.naz" type="STRING[20]" intf="0" timf="ss.zzz" align="center" zero="false" prec="-1" size="20" global="true" border="true" width="430" height="45" tabindex="1" />
+			</object>
+			<object caption="" X="1" Y="14" xoff="0" yoff="1" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="false" visvar="{web}.frm" vistype="BOOL" visneg="false" layer="2" Uid="4400">
+				<iframe variable="{web}.htt" type="STRING" width="590" height="800" href="" noscroll="1"></iframe>
+			</object>
+			<object caption="" X="61" Y="141" xoff="5" yoff="5" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="true" visneg="false" layer="3" Uid="4401">
+				<submit width="95" height="30" border="false" tabindex="2" />
+			</object>
+			<object caption="" X="3" Y="4" xoff="4" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visvar="SYSTEM_S.S2_2" vistype="BOOL" visneg="true" Uid="4402">
+				<image optcap="" variable="SYSTEM_S.S2_2" type="BOOL" on="OK1.PNG" off="ERROR.PNG" />
+			</object>
+			<object caption="" X="1" Y="11" xoff="5" yoff="1" level="0" readonly="false" front="65280" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4403">
+				<edit variable="aSys.mSec" type="UINT" intf="0" timf="" align="right" zero="false" prec="-1" size="3" global="true" border="false" width="47" height="26" tabindex="3" />
+			</object>
+			<object caption="" X="16" Y="11" xoff="0" yoff="1" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4404">
+				<edit variable="aWeb.nRf" type="USINT" intf="0" timf="" align="right" zero="false" prec="-1" size="3" global="true" border="false" width="47" height="26" tabindex="16" />
+			</object>
+			<object caption="" X="41" Y="11" xoff="0" yoff="1" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4405">
+				<edit variable="xx" type="REAL" intf="0" timf="" align="right" zero="false" prec="-1" size="5" global="true" border="false" width="73" height="26" tabindex="5" />
+			</object>
+			<object caption="" X="52" Y="11" xoff="7" yoff="1" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4406">
+				<edit variable="yy" type="REAL" intf="0" timf="" align="right" zero="false" prec="-1" size="5" global="true" border="false" width="73" height="26" tabindex="14" />
+			</object>
+			<object caption="" X="63" Y="11" xoff="4" yoff="1" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4407">
+				<edit variable="zz" type="REAL" intf="0" timf="" align="right" zero="false" prec="-1" size="5" global="true" border="false" width="73" height="26" tabindex="11" />
+			</object>
+			<object caption="" X="1" Y="1" xoff="5" yoff="5" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4408">
+				<edit variable="aSys.ini" type="USINT" intf="0" timf="" align="right" zero="false" prec="-1" size="3" global="true" border="false" width="47" height="26" tabindex="7" />
+			</object>
+			<object caption="" X="41" Y="1" xoff="0" yoff="5" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4409">
+				<edit variable="aa" type="REAL" intf="0" timf="" align="right" zero="false" prec="-1" size="5" global="true" border="false" width="73" height="26" tabindex="15" />
+			</object>
+			<object caption="" X="52" Y="1" xoff="2" yoff="5" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4410">
+				<edit variable="bb" type="REAL" intf="0" timf="" align="right" zero="false" prec="-1" size="5" global="true" border="false" width="73" height="26" tabindex="12" />
+			</object>
+			<object caption="" X="12" Y="1" xoff="2" yoff="5" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4411">
+				<edit variable="aWeb.A[1].tch.cm" type="USINT" intf="0" timf="" align="right" zero="false" prec="-1" size="3" global="true" border="false" width="47" height="26" tabindex="8" />
+			</object>
+			<object caption="" X="63" Y="1" xoff="4" yoff="5" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4412">
+				<edit variable="cc" type="REAL" intf="0" timf="" align="right" zero="false" prec="-1" size="5" global="true" border="false" width="73" height="26" tabindex="13" />
+			</object>
+			<object caption="" X="18" Y="1" xoff="4" yoff="5" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4413">
+				<edit variable="aWeb.A[1].tch.row" type="SINT" intf="0" timf="" align="right" zero="false" prec="-1" size="3" global="true" border="false" width="47" height="26" tabindex="9" />
+			</object>
+			<object caption="" X="24" Y="1" xoff="6" yoff="5" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4414">
+				<edit variable="aWeb.A[1].tch.obj" type="SINT" intf="0" timf="" align="right" zero="false" prec="-1" size="3" global="true" border="false" width="47" height="26" tabindex="10" />
+			</object>
+			<object caption="" X="26" Y="11" xoff="0" yoff="1" level="0" readonly="false" front="65535" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4415">
+				<edit variable="aSys.ErrPt" type="UINT" intf="0" timf="" align="right" zero="false" prec="-1" size="5" global="true" border="false" width="73" height="26" tabindex="6" />
+			</object>
+			<object caption="" X="8" Y="11" xoff="4" yoff="1" level="0" readonly="false" front="8454143" back="16777215" strong="true" italic="false" size="18" transparent="true" visvar="aWeb.M[1].set" vistype="BOOL" visneg="false" Uid="4416">
+				<edit variable="aSys.mSecMax" type="UINT" intf="0" timf="" align="right" zero="false" prec="-1" size="3" global="true" border="false" width="47" height="26" tabindex="4" />
+			</object>
+		</page>
+	</group>
+	<group caption="Frame-920" level="1" locked="0" altdim="true" notforid="true" width="585" height="800" dwMode="0" useIniScale="false" useMaxScale="false" userScale="false" iniScale="100" maxScale="100" Uid="4332">
+		<page notification="true" caption="Notify" name="NOTIFY.XML" background="" bgcolor="16777215" repeat="false" hidden="true" ajax="true" pause="1000" level="0" Uid="4333" ucid="1756934720" width="515" height="325">
+			<object caption="Povolit Notifikacie" X="25" Y="33" xoff="3" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="25" transparent="true" visneg="false" Uid="4334">
+				<label />
+			</object>
+			<object caption="stlacenim Zvonceka vpravo dolu" X="14" Y="37" xoff="1" yoff="7" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="25" transparent="true" visneg="false" Uid="4335">
+				<label />
+			</object>
+		</page>
+		<page caption="Page1" name="PAGE1.XML" background="" bgcolor="16777215" repeat="false" hidden="false" ajax="true" pause="1000" level="0" Uid="4383" ucid="1756933700" width="0" height="0"></page>
+		<placeholders>
+			<alias name="usr" type="" description="">yUsr</alias>
+		</placeholders>
+		<page caption="User-2" name="US2_NHF.XML" background="" bgcolor="3548178" repeat="false" hidden="true" ajax="true" pause="1000" level="1" ucid="1728810402" width="580" height="795" Uid="4336">
+			<object caption="Povolit zmenu Dashboardu" X="5" Y="24" xoff="3" yoff="6" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4337">
+				<label />
+			</object>
+			<object caption="Vždy prihlásit do Home " X="5" Y="16" xoff="3" yoff="0" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4338">
+				<label />
+			</object>
+			<object caption="" X="61" Y="15" xoff="0" yoff="3" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4339">
+				<image optcap="" variable="yUsr.cx.LoginHome" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="61" Y="24" xoff="0" yoff="1" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4340">
+				<image optcap="" variable="yUsr.cx.DshSet" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="Povolit konfigurátor" X="5" Y="33" xoff="3" yoff="4" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4341">
+				<label />
+			</object>
+			<object caption="" X="61" Y="32" xoff="0" yoff="7" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4342">
+				<image optcap="" variable="yUsr.cx.set" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="Povolené zóny [1=Home ... 11]" X="5" Y="42" xoff="3" yoff="2" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4343">
+				<label />
+			</object>
+			<object caption="" X="4" Y="47" xoff="6" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4344">
+				<image optcap="" variable="yUsr.cx.ZonList[1]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="10" Y="47" xoff="3" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4345">
+				<image optcap="" variable="yUsr.cx.ZonList[2]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="16" Y="47" xoff="0" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4346">
+				<image optcap="" variable="yUsr.cx.ZonList[3]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="21" Y="47" xoff="5" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4347">
+				<image optcap="" variable="yUsr.cx.ZonList[4]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="27" Y="47" xoff="2" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4348">
+				<image optcap="" variable="yUsr.cx.ZonList[5]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="32" Y="47" xoff="7" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4349">
+				<image optcap="" variable="yUsr.cx.ZonList[6]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="38" Y="47" xoff="4" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4350">
+				<image optcap="" variable="yUsr.cx.ZonList[7]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="44" Y="47" xoff="1" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4351">
+				<image optcap="" variable="yUsr.cx.ZonList[8]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="49" Y="47" xoff="6" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4352">
+				<image optcap="" variable="yUsr.cx.ZonList[9]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="55" Y="47" xoff="3" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4353">
+				<image optcap="" variable="yUsr.cx.ZonList[10]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="61" Y="47" xoff="0" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4354">
+				<image optcap="" variable="yUsr.cx.ZonList[11]" type="BOOL" on="OK1.PNG" off="OK0.PNG" />
+			</object>
+			<object caption="" X="66" Y="92" xoff="5" yoff="7" level="0" readonly="false" front="0" back="33023" strong="false" italic="false" size="10" transparent="true" visneg="false" Uid="4355">
+				<submit width="55" height="60" border="false" variable="yUsr.ok.ref" type="BOOL" value="1" tabindex="1" />
+			</object>
+		</page>
+		<page caption="User" name="USR_NHF.XML" background="" bgcolor="3548178" repeat="false" hidden="true" ajax="true" pause="1000" level="1" ucid="1728810383" width="580" height="795" Uid="4356">
+			<object caption="" X="5" Y="9" xoff="3" yoff="6" level="1" readonly="false" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4357">
+				<edit variable="{usr}.cf.Name" type="STRING[20]" intf="0" timf="" align="left" zero="false" prec="-1" size="20" global="true" border="false" width="508" height="52" tabindex="1" />
+			</object>
+			<object caption="Meno" X="5" Y="3" xoff="3" yoff="4" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4358">
+				<label />
+			</object>
+			<object caption="Oprávnenie" X="4" Y="18" xoff="6" yoff="4" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4359">
+				<label />
+			</object>
+			<object caption="" X="4" Y="23" xoff="6" yoff="4" level="1" readonly="false" front="3548178" back="8453888" strong="false" italic="true" size="30" transparent="false" visneg="false" Uid="4360">
+				<dropdown global="false" variable="yUsr.cx.UsrRight" type="USINT" size="15" border="false">
+					<option value="0">Návšteva</option>
+					<option value="1">Uzivatel</option>
+					<option value="2">Spravca</option>
+					<option value="3">Admin</option>
+				</dropdown>
+			</object>
+			<object caption="" X="43" Y="23" xoff="4" yoff="4" level="1" readonly="false" front="0" back="8453888" strong="false" italic="false" size="30" transparent="false" visneg="false" Uid="4361">
+				<dropdown global="false" variable="yUsr.cx.Sbj" type="USINT" size="10" border="false">
+					<option value="0">Vsetky</option>
+					<option value="5">Byt-1</option>
+					<option value="6">Byt-2</option>
+					<option value="7">Byt-3</option>
+				</dropdown>
+			</object>
+			<object caption="Subjekt" X="54" Y="18" xoff="1" yoff="4" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4362">
+				<label />
+			</object>
+			<object caption="Pin" X="5" Y="32" xoff="3" yoff="2" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4363">
+				<label />
+			</object>
+			<object caption="" X="5" Y="37" xoff="3" yoff="2" level="1" readonly="false" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4364">
+				<edit variable="{usr}.cx.KeyPas" type="STRING[6]" intf="0" timf="" align="left" zero="false" prec="-1" size="6" global="true" border="false" width="158" height="52" tabindex="10" />
+			</object>
+			<object caption="" X="30" Y="37" xoff="3" yoff="2" level="1" readonly="true" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4365">
+				<edit variable="{usr}.cx.RFID" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="12" global="true" border="false" width="308" height="52" tabindex="11" />
+			</object>
+			<object caption="RFID" X="30" Y="32" xoff="3" yoff="2" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4366">
+				<label />
+			</object>
+			<object caption="Telefon" X="5" Y="45" xoff="3" yoff="3" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4367">
+				<label />
+			</object>
+			<object caption="" X="5" Y="50" xoff="3" yoff="3" level="1" readonly="false" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4368">
+				<edit variable="{usr}.cx.Gsm" type="STRING[15]" intf="0" timf="" align="left" zero="false" prec="-1" size="15" global="true" border="false" width="383" height="52" tabindex="2" />
+			</object>
+			<object caption="Mail" X="5" Y="58" xoff="3" yoff="4" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4369">
+				<label />
+			</object>
+			<object caption="" X="5" Y="63" xoff="3" yoff="4" level="1" readonly="false" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4370">
+				<edit variable="{usr}.cx.mail" type="STRING[50]" intf="0" timf="" align="left" zero="false" prec="-1" size="20" global="true" border="false" width="508" height="52" tabindex="3" />
+			</object>
+			<object caption="Auto login z IP adresy" X="6" Y="72" xoff="0" yoff="2" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4371">
+				<label />
+			</object>
+			<object caption="" X="6" Y="77" xoff="0" yoff="2" level="1" readonly="false" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4372">
+				<edit variable="{usr}.cx.IP[1].IP" type="STRING[16]" intf="0" timf="" align="left" zero="false" prec="-1" size="15" global="true" border="false" width="383" height="52" tabindex="4" />
+			</object>
+			<object caption="" X="6" Y="84" xoff="0" yoff="6" level="1" readonly="false" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4373">
+				<edit variable="{usr}.cx.IP[2].IP" type="STRING[16]" intf="0" timf="" align="left" zero="false" prec="-1" size="15" global="true" border="false" width="383" height="52" tabindex="8" />
+			</object>
+			<object caption="" X="6" Y="92" xoff="0" yoff="2" level="1" readonly="false" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4374">
+				<edit variable="{usr}.cx.IP[3].IP" type="STRING[16]" intf="0" timf="" align="left" zero="false" prec="-1" size="15" global="true" border="false" width="383" height="52" tabindex="9" />
+			</object>
+			<object caption="" X="55" Y="77" xoff="3" yoff="2" level="1" readonly="false" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4375">
+				<edit variable="{usr}.cx.IP[1].y" type="REAL" intf="0" timf="" align="right" zero="false" prec="2" size="4" global="true" border="false" width="108" height="52" tabindex="5" />
+			</object>
+			<object caption="" X="55" Y="84" xoff="3" yoff="6" level="1" readonly="false" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4376">
+				<edit variable="{usr}.cx.IP[2].y" type="REAL" intf="0" timf="" align="right" zero="false" prec="2" size="4" global="true" border="false" width="108" height="52" tabindex="6" />
+			</object>
+			<object caption="" X="55" Y="92" xoff="3" yoff="2" level="1" readonly="false" front="0" back="8453888" strong="false" italic="true" size="40" transparent="false" visneg="false" Uid="4377">
+				<edit variable="{usr}.cx.IP[3].y" type="REAL" intf="0" timf="" align="right" zero="false" prec="2" size="4" global="true" border="false" width="108" height="52" tabindex="7" />
+			</object>
+			<object caption="Y-kor." X="57" Y="72" xoff="7" yoff="2" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4378">
+				<label />
+			</object>
+			<object caption="Povolit prihlasenie" X="29" Y="2" xoff="1" yoff="7" level="0" readonly="false" front="16777215" back="16777215" strong="false" italic="true" size="28" transparent="true" visneg="false" Uid="4379">
+				<label />
+			</object>
+			<object caption="" X="63" Y="2" xoff="4" yoff="2" level="1" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="4380">
+				<image optcap="" variable="yUsr.cf.blk" type="BOOL" on="STOP1.PNG" off="OK1.PNG" />
+			</object>
+			<object caption="" X="69" Y="95" xoff="1" yoff="3" level="0" readonly="false" front="0" back="33023" strong="false" italic="false" size="10" transparent="true" visneg="false" Uid="4381">
+				<submit width="35" height="40" border="false" variable="yUsr.ok.ref" type="BOOL" value="1" tabindex="12" />
+			</object>
+		</page>
+	</group>
+	<images>
+		<img name="001.PNG" type="PNG" height="86" width="121" longname="001" />
+		<img name="002.PNG" type="PNG" height="650" width="500" longname="002" />
+		<img name="003.PNG" type="PNG" height="256" width="256" longname="003" />
+		<img name="004.PNG" type="PNG" height="256" width="256" longname="004" />
+		<img name="005.PNG" type="PNG" height="256" width="256" longname="005" />
+		<img name="006.PNG" type="PNG" height="128" width="128" longname="006" />
+		<img name="007.PNG" type="PNG" height="128" width="128" longname="007" />
+		<img name="008.PNG" type="PNG" height="128" width="128" longname="008" />
+		<img name="010.PNG" type="PNG" height="128" width="128" longname="010" />
+		<img name="011.PNG" type="PNG" height="128" width="128" longname="011" />
+		<img name="012.PNG" type="PNG" height="128" width="128" longname="012" />
+		<img name="013.PNG" type="PNG" height="128" width="128" longname="013" />
+		<img name="014.PNG" type="PNG" height="128" width="128" longname="014" />
+		<img name="015.PNG" type="PNG" height="128" width="128" longname="015" />
+		<img name="016.PNG" type="PNG" height="128" width="128" longname="016" />
+		<img name="017.PNG" type="PNG" height="128" width="128" longname="017" />
+		<img name="018.PNG" type="PNG" height="128" width="128" longname="018" />
+		<img name="019.PNG" type="PNG" height="128" width="128" longname="019" />
+		<img name="020.PNG" type="PNG" height="128" width="128" longname="020" />
+		<img name="021.PNG" type="PNG" height="128" width="128" longname="021" />
+		<img name="022.PNG" type="PNG" height="128" width="128" longname="022" />
+		<img name="023.PNG" type="PNG" height="128" width="128" longname="023" />
+		<img name="024.PNG" type="PNG" height="128" width="128" longname="024" />
+		<img name="025.PNG" type="PNG" height="128" width="128" longname="025" />
+		<img name="027.PNG" type="PNG" height="128" width="128" longname="027" />
+		<img name="028.PNG" type="PNG" height="128" width="128" longname="028" />
+		<img name="029.PNG" type="PNG" height="128" width="128" longname="029" />
+		<img name="030.PNG" type="PNG" height="128" width="128" longname="030" />
+		<img name="031.PNG" type="PNG" height="128" width="128" longname="031" />
+		<img name="032.PNG" type="PNG" height="128" width="128" longname="032" />
+		<img name="033.PNG" type="PNG" height="128" width="128" longname="033" />
+		<img name="034.PNG" type="PNG" height="128" width="128" longname="034" />
+		<img name="035.PNG" type="PNG" height="128" width="128" longname="035" />
+		<img name="036.PNG" type="PNG" height="128" width="128" longname="036" />
+		<img name="037.PNG" type="PNG" height="128" width="128" longname="037" />
+		<img name="038.PNG" type="PNG" height="128" width="128" longname="038" />
+		<img name="039.PNG" type="PNG" height="128" width="128" longname="039" />
+		<img name="040.PNG" type="PNG" height="128" width="128" longname="040" />
+		<img name="041.PNG" type="PNG" height="128" width="128" longname="041" />
+		<img name="042.PNG" type="PNG" height="128" width="128" longname="042" />
+		<img name="043.PNG" type="PNG" height="128" width="128" longname="043" />
+		<img name="044.PNG" type="PNG" height="128" width="128" longname="044" />
+		<img name="045.PNG" type="PNG" height="128" width="128" longname="045" />
+		<img name="046.PNG" type="PNG" height="128" width="128" longname="046" />
+		<img name="047.PNG" type="PNG" height="128" width="128" longname="047" />
+		<img name="048.PNG" type="PNG" height="128" width="128" longname="048" />
+		<img name="049.PNG" type="PNG" height="128" width="128" longname="049" />
+		<img name="050.PNG" type="PNG" height="128" width="128" longname="050" />
+		<img name="051.PNG" type="PNG" height="128" width="128" longname="051" />
+		<img name="052.PNG" type="PNG" height="128" width="128" longname="052" />
+		<img name="053.PNG" type="PNG" height="128" width="128" longname="053" />
+		<img name="054.PNG" type="PNG" height="128" width="128" longname="054" />
+		<img name="055.PNG" type="PNG" height="128" width="128" longname="055" />
+		<img name="058.PNG" type="PNG" height="128" width="128" longname="058" />
+		<img name="059.PNG" type="PNG" height="128" width="128" longname="059" />
+		<img name="060.PNG" type="PNG" height="128" width="128" longname="060" />
+		<img name="061.PNG" type="PNG" height="128" width="128" longname="061" />
+		<img name="062.PNG" type="PNG" height="128" width="128" longname="062" />
+		<img name="063.PNG" type="PNG" height="128" width="128" longname="063" />
+		<img name="064.PNG" type="PNG" height="128" width="128" longname="064" />
+		<img name="066.PNG" type="PNG" height="128" width="128" longname="066" />
+		<img name="067.PNG" type="PNG" height="128" width="128" longname="067" />
+		<img name="068.PNG" type="PNG" height="128" width="128" longname="068" />
+		<img name="069.PNG" type="PNG" height="128" width="128" longname="069" />
+		<img name="070.PNG" type="PNG" height="128" width="128" longname="070" />
+		<img name="071.PNG" type="PNG" height="128" width="128" longname="071" />
+		<img name="072.PNG" type="PNG" height="128" width="128" longname="072" />
+		<img name="073.PNG" type="PNG" height="128" width="128" longname="073" />
+		<img name="074.PNG" type="PNG" height="128" width="128" longname="074" />
+		<img name="075.PNG" type="PNG" height="128" width="128" longname="075" />
+		<img name="076.PNG" type="PNG" height="128" width="128" longname="076" />
+		<img name="077.PNG" type="PNG" height="128" width="128" longname="077" />
+		<img name="078.PNG" type="PNG" height="128" width="128" longname="078" />
+		<img name="079.PNG" type="PNG" height="128" width="128" longname="079" />
+		<img name="080.PNG" type="PNG" height="128" width="128" longname="080" />
+		<img name="081.PNG" type="PNG" height="128" width="128" longname="081" />
+		<img name="082.PNG" type="PNG" height="128" width="128" longname="082" />
+		<img name="083.PNG" type="PNG" height="128" width="128" longname="083" />
+		<img name="084.PNG" type="PNG" height="128" width="128" longname="084" />
+		<img name="085.PNG" type="PNG" height="128" width="128" longname="085" />
+		<img name="086.PNG" type="PNG" height="128" width="128" longname="086" />
+		<img name="087.PNG" type="PNG" height="128" width="128" longname="087" />
+		<img name="088.PNG" type="PNG" height="128" width="128" longname="088" />
+		<img name="089.PNG" type="PNG" height="128" width="128" longname="089" />
+		<img name="090.PNG" type="PNG" height="128" width="128" longname="090" />
+		<img name="091.PNG" type="PNG" height="128" width="128" longname="091" />
+		<img name="092.PNG" type="PNG" height="128" width="128" longname="092" />
+		<img name="093.PNG" type="PNG" height="128" width="128" longname="093" />
+		<img name="095.PNG" type="PNG" height="128" width="128" longname="095" />
+		<img name="096.PNG" type="PNG" height="128" width="128" longname="096" />
+		<img name="097.PNG" type="PNG" height="128" width="128" longname="097" />
+		<img name="098.PNG" type="PNG" height="128" width="128" longname="098" />
+		<img name="099.PNG" type="PNG" height="128" width="128" longname="099" />
+		<img name="100.PNG" type="PNG" height="128" width="128" longname="100" />
+		<img name="101.PNG" type="PNG" height="128" width="128" longname="101" />
+		<img name="102.PNG" type="PNG" height="128" width="128" longname="102" />
+		<img name="103.PNG" type="PNG" height="128" width="128" longname="103" />
+		<img name="104.PNG" type="PNG" height="128" width="128" longname="104" />
+		<img name="105.PNG" type="PNG" height="128" width="128" longname="105" />
+		<img name="106.PNG" type="PNG" height="128" width="128" longname="106" />
+		<img name="107.PNG" type="PNG" height="128" width="128" longname="107" />
+		<img name="108.PNG" type="PNG" height="128" width="128" longname="108" />
+		<img name="109.PNG" type="PNG" height="128" width="128" longname="109" />
+		<img name="112.PNG" type="PNG" height="128" width="128" longname="112" />
+		<img name="113.PNG" type="PNG" height="128" width="128" longname="113" />
+		<img name="114.PNG" type="PNG" height="128" width="128" longname="114" />
+		<img name="115.PNG" type="PNG" height="128" width="128" longname="115" />
+		<img name="117.PNG" type="PNG" height="128" width="128" longname="117" />
+		<img name="118.PNG" type="PNG" height="128" width="128" longname="118" />
+		<img name="119.PNG" type="PNG" height="128" width="128" longname="119" />
+		<img name="120.PNG" type="PNG" height="128" width="128" longname="120" />
+		<img name="121.PNG" type="PNG" height="128" width="128" longname="121" />
+		<img name="122.PNG" type="PNG" height="128" width="128" longname="122" />
+		<img name="123.PNG" type="PNG" height="128" width="128" longname="123" />
+		<img name="124.PNG" type="PNG" height="128" width="128" longname="124" />
+		<img name="125.PNG" type="PNG" height="128" width="128" longname="125" />
+		<img name="126.PNG" type="PNG" height="630" width="630" longname="126" />
+		<img name="127.PNG" type="PNG" height="256" width="256" longname="127" />
+		<img name="128.PNG" type="PNG" height="256" width="256" longname="128" />
+		<img name="129.PNG" type="PNG" height="128" width="128" longname="129" />
+		<img name="130.PNG" type="PNG" height="128" width="128" longname="130" />
+		<img name="131.PNG" type="PNG" height="128" width="128" longname="131" />
+		<img name="132.PNG" type="PNG" height="128" width="128" longname="132" />
+		<img name="133.PNG" type="PNG" height="128" width="128" longname="133" />
+		<img name="134.PNG" type="PNG" height="128" width="128" longname="134" />
+		<img name="135.PNG" type="PNG" height="128" width="128" longname="135" />
+		<img name="136.PNG" type="PNG" height="128" width="128" longname="136" />
+		<img name="137.PNG" type="PNG" height="128" width="128" longname="137" />
+		<img name="139.PNG" type="PNG" height="128" width="128" longname="139" />
+		<img name="140.PNG" type="PNG" height="128" width="128" longname="140" />
+		<img name="141.PNG" type="PNG" height="128" width="128" longname="141" />
+		<img name="142.PNG" type="PNG" height="128" width="128" longname="142" />
+		<img name="143.PNG" type="PNG" height="128" width="128" longname="143" />
+		<img name="144.PNG" type="PNG" height="128" width="128" longname="144" />
+		<img name="145.PNG" type="PNG" height="128" width="128" longname="145" />
+		<img name="146.PNG" type="PNG" height="128" width="128" longname="146" />
+		<img name="147.PNG" type="PNG" height="128" width="128" longname="147" />
+		<img name="148.PNG" type="PNG" height="128" width="128" longname="148" />
+		<img name="151.PNG" type="PNG" height="128" width="128" longname="151" />
+		<img name="155.PNG" type="PNG" height="128" width="128" longname="155" />
+		<img name="156.PNG" type="PNG" height="128" width="128" longname="156" />
+		<img name="157.PNG" type="PNG" height="128" width="128" longname="157" />
+		<img name="158.PNG" type="PNG" height="128" width="128" longname="158" />
+		<img name="159.PNG" type="PNG" height="128" width="128" longname="159" />
+		<img name="160.PNG" type="PNG" height="128" width="128" longname="160" />
+		<img name="161.PNG" type="PNG" height="128" width="128" longname="161" />
+		<img name="162.PNG" type="PNG" height="128" width="128" longname="162" />
+		<img name="163.PNG" type="PNG" height="128" width="128" longname="163" />
+		<img name="164.PNG" type="PNG" height="128" width="128" longname="164" />
+		<img name="166.PNG" type="PNG" height="128" width="128" longname="166" />
+		<img name="170.PNG" type="PNG" height="128" width="128" longname="170" />
+		<img name="171.PNG" type="PNG" height="128" width="128" longname="171" />
+		<img name="172.PNG" type="PNG" height="128" width="128" longname="172" />
+		<img name="173.PNG" type="PNG" height="128" width="128" longname="173" />
+		<img name="174.PNG" type="PNG" height="128" width="128" longname="174" />
+		<img name="175.PNG" type="PNG" height="128" width="128" longname="175" />
+		<img name="176.PNG" type="PNG" height="128" width="128" longname="176" />
+		<img name="177.PNG" type="PNG" height="128" width="128" longname="177" />
+		<img name="180.PNG" type="PNG" height="128" width="128" longname="180" />
+		<img name="182.PNG" type="PNG" height="128" width="128" longname="182" />
+		<img name="183.PNG" type="PNG" height="128" width="128" longname="183" />
+		<img name="184.PNG" type="PNG" height="128" width="128" longname="184" />
+		<img name="185.PNG" type="PNG" height="128" width="128" longname="185" />
+		<img name="186.PNG" type="PNG" height="128" width="128" longname="186" />
+		<img name="187.PNG" type="PNG" height="128" width="128" longname="187" />
+		<img name="190.PNG" type="PNG" height="128" width="128" longname="190" />
+		<img name="191.PNG" type="PNG" height="128" width="128" longname="191" />
+		<img name="195.PNG" type="PNG" height="128" width="128" longname="195" />
+		<img name="196.PNG" type="PNG" height="128" width="128" longname="196" />
+		<img name="197.PNG" type="PNG" height="128" width="128" longname="197" />
+		<img name="198.PNG" type="PNG" height="128" width="128" longname="198" />
+		<img name="199.PNG" type="PNG" height="128" width="128" longname="199" />
+		<img name="201.PNG" type="PNG" height="128" width="128" longname="201" />
+		<img name="202.PNG" type="PNG" height="128" width="128" longname="202" />
+		<img name="203.PNG" type="PNG" height="128" width="128" longname="203" />
+		<img name="204.PNG" type="PNG" height="128" width="128" longname="204" />
+		<img name="205.PNG" type="PNG" height="128" width="128" longname="205" />
+		<img name="206.PNG" type="PNG" height="128" width="128" longname="206" />
+		<img name="207.PNG" type="PNG" height="128" width="128" longname="207" />
+		<img name="208.PNG" type="PNG" height="48" width="48" longname="208" />
+		<img name="209.PNG" type="PNG" height="48" width="48" longname="209" />
+		<img name="210.PNG" type="PNG" height="48" width="48" longname="210" />
+		<img name="211.PNG" type="PNG" height="48" width="48" longname="211" />
+		<img name="213.PNG" type="PNG" height="128" width="128" longname="213" />
+		<img name="214.PNG" type="PNG" height="128" width="128" longname="214" />
+		<img name="215.PNG" type="PNG" height="128" width="128" longname="215" />
+		<img name="216.PNG" type="PNG" height="128" width="128" longname="216" />
+		<img name="217.PNG" type="PNG" height="128" width="128" longname="217" />
+		<img name="218.PNG" type="PNG" height="128" width="128" longname="218" />
+		<img name="219.PNG" type="PNG" height="128" width="128" longname="219" />
+		<img name="220.PNG" type="PNG" height="128" width="128" longname="220" />
+		<img name="221.PNG" type="PNG" height="128" width="128" longname="221" />
+		<img name="222.PNG" type="PNG" height="128" width="128" longname="222" />
+		<img name="223.PNG" type="PNG" height="128" width="128" longname="223" />
+		<img name="224.PNG" type="PNG" height="128" width="128" longname="224" />
+		<img name="225.PNG" type="PNG" height="128" width="128" longname="225" />
+		<img name="226.PNG" type="PNG" height="128" width="128" longname="226" />
+		<img name="227.PNG" type="PNG" height="128" width="128" longname="227" />
+		<img name="228.PNG" type="PNG" height="128" width="128" longname="228" />
+		<img name="229.PNG" type="PNG" height="128" width="128" longname="229" />
+		<img name="230.PNG" type="PNG" height="128" width="128" longname="230" />
+		<img name="232.PNG" type="PNG" height="128" width="128" longname="232" />
+		<img name="233.PNG" type="PNG" height="128" width="128" longname="233" />
+		<img name="253.PNG" type="PNG" height="128" width="128" longname="253" />
+		<img name="254.PNG" type="PNG" height="255" width="255" longname="254" />
+		<img name="255.PNG" type="PNG" height="256" width="256" longname="255" />
+		<img name="256.PNG" type="PNG" height="128" width="128" longname="256" />
+		<img name="257.PNG" type="PNG" height="128" width="128" longname="257" />
+		<img name="258.PNG" type="PNG" height="128" width="128" longname="258" />
+		<img name="260.PNG" type="PNG" height="128" width="128" longname="260" />
+		<img name="261.PNG" type="PNG" height="128" width="128" longname="261" />
+		<img name="262.PNG" type="PNG" height="128" width="128" longname="262" />
+		<img name="263.PNG" type="PNG" height="128" width="128" longname="263" />
+		<img name="269.PNG" type="PNG" height="128" width="128" longname="269" />
+		<img name="270.PNG" type="PNG" height="128" width="128" longname="270" />
+		<img name="271.PNG" type="PNG" height="128" width="128" longname="271" />
+		<img name="272.PNG" type="PNG" height="128" width="128" longname="272" />
+		<img name="273.PNG" type="PNG" height="128" width="128" longname="273" />
+		<img name="274.PNG" type="PNG" height="128" width="128" longname="274" />
+		<img name="275.PNG" type="PNG" height="128" width="128" longname="275" />
+		<img name="276.PNG" type="PNG" height="128" width="128" longname="276" />
+		<img name="277.PNG" type="PNG" height="128" width="128" longname="277" />
+		<img name="278.PNG" type="PNG" height="128" width="128" longname="278" />
+		<img name="279.PNG" type="PNG" height="128" width="128" longname="279" />
+		<img name="280.PNG" type="PNG" height="128" width="128" longname="280" />
+		<img name="281.PNG" type="PNG" height="128" width="128" longname="281" />
+		<img name="282.PNG" type="PNG" height="128" width="128" longname="282" />
+		<img name="283.PNG" type="PNG" height="128" width="128" longname="283" />
+		<img name="284.PNG" type="PNG" height="128" width="128" longname="284" />
+		<img name="294.PNG" type="PNG" height="128" width="128" longname="294" />
+		<img name="295.PNG" type="PNG" height="128" width="128" longname="295" />
+		<img name="296.PNG" type="PNG" height="128" width="128" longname="296" />
+		<img name="297.PNG" type="PNG" height="128" width="128" longname="297" />
+		<img name="298.PNG" type="PNG" height="128" width="128" longname="298" />
+		<img name="300.PNG" type="PNG" height="255" width="255" longname="300" />
+		<img name="301.PNG" type="PNG" height="128" width="128" longname="301" />
+		<img name="302.PNG" type="PNG" height="128" width="128" longname="302" />
+		<img name="303.PNG" type="PNG" height="128" width="128" longname="303" />
+		<img name="310.PNG" type="PNG" height="128" width="128" longname="310" />
+		<img name="311.PNG" type="PNG" height="128" width="128" longname="311" />
+		<img name="398.PNG" type="PNG" height="128" width="128" longname="398" />
+		<img name="399.PNG" type="PNG" height="128" width="128" longname="399" />
+		<img name="400.PNG" type="PNG" height="128" width="128" longname="400" />
+		<img name="401.PNG" type="PNG" height="128" width="128" longname="401" />
+		<img name="402.PNG" type="PNG" height="128" width="128" longname="402" />
+		<img name="403.PNG" type="PNG" height="128" width="128" longname="403" />
+		<img name="404.PNG" type="PNG" height="128" width="128" longname="404" />
+		<img name="405.PNG" type="PNG" height="128" width="128" longname="405" />
+		<img name="406.PNG" type="PNG" height="128" width="128" longname="406" />
+		<img name="500.PNG" type="PNG" height="128" width="128" longname="500" />
+		<img name="505.PNG" type="PNG" height="128" width="128" longname="505" />
+		<img name="507.PNG" type="PNG" height="128" width="128" longname="507" />
+		<img name="508.PNG" type="PNG" height="128" width="128" longname="508" />
+		<img name="509.PNG" type="PNG" height="128" width="128" longname="509" />
+		<img name="510.PNG" type="PNG" height="128" width="128" longname="510" />
+		<img name="ERROR.PNG" type="PNG" height="48" width="48" longname="ERROR" />
+		<img name="LEFT.PNG" type="PNG" height="2" width="20" longname="LEFT" />
+		<img name="OK0.PNG" type="PNG" height="48" width="48" longname="OK0" />
+		<img name="OK1.PNG" type="PNG" height="48" width="48" longname="OK1" />
+		<img name="STOP1.PNG" type="PNG" height="48" width="48" longname="STOP1" />
+		<img name="056.PNG" type="PNG" height="128" width="128" longname="027" />
+		<img name="057.PNG" type="PNG" height="128" width="128" longname="028" />
+		<img name="065.PNG" type="PNG" height="128" width="128" longname="029" />
+		<img name="116.PNG" type="PNG" height="128" width="128" longname="039" />
+		<img name="149.PNG" type="PNG" height="128" width="128" longname="040" />
+		<img name="152.PNG" type="PNG" height="128" width="128" longname="057" />
+		<img name="153.PNG" type="PNG" height="128" width="128" longname="058" />
+		<img name="178.PNG" type="PNG" height="128" width="128" longname="076" />
+		<img name="192.PNG" type="PNG" height="128" width="128" longname="088" />
+		<img name="193.PNG" type="PNG" height="128" width="128" longname="089" />
+		<img name="194.PNG" type="PNG" height="128" width="128" longname="090" />
+		<img name="200.PNG" type="PNG" height="128" width="128" longname="091" />
+		<img name="212.PNG" type="PNG" height="128" width="128" longname="114" />
+		<img name="234.PNG" type="PNG" height="128" width="128" longname="115" />
+		<img name="235.PNG" type="PNG" height="128" width="128" longname="116" />
+		<img name="236.PNG" type="PNG" height="128" width="128" longname="119" />
+		<img name="237.PNG" type="PNG" height="128" width="128" longname="149" />
+		<img name="238.PNG" type="PNG" height="128" width="128" longname="152" />
+		<img name="252.PNG" type="PNG" height="48" width="48" longname="212" />
+		<img name="264.PNG" type="PNG" height="128" width="128" longname="221" />
+		<img name="265.PNG" type="PNG" height="128" width="128" longname="223" />
+		<img name="266.PNG" type="PNG" height="128" width="128" longname="226" />
+		<img name="285.PNG" type="PNG" height="128" width="128" longname="233" />
+		<img name="287.PNG" type="PNG" height="128" width="128" longname="235" />
+		<img name="289.PNG" type="PNG" height="128" width="128" longname="263" />
+		<img name="290.PNG" type="PNG" height="128" width="128" longname="264" />
+		<img name="291.PNG" type="PNG" height="128" width="128" longname="265" />
+		<img name="292.PNG" type="PNG" height="128" width="128" longname="266" />
+		<img name="293.PNG" type="PNG" height="128" width="128" longname="270" />
+		<img name="312.PNG" type="PNG" height="128" width="128" longname="287" />
+		<img name="313.PNG" type="PNG" height="128" width="128" longname="289" />
+		<img name="314.PNG" type="PNG" height="128" width="128" longname="290" />
+		<img name="315.PNG" type="PNG" height="128" width="128" longname="291" />
+		<img name="316.PNG" type="PNG" height="128" width="128" longname="292" />
+		<img name="317.PNG" type="PNG" height="128" width="128" longname="293" />
+		<img name="318.PNG" type="PNG" height="128" width="128" longname="310" />
+		<img name="319.PNG" type="PNG" height="128" width="128" longname="312" />
+		<img name="320.PNG" type="PNG" height="128" width="128" longname="313" />
+		<img name="321.PNG" type="PNG" height="128" width="128" longname="314" />
+		<img name="322.PNG" type="PNG" height="128" width="128" longname="315" />
+		<img name="323.PNG" type="PNG" height="128" width="128" longname="316" />
+		<img name="324.PNG" type="PNG" height="128" width="128" longname="317" />
+		<img name="325.PNG" type="PNG" height="128" width="128" longname="318" />
+		<img name="326.PNG" type="PNG" height="128" width="128" longname="319" />
+		<img name="330.PNG" type="PNG" height="128" width="128" longname="323" />
+		<img name="331.PNG" type="PNG" height="128" width="128" longname="324" />
+		<img name="332.PNG" type="PNG" height="128" width="128" longname="325" />
+		<img name="333.PNG" type="PNG" height="128" width="128" longname="326" />
+		<img name="334.PNG" type="PNG" height="128" width="128" longname="330" />
+		<img name="335.PNG" type="PNG" height="128" width="128" longname="331" />
+		<img name="336.PNG" type="PNG" height="128" width="128" longname="332" />
+		<img name="339.PNG" type="PNG" height="128" width="128" longname="335" />
+		<img name="340.PNG" type="PNG" height="128" width="128" longname="336" />
+		<img name="341.PNG" type="PNG" height="301" width="301" longname="339" />
+		<img name="342.PNG" type="PNG" height="128" width="128" longname="340" />
+		<img name="343.PNG" type="PNG" height="128" width="128" longname="341" />
+		<img name="344.PNG" type="PNG" height="128" width="128" longname="342" />
+		<img name="345.PNG" type="PNG" height="128" width="128" longname="343" />
+		<img name="346.PNG" type="PNG" height="128" width="128" longname="344" />
+		<img name="347.PNG" type="PNG" height="128" width="128" longname="345" />
+		<img name="348.PNG" type="PNG" height="128" width="128" longname="346" />
+		<img name="351.PNG" type="PNG" height="128" width="128" longname="351" />
+		<img name="352.PNG" type="PNG" height="128" width="128" longname="352" />
+		<img name="353.PNG" type="PNG" height="128" width="128" longname="353" />
+		<img name="354.PNG" type="PNG" height="128" width="128" longname="354" />
+		<img name="355.PNG" type="PNG" height="128" width="128" longname="355" />
+		<img name="356.PNG" type="PNG" height="128" width="128" longname="356" />
+		<img name="357.PNG" type="PNG" height="128" width="128" longname="357" />
+		<img name="360.PNG" type="PNG" height="128" width="128" longname="360" />
+		<img name="361.PNG" type="PNG" height="128" width="128" longname="361" />
+		<img name="362.PNG" type="PNG" height="128" width="128" longname="362" />
+		<img name="363.PNG" type="PNG" height="128" width="128" longname="363" />
+		<img name="364.PNG" type="PNG" height="128" width="128" longname="364" />
+		<img name="365.PNG" type="PNG" height="128" width="128" longname="365" />
+		<img name="366.PNG" type="PNG" height="128" width="128" longname="366" />
+		<img name="367.PNG" type="PNG" height="128" width="128" longname="367" />
+		<img name="368.PNG" type="PNG" height="128" width="128" longname="368" />
+		<img name="369.PNG" type="PNG" height="128" width="128" longname="369" />
+		<img name="370.PNG" type="PNG" height="128" width="128" longname="370" />
+		<img name="371.PNG" type="PNG" height="48" width="48" longname="371" />
+		<img name="372.PNG" type="PNG" height="128" width="128" longname="372" />
+		<img name="374.PNG" type="PNG" height="128" width="128" longname="374" />
+		<img name="375.PNG" type="PNG" height="128" width="128" longname="375" />
+		<img name="376.PNG" type="PNG" height="128" width="128" longname="376" />
+		<img name="378.PNG" type="PNG" height="257" width="257" longname="378" />
+		<img name="379.PNG" type="PNG" height="200" width="200" longname="379" />
+		<img name="380.PNG" type="PNG" height="256" width="256" longname="380" />
+		<img name="381.PNG" type="PNG" height="256" width="256" longname="381" />
+		<img name="382.PNG" type="PNG" height="256" width="256" longname="382" />
+		<img name="383.PNG" type="PNG" height="256" width="256" longname="383" />
+		<img name="385.PNG" type="PNG" height="128" width="128" longname="385" />
+		<img name="386.PNG" type="PNG" height="128" width="128" longname="386" />
+		<img name="387.PNG" type="PNG" height="128" width="128" longname="387" />
+		<img name="388.PNG" type="PNG" height="128" width="128" longname="388" />
+		<img name="389.PNG" type="PNG" height="128" width="128" longname="389" />
+		<img name="390.PNG" type="PNG" height="128" width="128" longname="390" />
+		<img name="391.PNG" type="PNG" height="128" width="128" longname="391" />
+		<img name="392.PNG" type="PNG" height="128" width="128" longname="392" />
+		<img name="410.PNG" type="PNG" height="128" width="128" longname="410" />
+		<img name="411.PNG" type="PNG" height="129" width="129" longname="411" />
+		<img name="412.PNG" type="PNG" height="129" width="129" longname="412" />
+		<img name="413.PNG" type="PNG" height="129" width="129" longname="413" />
+		<img name="415.PNG" type="PNG" height="128" width="128" longname="415" />
+		<img name="416.PNG" type="PNG" height="128" width="128" longname="416" />
+		<img name="417.PNG" type="PNG" height="128" width="128" longname="417" />
+		<img name="418.PNG" type="PNG" height="128" width="128" longname="418" />
+		<img name="498.PNG" type="PNG" height="128" width="128" longname="498" />
+		<img name="499.PNG" type="PNG" height="128" width="128" longname="499" />
+	</images>
+	<Languages>
+		<Language Code="5" Editor="1" />
+	</Languages>
+	<Layers active="0" pasteMode="0">
+		<layer visible="1" frozen="0" name="Canvas" />
+		<layer visible="1" frozen="0" name="Nazov" />
+		<layer visible="1" frozen="0" name="http" />
+		<layer visible="1" frozen="0" name="tlacitko odeslani" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+	</Layers>
+	<security crypt="0" count="10">
+		<user level="5" name="nopass" pass="9121B04EDA66" />
+		<user level="9" name="user" pass="8A16B03D" />
+		<user level="9" name="admin" pass="9E39CB61F2" />
+		<user level="-1" name="3" pass="CC" />
+		<user level="-1" name="4" pass="CB" />
+		<user level="-1" name="5" pass="CA" />
+		<user level="-1" name="6" pass="C9" />
+		<user level="-1" name="7" pass="C8" />
+		<user level="-1" name="8" pass="C7" />
+		<user level="-1" name="9" pass="C6" />
+	</security>
+	<autologin count="10">
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+	</autologin>
+	<tecoapi count="10">
+		<api level="0" name="NhApi" pass="B14806952B" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+	</tecoapi>
+</web>

@@ -1,0 +1,25 @@
+;Upozornení 
+;Soubor je automaticky regenerován a všechny rucní modifikace budou ztracené. 
+;**********************************************************************
+;**********************************************************************
+;**********************************************************************
+#def _TESTLIB	0
+#def _OSCATBASICLIB_333A	1
+#if _ProgName_ == _TESTLIB
+  #def _ProgName__TESTLIB 1
+#else
+  #def _ProgName__TESTLIB 0
+#endif
+
+#if _ProgName_ == _OSCATBASICLIB_333A
+  #def _ProgName__OSCATBASICLIB_333A 1
+#else
+  #def _ProgName__OSCATBASICLIB_333A 0
+#endif
+
+
+;**********************************************************************
+;Generováno programem MOSAIC 
+;© 2001-2019 Teco a.s. 
+;Verze : 2.2 
+;DLL Verze : 25.1.6.21 

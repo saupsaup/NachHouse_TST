@@ -1,0 +1,16 @@
+[Watch2Bank]
+Version="xPRO","4.3.00"
+contentversion=1
+[/Watch2Bank]
+
+[Watch2Bank0]
+bankname="Banka1"
+shortcut=1
+watchcnt=2
+bindfile=""
+watchobjEx0=0,"errCnt|"
+watchobj0="errCnt",1,0,0,""
+watchobjEx1=0,"info|"
+watchobj1="info",1,0,0,""
+[/Watch2Bank0]
+

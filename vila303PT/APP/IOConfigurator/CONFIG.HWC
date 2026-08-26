@@ -1,0 +1,1285 @@
+;Upozornení
+;Soubor je automaticky regenerován a všechny rucní modifikace budou ztracené.
+
+#struct _TTS_UNIINIT
+        UINT code,
+        UINT mode,
+        USINT chMod,
+        USINT adr,
+        USINT speed,
+        USINT tor,
+        USINT tot,
+        USINT rez1,
+        USINT rez11,
+        USINT interface,
+        WORD sysMap,
+        USINT[10] rez2,
+        UINT lendi,
+        UINT lendo,
+        UDINT idati,
+        UDINT idato,
+        USINT lnc,
+        USINT msc,
+        USINT opd,
+        USINT opm,
+        USINT prot,
+        USINT sdl,
+        USINT edl,
+        USINT edh,
+        USINT acl,
+        USINT ach,
+        UINT pad,
+        UINT pas,
+        UINT chs,
+        UINT plm,
+        UINT mlm
+
+#struct TModulE2
+        USINT version,
+        UDINT hwCode,
+        DWORD busId,
+        UDINT address,
+        UDINT port,
+        UINT lenInputs,
+        UINT lenOutputs,
+        DINT offsetInputs,
+        DINT offsetOutputs,
+        INT initTable,
+        INT driverInitTable
+
+#struct _TTS_Head
+        UINT ModulID,
+        BYTE Stat0,
+        BYTE Stat1
+
+#struct _TTS_EnbCNTI
+        BYTE ESCNT,
+        BYTE ECNT,
+        BYTE ECNTB
+
+#struct _TTS_EnbCNTO
+        BYTE ECCNT,
+        BYTE ESET
+
+#struct _TTS_SPE4
+        BOOL SPE0,
+        BOOL SPE1,
+        BOOL SPE2,
+        BOOL SPE3,
+        BOOL dummy4,
+        BOOL dummy5,
+        BOOL dummy6,
+        BOOL dummy7
+
+#struct _TTS_SPP4
+        BOOL SPP0,
+        BOOL SPP1,
+        BOOL SPP2,
+        BOOL SPP3,
+        BOOL dummy4,
+        BOOL dummy5,
+        BOOL dummy6,
+        BOOL dummy7
+
+#struct T_CFGCNT
+        BOOL dummy0,
+        BOOL dummy1,
+        BOOL PNI,
+        BOOL PMD,
+        BOOL dummy4,
+        BOOL dummy5,
+        BOOL dummy6,
+        BOOL dummy7
+
+#struct _TTS_IniCNT
+        BYTE MODCNT,
+        T_CFGCNT CFGCNT
+
+#struct _TTS_IR1501
+        _TTS_Head Head,
+        USINT EDI,
+        USINT EDIP,
+        _TTS_EnbCNTI[2] ECNTI,
+        USINT EDO,
+        USINT Erez,
+        _TTS_EnbCNTO[2] ECNTO,
+        _TTS_SPE4 SPE,
+        _TTS_SPP4 SPP,
+        _TTS_IniCNT[2] SetCNT
+
+#struct _TCIBHeader_
+        UINT code,
+        WORD mode,
+        WORD fadr,
+        USINT ladr,
+        USINT ndev
+
+#struct _TCIBDevice
+        BYTE typdev,
+        BYTE bloko,
+        UINT leindev,
+        UINT leoutdev
+
+#struct TCIB_3357_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[5] Dev,
+        INT thermOffset,
+        BYTE ai1type,
+        BYTE ai2type,
+        USINT thermTau,
+        USINT ai1tau,
+        USINT ai2tau,
+        USINT tPress
+
+#struct TCIB_3361_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[6] Dev,
+        BYTE ezs,
+        USINT tPress,
+        INT thermOffset,
+        BYTE ai1type,
+        BYTE ai2type,
+        USINT ai1tau,
+        USINT ai2tau,
+        USINT co2tau
+
+#struct TCIB_3356_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[5] Dev,
+        INT thermOffset,
+        BYTE ai1type,
+        BYTE ai2type,
+        USINT thermTau,
+        USINT ai1tau,
+        USINT ai2tau,
+        USINT tPress
+
+#struct TCIB_3367_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[2] Dev,
+        BYTE manDis
+
+#struct TCIB_3303_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[2] Dev,
+        BYTE manDis
+
+#struct TCIB_3368_init
+        _TCIBHeader_ Header,
+        _TCIBDevice Dev1,
+        _TCIBDevice Dev2,
+        _TCIBDevice Dev3,
+        BYTE manDis,
+        USINT reversTime
+
+#struct TCIB_3306_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[6] Dev,
+        BYTE ezsenb1,
+        BYTE ezsenb2,
+        BYTE ezsenb3,
+        BYTE ezstype1,
+        BYTE ezstype2,
+        BYTE ezstype3,
+        USINT tPress,
+        BYTE ai1type,
+        BYTE ai2type,
+        BYTE ai3type,
+        BYTE ai4type,
+        USINT ai1tau,
+        USINT ai2tau,
+        USINT ai3tau,
+        USINT ai4tau
+
+#struct TCIB_3326_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[5] Dev,
+        BYTE ezsenb,
+        BYTE ezstype,
+        BYTE ai1_4type,
+        BYTE ai5type,
+        USINT ai1_4tau,
+        USINT ai5tau
+
+#struct TCIB_3347_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[5] Dev,
+        BYTE ai1type,
+        BYTE ai2type,
+        USINT ai1tau,
+        USINT ai2tau
+
+#struct _TTS_EnbCHAI
+        BYTE ESTAT,
+        BYTE EFS,
+        BYTE EENG,
+        BYTE EPCT
+
+#struct _TTS_IniCHAI
+        BYTE Mode,
+        USINT Filter,
+        REAL Offset,
+        REAL Gain
+
+#struct _TTS_IR2553
+        _TTS_Head Head,
+        USINT NUMVARI,
+        USINT NUMVARO,
+        USINT EDIS,
+        USINT EDIP,
+        _TTS_EnbCHAI[4] EAI,
+        USINT ESTPW,
+        USINT EUSRC,
+        USINT ESACU,
+        USINT EIACU,
+        USINT EDOS,
+        _TTS_SPE4 SPE,
+        _TTS_SPP4 SPP,
+        _TTS_IniCHAI[4] SetAI
+
+#struct _TTS_OI2872
+        _TTS_Head Head,
+        USINT NUMVARI,
+        USINT NUMVARO,
+        BYTE EKEY,
+        BYTE EDISP0,
+        BYTE EDISP1,
+        BYTE EDISP2,
+        BYTE EDISP3,
+        BYTE ECDPG,
+        UINT CDPG,
+        USINT AREP,
+        BYTE MARK,
+        UINT LIGHTTIME,
+        DWORD MODE
+
+;CH5 - Inicializacní tabulka UNI režimu kanálu
+#table _TTS_UNIINIT r16_p2_Table_UNI_CH5 = 197,
+                                           2,
+                                           5,
+                                           0,
+                                           12,
+                                           4,
+                                           4,
+                                           0,
+                                           0,
+                                           0,
+                                           $0105,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           254,
+                                           54,
+                                           __offset32(r16_p2_UNI_CH5_IN),
+                                           __offset32(r16_p2_UNI_CH5_OUT),
+                                           0,
+                                           128,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0,
+                                           0
+
+;CH5 - Inicializacni tabulka driveru
+#table BYTE r16_p2_DriverInit_CH5 = $01,3,'CH5',
+                                    $02,12,'Obecný kanál',
+                                    $00
+
+;IR-1501 - Initialization table of IR-1501 module
+#table _TTS_IR1501 r4128_p23_Table = 1501,$00,$00,
+                                     128,
+                                     0,
+                                     $00,$00,$00,
+                                     $00,$00,$00,
+                                     128,
+                                     0,
+                                     $00,$00,
+                                     $00,$00,
+                                     0,0,0,0,0,0,0,0,
+                                     1,1,1,1,0,0,0,0,
+                                     $00,0,0,1,1,0,0,0,0,
+                                     $00,0,0,0,0,0,0,0,0
+
+;IR-1501 - Inicializacni tabulka driveru
+#table BYTE r4128_p23_DriverInit = $01,7,'IR-1501',
+                                   $02,5,'IO.10',
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p0_C_WS_0400R_Lo_init = 3357,$0000,$356E,0,5,
+                                                    $83,$00,24,8,
+                                                    $00,$00,8,0,
+                                                    $80,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    0,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p0_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                  $02,8,'WS.106.2',
+                                  $03,5,$03,$41,$93,$44,$44,
+                                  $04,1,$01,
+                                  $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p1_C_WS_0400R_Lo_init = 3357,$0000,$357B,1,5,
+                                                    $83,$00,24,8,
+                                                    $00,$00,8,0,
+                                                    $80,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    0,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p1_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                  $02,6,'WS.206',
+                                  $03,5,$03,$41,$93,$44,$44,
+                                  $04,1,$01,
+                                  $00
+
+;C-RQ-0600
+#table TCIB_3361_init r4144_p2_C_RQ_0600_init = 3361,$0000,$5EF0,2,6,
+                                                $80,$00,16,0,
+                                                $00,$00,16,0,
+                                                $83,$00,16,8,
+                                                $80,$00,32,0,
+                                                $00,$00,16,0,
+                                                $00,$00,16,0,
+                                                $00,
+                                                70,
+                                                0,
+                                                $22,
+                                                $22,
+                                                0,
+                                                0,
+                                                0
+
+;C-RQ-0600 - Inicializacni tabulka driveru
+#table BYTE r4144_p2_DriverInit = $01,9,'C-RQ-0600',
+                                  $02,6,'RQ6.01',
+                                  $03,7,$02,$42,$84,$93,$94,$44,$44,
+                                  $04,1,$01,
+                                  $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r4144_p3_C_WS_0200R_Lo_init = 3356,$0000,$9A7D,3,5,
+                                                    $83,$00,24,8,
+                                                    $00,$00,8,0,
+                                                    $80,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    0,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p3_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                  $02,8,'WS.106.1',
+                                  $03,5,$03,$41,$93,$44,$44,
+                                  $04,1,$01,
+                                  $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p4_C_WS_0400R_Lo_init = 3357,$0000,$9B1B,4,5,
+                                                    $83,$00,24,8,
+                                                    $00,$00,8,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    0,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p4_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                  $02,8,'WS.001.P',
+                                  $03,5,$03,$41,$44,$44,$44,
+                                  $04,1,$01,
+                                  $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p5_C_WS_0400R_Lo_init = 3357,$0000,$9B1C,5,5,
+                                                    $83,$00,24,8,
+                                                    $00,$00,8,0,
+                                                    $80,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    0,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p5_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                  $02,8,'WS.001.L',
+                                  $03,5,$03,$41,$93,$44,$44,
+                                  $04,1,$01,
+                                  $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p6_C_WS_0400R_Lo_init = 3357,$0000,$9B1D,6,5,
+                                                    $83,$00,24,8,
+                                                    $00,$00,8,0,
+                                                    $80,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    0,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p6_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                  $02,8,'WS.007.1',
+                                  $03,5,$03,$41,$93,$44,$44,
+                                  $04,1,$01,
+                                  $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p7_C_WS_0400R_Lo_init = 3357,$0000,$9B1E,7,5,
+                                                    $83,$00,24,8,
+                                                    $00,$00,8,0,
+                                                    $80,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    0,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p7_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                  $02,8,'WS.007.2',
+                                  $03,5,$03,$41,$93,$44,$44,
+                                  $04,1,$01,
+                                  $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p8_C_WS_0400R_Lo_init = 3357,$0000,$9B1F,8,5,
+                                                    $83,$00,24,8,
+                                                    $00,$00,8,0,
+                                                    $80,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    0,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p8_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                  $02,6,'WS.021',
+                                  $03,5,$03,$41,$93,$44,$44,
+                                  $04,1,$01,
+                                  $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p9_C_WS_0400R_Lo_init = 3357,$0000,$9B20,9,5,
+                                                    $83,$00,24,8,
+                                                    $00,$00,8,0,
+                                                    $80,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    0,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0,
+                                                    70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p9_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                  $02,6,'WS.020',
+                                  $03,5,$03,$41,$93,$44,$44,
+                                  $04,1,$01,
+                                  $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p10_C_WS_0400R_Lo_init = 3357,$0000,$9B21,10,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p10_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,8,'WS.104.2',
+                                   $03,5,$03,$41,$44,$44,$93,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p11_C_WS_0400R_Lo_init = 3357,$0000,$9B22,11,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p11_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,6,'WS.207',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p12_C_WS_0400R_Lo_init = 3357,$0000,$9B23,12,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p12_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,8,'WS.104.1',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p13_C_WS_0400R_Lo_init = 3357,$0000,$9B24,13,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p13_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,8,'WS.104.3',
+                                   $03,5,$03,$41,$44,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p14_C_WS_0400R_Lo_init = 3357,$0000,$9B25,14,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p14_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,6,'WS.X11',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p15_C_WS_0400R_Lo_init = 3357,$0000,$9B26,15,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p15_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,8,'WS.104.4',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p16_C_WS_0400R_Lo_init = 3357,$0000,$9B27,16,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p16_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,6,'WS.105',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p17_C_WS_0400R_Lo_init = 3357,$0000,$9B28,17,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p17_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,6,'WS.107',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p18_C_WS_0400R_Lo_init = 3357,$0000,$9B29,18,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p18_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,6,'WS.108',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p19_C_WS_0400R_Lo_init = 3357,$0000,$9B2A,19,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p19_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,8,'WS.204.2',
+                                   $03,5,$03,$41,$44,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p20_C_WS_0400R_Lo_init = 3357,$0000,$9B2B,20,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p20_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,8,'WS.204.1',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0400R-Logus
+#table TCIB_3357_init r4144_p21_C_WS_0400R_Lo_init = 3357,$0000,$9B2E,21,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0400R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p21_DriverInit = $01,16,'C-WS-0400R-Logus',
+                                   $02,8,'WS.204.3',
+                                   $03,5,$03,$41,$44,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r4144_p22_C_WS_0200R_Lo_init = 3356,$0000,$AFC1,22,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p22_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,8,'WS.106.3',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r4144_p23_C_WS_0200R_Lo_init = 3356,$0000,$BE1D,23,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p23_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,6,'WS.005',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r4144_p24_C_WS_0200R_Lo_init = 3356,$0000,$BE24,24,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p24_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,6,'WS.008',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r4144_p25_C_WS_0200R_Lo_init = 3356,$0000,$BE25,25,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p25_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,6,'WS.006',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-OR-0011M-800
+#table TCIB_3367_init r4146_p0_C_OR_0011M_800_init = 3367,$0000,$84AD,0,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $01
+
+;C-OR-0011M-800 - Inicializacni tabulka driveru
+#table BYTE r4146_p0_DriverInit = $01,14,'C-OR-0011M-800',
+                                  $02,5,'IO.09',
+                                  $03,1,$01,
+                                  $04,1,$02,
+                                  $00
+
+;C-OR-0011M-800
+#table TCIB_3367_init r4146_p1_C_OR_0011M_800_init = 3367,$0000,$84B0,1,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00
+
+;C-OR-0011M-800 - Inicializacni tabulka driveru
+#table BYTE r4146_p1_DriverInit = $01,14,'C-OR-0011M-800',
+                                  $02,5,'IO.02',
+                                  $03,1,$01,
+                                  $04,1,$02,
+                                  $00
+
+;C-OR-0011M-800
+#table TCIB_3367_init r4146_p2_C_OR_0011M_800_init = 3367,$0000,$84B2,2,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00
+
+;C-OR-0011M-800 - Inicializacni tabulka driveru
+#table BYTE r4146_p2_DriverInit = $01,14,'C-OR-0011M-800',
+                                  $02,5,'IO.04',
+                                  $03,1,$01,
+                                  $04,1,$02,
+                                  $00
+
+;C-OR-0008M
+#table TCIB_3303_init r4146_p3_C_OR_0008M_init = 3303,$0000,$8577,3,2,
+                                                 $80,$00,8,0,
+                                                 $81,$00,0,8,
+                                                 $00
+
+;C-OR-0008M - Inicializacni tabulka driveru
+#table BYTE r4146_p3_DriverInit = $01,10,'C-OR-0008M',
+                                  $02,5,'IO.03',
+                                  $03,1,$01,
+                                  $04,1,$01,
+                                  $00
+
+;C-OR-0008M
+#table TCIB_3303_init r4146_p4_C_OR_0008M_init = 3303,$0000,$857C,4,2,
+                                                 $00,$00,8,0,
+                                                 $81,$00,0,8,
+                                                 $00
+
+;C-OR-0008M - Inicializacni tabulka driveru
+#table BYTE r4146_p4_DriverInit = $01,10,'C-OR-0008M',
+                                  $02,5,'IO.06',
+                                  $03,1,$41,
+                                  $04,1,$01,
+                                  $00
+
+;C-OR-0011M-800
+#table TCIB_3367_init r4146_p5_C_OR_0011M_800_init = 3367,$0000,$8984,5,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00
+
+;C-OR-0011M-800 - Inicializacni tabulka driveru
+#table BYTE r4146_p5_DriverInit = $01,14,'C-OR-0011M-800',
+                                  $02,5,'IO.05',
+                                  $03,1,$01,
+                                  $04,1,$02,
+                                  $00
+
+;C-OR-0011M-800
+#table TCIB_3367_init r4146_p6_C_OR_0011M_800_init = 3367,$0000,$898A,6,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00
+
+;C-OR-0011M-800 - Inicializacni tabulka driveru
+#table BYTE r4146_p6_DriverInit = $01,14,'C-OR-0011M-800',
+                                  $02,5,'IO.01',
+                                  $03,1,$01,
+                                  $04,1,$02,
+                                  $00
+
+;C-JC-0006M
+#table TCIB_3368_init r4146_p7_C_JC_0006M_init = 3368,$0000,$8A1D,7,3,
+                                                 $00,$00,8,0,
+                                                 $81,$00,0,16,
+                                                 $81,$00,0,48,
+                                                 $00,
+                                                 30
+
+;C-JC-0006M - Inicializacni tabulka driveru
+#table BYTE r4146_p7_DriverInit = $01,10,'C-JC-0006M',
+                                  $02,5,'IO.07',
+                                  $03,1,$41,
+                                  $04,1,$08,
+                                  $00
+
+;C-JC-0006M
+#table TCIB_3368_init r4146_p8_C_JC_0006M_init = 3368,$0000,$8A20,8,3,
+                                                 $00,$00,8,0,
+                                                 $81,$00,0,16,
+                                                 $81,$00,0,48,
+                                                 $00,
+                                                 30
+
+;C-JC-0006M - Inicializacni tabulka driveru
+#table BYTE r4146_p8_DriverInit = $01,10,'C-JC-0006M',
+                                  $02,5,'IO.08',
+                                  $03,1,$41,
+                                  $04,1,$08,
+                                  $00
+
+;C-OR-0011M-800
+#table TCIB_3367_init r4146_p9_C_OR_0011M_800_init = 3367,$0000,$A9E2,9,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00
+
+;C-OR-0011M-800 - Inicializacni tabulka driveru
+#table BYTE r4146_p9_DriverInit = $01,14,'C-OR-0011M-800',
+                                  $02,5,'NH.11',
+                                  $03,1,$01,
+                                  $04,1,$02,
+                                  $00
+
+;C-IB-1800M - Initialization table of C-IB-1800M unit
+#table TCIB_3306_init r4146_p10_C_IB_1800M_init = 3306,$0000,$E38B,10,6,
+                                                  $80,$00,96,0,
+                                                  $00,$00,8,0,
+                                                  $00,$00,16,0,
+                                                  $00,$00,16,0,
+                                                  $00,$00,16,0,
+                                                  $00,$00,16,0,
+                                                  $00,
+                                                  $00,
+                                                  $00,
+                                                  $00,
+                                                  $00,
+                                                  $00,
+                                                  70,
+                                                  $22,
+                                                  $22,
+                                                  $22,
+                                                  $22,
+                                                  0,
+                                                  0,
+                                                  0,
+                                                  0
+
+;C-IB-1800M - Inicializacni tabulka driveru
+#table BYTE r4146_p10_DriverInit = $01,10,'C-IB-1800M',
+                                   $02,5,'NH.10',
+                                   $03,6,$0C,$41,$44,$44,$44,$44,
+                                   $00
+
+;C-IT-0504S - Initialization table of C-IT-0504S unit
+#table TCIB_3326_init r4146_p11_C_IT_0504S_init = 3326,$0000,$61C4,11,5,
+                                                  $00,$00,16,0,
+                                                  $81,$00,0,32,
+                                                  $00,$00,16,0,
+                                                  $80,$00,64,0,
+                                                  $00,$00,16,0,
+                                                  $00,
+                                                  $00,
+                                                  $28,
+                                                  $22,
+                                                  0,
+                                                  0
+
+;C-IT-0504S - Inicializacni tabulka driveru
+#table BYTE r4146_p11_DriverInit = $01,10,'C-IT-0504S',
+                                   $02,6,'NH.021',
+                                   $03,7,$42,$42,$93,$93,$93,$93,$44,
+                                   $04,4,$C2,$C2,$C2,$C2,
+                                   $00
+
+;C-RI-0401S
+#table TCIB_3347_init r4146_p12_C_RI_0401S_init = 3347,$0000,$FA37,12,5,
+                                                  $00,$00,8,0,
+                                                  $80,$00,32,0,
+                                                  $80,$00,16,0,
+                                                  $00,$00,2,0,
+                                                  $00,$00,24,24,
+                                                  $22,
+                                                  $22,
+                                                  0,
+                                                  0
+
+;C-RI-0401S - Inicializacni tabulka driveru
+#table BYTE r4146_p12_DriverInit = $01,10,'C-RI-0401S',
+                                   $02,6,'NH.X22',
+                                   $03,6,$41,$93,$93,$02,$41,$43,
+                                   $04,1,$43,
+                                   $00
+
+;CP-2000 - Inicializacní tabulka IO desky CP-2000
+#table _TTS_IR2553 r16_p6_IO_Table = 2553,$00,$01,
+                                     22,
+                                     1,
+                                     128,
+                                     0,
+                                     $00,$00,$00,$00,
+                                     $00,$00,$00,$00,
+                                     $00,$00,$00,$00,
+                                     $00,$00,$00,$00,
+                                     128,
+                                     0,
+                                     0,
+                                     0,
+                                     128,
+                                     0,0,0,0,0,0,0,0,
+                                     1,1,1,1,0,0,0,0,
+                                     $2C,0,0,1,
+                                     $2C,0,0,1,
+                                     $2C,0,0,1,
+                                     $2C,0,0,1
+
+;CP-2000 - Inicializacní tabulka desky OI-2872
+#table _TTS_OI2872 r16_p7_DISP_Table = 2872,$02,$01,
+                                       1,
+                                       5,
+                                       $80,
+                                       $80,
+                                       $80,
+                                       $80,
+                                       $80,
+                                       $00,
+                                       1250,
+                                       15,
+                                       $80,
+                                       60,
+                                       $00040014
+
+;CH5 - Deklarace UNI_SC
+#module TModulE2 $02,2191,$10,2,$89,__sizeof(r16_p2_Statistic_CH5),__sizeof(r16_p2_Control_CH5),__offset(r16_p2_Statistic_CH5),__offset(r16_p2_Control_CH5),__indx(r16_p2_Table_UNI_CH5),__indx(r16_p2_DriverInit_CH5)
+
+;IR-1501 - Deklarace modulu IR-1501
+;#module TModulE2 $02,1501,$1020,23,9,22,14,__offset(r4128_p23_IN),__offset(r4128_p23_OUT),__indx(r4128_p23_Table),__indx(r4128_p23_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,0,9,__sizeof(r4144_p0_IN),__sizeof(r4144_p0_OUT),__offset(r4144_p0_IN),__offset(r4144_p0_OUT),__indx(r4144_p0_C_WS_0400R_Lo_init),__indx(r4144_p0_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,1,9,__sizeof(r4144_p1_IN),__sizeof(r4144_p1_OUT),__offset(r4144_p1_IN),__offset(r4144_p1_OUT),__indx(r4144_p1_C_WS_0400R_Lo_init),__indx(r4144_p1_DriverInit)
+
+;C-RQ-0600
+#module TModulE2 $02,3361,$1030,2,9,__sizeof(r4144_p2_IN),__sizeof(r4144_p2_OUT),__offset(r4144_p2_IN),__offset(r4144_p2_OUT),__indx(r4144_p2_C_RQ_0600_init),__indx(r4144_p2_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$1030,3,9,__sizeof(r4144_p3_IN),__sizeof(r4144_p3_OUT),__offset(r4144_p3_IN),__offset(r4144_p3_OUT),__indx(r4144_p3_C_WS_0200R_Lo_init),__indx(r4144_p3_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,4,9,__sizeof(r4144_p4_IN),__sizeof(r4144_p4_OUT),__offset(r4144_p4_IN),__offset(r4144_p4_OUT),__indx(r4144_p4_C_WS_0400R_Lo_init),__indx(r4144_p4_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,5,9,__sizeof(r4144_p5_IN),__sizeof(r4144_p5_OUT),__offset(r4144_p5_IN),__offset(r4144_p5_OUT),__indx(r4144_p5_C_WS_0400R_Lo_init),__indx(r4144_p5_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,6,9,__sizeof(r4144_p6_IN),__sizeof(r4144_p6_OUT),__offset(r4144_p6_IN),__offset(r4144_p6_OUT),__indx(r4144_p6_C_WS_0400R_Lo_init),__indx(r4144_p6_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,7,9,__sizeof(r4144_p7_IN),__sizeof(r4144_p7_OUT),__offset(r4144_p7_IN),__offset(r4144_p7_OUT),__indx(r4144_p7_C_WS_0400R_Lo_init),__indx(r4144_p7_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,8,9,__sizeof(r4144_p8_IN),__sizeof(r4144_p8_OUT),__offset(r4144_p8_IN),__offset(r4144_p8_OUT),__indx(r4144_p8_C_WS_0400R_Lo_init),__indx(r4144_p8_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,9,9,__sizeof(r4144_p9_IN),__sizeof(r4144_p9_OUT),__offset(r4144_p9_IN),__offset(r4144_p9_OUT),__indx(r4144_p9_C_WS_0400R_Lo_init),__indx(r4144_p9_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,10,9,__sizeof(r4144_p10_IN),__sizeof(r4144_p10_OUT),__offset(r4144_p10_IN),__offset(r4144_p10_OUT),__indx(r4144_p10_C_WS_0400R_Lo_init),__indx(r4144_p10_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,11,9,__sizeof(r4144_p11_IN),__sizeof(r4144_p11_OUT),__offset(r4144_p11_IN),__offset(r4144_p11_OUT),__indx(r4144_p11_C_WS_0400R_Lo_init),__indx(r4144_p11_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,12,9,__sizeof(r4144_p12_IN),__sizeof(r4144_p12_OUT),__offset(r4144_p12_IN),__offset(r4144_p12_OUT),__indx(r4144_p12_C_WS_0400R_Lo_init),__indx(r4144_p12_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,13,9,__sizeof(r4144_p13_IN),__sizeof(r4144_p13_OUT),__offset(r4144_p13_IN),__offset(r4144_p13_OUT),__indx(r4144_p13_C_WS_0400R_Lo_init),__indx(r4144_p13_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,14,9,__sizeof(r4144_p14_IN),__sizeof(r4144_p14_OUT),__offset(r4144_p14_IN),__offset(r4144_p14_OUT),__indx(r4144_p14_C_WS_0400R_Lo_init),__indx(r4144_p14_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,15,9,__sizeof(r4144_p15_IN),__sizeof(r4144_p15_OUT),__offset(r4144_p15_IN),__offset(r4144_p15_OUT),__indx(r4144_p15_C_WS_0400R_Lo_init),__indx(r4144_p15_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,16,9,__sizeof(r4144_p16_IN),__sizeof(r4144_p16_OUT),__offset(r4144_p16_IN),__offset(r4144_p16_OUT),__indx(r4144_p16_C_WS_0400R_Lo_init),__indx(r4144_p16_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,17,9,__sizeof(r4144_p17_IN),__sizeof(r4144_p17_OUT),__offset(r4144_p17_IN),__offset(r4144_p17_OUT),__indx(r4144_p17_C_WS_0400R_Lo_init),__indx(r4144_p17_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,18,9,__sizeof(r4144_p18_IN),__sizeof(r4144_p18_OUT),__offset(r4144_p18_IN),__offset(r4144_p18_OUT),__indx(r4144_p18_C_WS_0400R_Lo_init),__indx(r4144_p18_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,19,9,__sizeof(r4144_p19_IN),__sizeof(r4144_p19_OUT),__offset(r4144_p19_IN),__offset(r4144_p19_OUT),__indx(r4144_p19_C_WS_0400R_Lo_init),__indx(r4144_p19_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,20,9,__sizeof(r4144_p20_IN),__sizeof(r4144_p20_OUT),__offset(r4144_p20_IN),__offset(r4144_p20_OUT),__indx(r4144_p20_C_WS_0400R_Lo_init),__indx(r4144_p20_DriverInit)
+
+;C-WS-0400R-Logus
+#module TModulE2 $02,3357,$1030,21,9,__sizeof(r4144_p21_IN),__sizeof(r4144_p21_OUT),__offset(r4144_p21_IN),__offset(r4144_p21_OUT),__indx(r4144_p21_C_WS_0400R_Lo_init),__indx(r4144_p21_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$1030,22,9,__sizeof(r4144_p22_IN),__sizeof(r4144_p22_OUT),__offset(r4144_p22_IN),__offset(r4144_p22_OUT),__indx(r4144_p22_C_WS_0200R_Lo_init),__indx(r4144_p22_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$1030,23,9,__sizeof(r4144_p23_IN),__sizeof(r4144_p23_OUT),__offset(r4144_p23_IN),__offset(r4144_p23_OUT),__indx(r4144_p23_C_WS_0200R_Lo_init),__indx(r4144_p23_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$1030,24,9,__sizeof(r4144_p24_IN),__sizeof(r4144_p24_OUT),__offset(r4144_p24_IN),__offset(r4144_p24_OUT),__indx(r4144_p24_C_WS_0200R_Lo_init),__indx(r4144_p24_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$1030,25,9,__sizeof(r4144_p25_IN),__sizeof(r4144_p25_OUT),__offset(r4144_p25_IN),__offset(r4144_p25_OUT),__indx(r4144_p25_C_WS_0200R_Lo_init),__indx(r4144_p25_DriverInit)
+
+;C-OR-0011M-800
+#module TModulE2 $02,3367,$1032,0,9,__sizeof(r4146_p0_IN),__sizeof(r4146_p0_OUT),__offset(r4146_p0_IN),__offset(r4146_p0_OUT),__indx(r4146_p0_C_OR_0011M_800_init),__indx(r4146_p0_DriverInit)
+
+;C-OR-0011M-800
+#module TModulE2 $02,3367,$1032,1,9,__sizeof(r4146_p1_IN),__sizeof(r4146_p1_OUT),__offset(r4146_p1_IN),__offset(r4146_p1_OUT),__indx(r4146_p1_C_OR_0011M_800_init),__indx(r4146_p1_DriverInit)
+
+;C-OR-0011M-800
+#module TModulE2 $02,3367,$1032,2,9,__sizeof(r4146_p2_IN),__sizeof(r4146_p2_OUT),__offset(r4146_p2_IN),__offset(r4146_p2_OUT),__indx(r4146_p2_C_OR_0011M_800_init),__indx(r4146_p2_DriverInit)
+
+;C-OR-0008M
+#module TModulE2 $02,3303,$1032,3,9,__sizeof(r4146_p3_IN),__sizeof(r4146_p3_OUT),__offset(r4146_p3_IN),__offset(r4146_p3_OUT),__indx(r4146_p3_C_OR_0008M_init),__indx(r4146_p3_DriverInit)
+
+;C-OR-0008M
+#module TModulE2 $02,3303,$1032,4,9,__sizeof(r4146_p4_IN),__sizeof(r4146_p4_OUT),__offset(r4146_p4_IN),__offset(r4146_p4_OUT),__indx(r4146_p4_C_OR_0008M_init),__indx(r4146_p4_DriverInit)
+
+;C-OR-0011M-800
+#module TModulE2 $02,3367,$1032,5,9,__sizeof(r4146_p5_IN),__sizeof(r4146_p5_OUT),__offset(r4146_p5_IN),__offset(r4146_p5_OUT),__indx(r4146_p5_C_OR_0011M_800_init),__indx(r4146_p5_DriverInit)
+
+;C-OR-0011M-800
+#module TModulE2 $02,3367,$1032,6,9,__sizeof(r4146_p6_IN),__sizeof(r4146_p6_OUT),__offset(r4146_p6_IN),__offset(r4146_p6_OUT),__indx(r4146_p6_C_OR_0011M_800_init),__indx(r4146_p6_DriverInit)
+
+;C-JC-0006M
+#module TModulE2 $02,3368,$1032,7,9,__sizeof(r4146_p7_IN),__sizeof(r4146_p7_OUT),__offset(r4146_p7_IN),__offset(r4146_p7_OUT),__indx(r4146_p7_C_JC_0006M_init),__indx(r4146_p7_DriverInit)
+
+;C-JC-0006M
+#module TModulE2 $02,3368,$1032,8,9,__sizeof(r4146_p8_IN),__sizeof(r4146_p8_OUT),__offset(r4146_p8_IN),__offset(r4146_p8_OUT),__indx(r4146_p8_C_JC_0006M_init),__indx(r4146_p8_DriverInit)
+
+;C-OR-0011M-800
+#module TModulE2 $02,3367,$1032,9,9,__sizeof(r4146_p9_IN),__sizeof(r4146_p9_OUT),__offset(r4146_p9_IN),__offset(r4146_p9_OUT),__indx(r4146_p9_C_OR_0011M_800_init),__indx(r4146_p9_DriverInit)
+
+;C-IB-1800M
+#module TModulE2 $02,3306,$1032,10,9,__sizeof(r4146_p10_IN),0,__offset(r4146_p10_IN),0,__indx(r4146_p10_C_IB_1800M_init),__indx(r4146_p10_DriverInit)
+
+;C-IT-0504S
+#module TModulE2 $02,3326,$1032,11,9,__sizeof(r4146_p11_IN),__sizeof(r4146_p11_OUT),__offset(r4146_p11_IN),__offset(r4146_p11_OUT),__indx(r4146_p11_C_IT_0504S_init),__indx(r4146_p11_DriverInit)
+
+;C-RI-0401S
+#module TModulE2 $02,3347,$1032,12,9,__sizeof(r4146_p12_IN),__sizeof(r4146_p12_OUT),__offset(r4146_p12_IN),__offset(r4146_p12_OUT),__indx(r4146_p12_C_RI_0401S_init),__indx(r4146_p12_DriverInit)
+
+;CP-2000 - Deklarace virtuálního rozhraní ITCL
+#module TModulE2 $02,0,$0,0,$C9,__sizeof(r0_p0_ITCL_DIAG),__sizeof(r0_p0_ITCL_CONTROL),__offset(r0_p0_ITCL_DIAG),__offset(r0_p0_ITCL_CONTROL),-1,-1
+
+;CP-2000 - Deklarace rozhraní TCL2
+#module TModulE2 $02,2190,$10,1,$C1,__sizeof(r16_p1_TCL2_DIAG),__sizeof(r16_p1_TCL2_CONTROL),__offset(r16_p1_TCL2_DIAG),__offset(r16_p1_TCL2_CONTROL),-1,-1
+
+;CP-2000 - Deklarace rozhraní CIB
+#module TModulE2 $02,2190,$10,1,$E2,__sizeof(r16_p1_CIB_DIAG),__sizeof(r16_p1_CIB_CONTROL),__offset(r16_p1_CIB_DIAG),__offset(r16_p1_CIB_CONTROL),-1,-1
+
+;CP-2000 - Deklarace rozhraní CIB
+#module TModulE2 $02,2191,$10,2,$E2,__sizeof(r16_p2_CIB_DIAG),__sizeof(r16_p2_CIB_CONTROL),__offset(r16_p2_CIB_DIAG),__offset(r16_p2_CIB_CONTROL),-1,-1
+
+;CP-2000 - Deklarace I/O rozhraní
+#module TModulE2 $02,2553,$10,6,$09,__sizeof(r16_p6_IO_IN),__sizeof(r16_p6_IO_OUT),__offset(r16_p6_IO_IN),__offset(r16_p6_IO_OUT),__indx(r16_p6_IO_Table),-1
+
+;CP-2000 - Deklarace rozhraní pro uživatelský displej
+#module TModulE2 $02,2872,$10,7,$4A,__sizeof(r16_p7_DISP_IN),__sizeof(r16_p7_DISP_OUT),__offset(r16_p7_DISP_IN),__offset(r16_p7_DISP_OUT),__indx(r16_p7_DISP_Table),-1
+
+;CP-2000 - Deklarace CPU modulu
+#module TModulE2 $02,2000,$0,0,$0,0,0,0,0,-1,-1
+
+;*******************************************************************************
+;Generováno programem Mosaic
+;© 2001-2025 Teco a.s.

@@ -1,0 +1,6 @@
+<Variables>
+	<Item Name="ApiConfig.Rooms[1].Name" Pos="030000E8" Tdi="8F8933D8" Type="48" />
+	<Item Name="ApiConfig.Rooms[1].FloorId" Pos="03000116" Tdi="9F7899A6" Type="8" />
+	<Item Name="ApiConfig.Rooms[2].Name" Pos="03000154" Tdi="EFC4D8DB" Type="48" />
+	<Item Name="ApiConfig.Rooms[2].FloorId" Pos="03000182" Tdi="FF35CB73" Type="8" />
+</Variables>

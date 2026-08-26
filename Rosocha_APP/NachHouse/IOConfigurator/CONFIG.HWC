@@ -1,0 +1,1757 @@
+;Upozornení
+;Soubor je automaticky regenerován a všechny rucní modifikace budou ztracené.
+
+#struct _TCIBHeader_
+        UINT code,
+        WORD mode,
+        WORD fadr,
+        USINT ladr,
+        USINT ndev
+
+#struct _TCIBDevice
+        BYTE typdev,
+        BYTE bloko,
+        UINT leindev,
+        UINT leoutdev
+
+#struct TCIB_3354_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[1] Dev
+
+#struct TModulE2
+        USINT version,
+        UDINT hwCode,
+        DWORD busId,
+        UDINT address,
+        UDINT port,
+        UINT lenInputs,
+        UINT lenOutputs,
+        DINT offsetInputs,
+        DINT offsetOutputs,
+        INT initTable,
+        INT driverInitTable
+
+#struct TCIB_3326_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[5] Dev,
+        BYTE ezsenb,
+        BYTE ezstype,
+        BYTE ai1_4type,
+        BYTE ai5type,
+        USINT ai1_4tau,
+        USINT ai5tau
+
+#struct TCIB_3367_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[2] Dev,
+        BYTE manDis
+
+#struct TCIB_3368_old_init
+        _TCIBHeader_ Header,
+        _TCIBDevice Dev1,
+        _TCIBDevice Dev2,
+        BYTE manDis,
+        USINT reversTime
+
+#struct TCIB_3384_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[6] Dev,
+        BYTE ezsenb,
+        BYTE ezstype,
+        INT thermOffset,
+        USINT thermTau,
+        BYTE ai1type,
+        BYTE ai2type,
+        USINT ai1tau,
+        USINT ai2tau,
+        USINT Font,
+        USINT tPress,
+        BOOL TouchBuzzer,
+        BOOL dummy13,
+        BOOL dummy14,
+        BOOL dummy15,
+        BOOL dummy16,
+        BOOL dummy17,
+        BOOL dummy18,
+        BOOL dummy19
+
+#struct TCIB_3356_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[5] Dev,
+        INT thermOffset,
+        BYTE ai1type,
+        BYTE ai2type,
+        USINT thermTau,
+        USINT ai1tau,
+        USINT ai2tau,
+        USINT tPress
+
+#struct TCIB_3369_old_init
+        _TCIBHeader_ Header,
+        _TCIBDevice Dev1,
+        _TCIBDevice Dev2,
+        USINT tPress,
+        USINT reversTime
+
+#struct TCIB_3391_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[6] Dev,
+        USINT tPress,
+        BYTE ai1type,
+        BYTE ai2type,
+        USINT ai1tau,
+        USINT ai2tau,
+        INT thermOffset
+
+#struct TCIB_3361_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[6] Dev,
+        BYTE ezs,
+        USINT tPress,
+        INT thermOffset,
+        BYTE ai1type,
+        BYTE ai2type,
+        USINT ai1tau,
+        USINT ai2tau,
+        USINT co2tau
+
+#struct TCIB_3370_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[2] Dev,
+        USINT tPress
+
+#struct TCIB_3302_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[5] Dev,
+        BYTE ezs,
+        BYTE ai1type,
+        BYTE ai2type,
+        USINT ai1tau,
+        USINT ai2tau
+
+#struct TCIB_3325_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[5] Dev,
+        BYTE ezs,
+        BYTE ai1type,
+        BYTE ai2type,
+        USINT ai1tau,
+        USINT ai2tau
+
+#struct TCIB_3353_init
+        _TCIBHeader_ Header,
+        _TCIBDevice[5] Dev,
+        BYTE ezs,
+        BYTE ai4type,
+        BYTE ai5type,
+        USINT ai4tau,
+        USINT ai5tau,
+        BYTE codeType
+
+#struct _TTS_Head
+        UINT ModulID,
+        BYTE Stat0,
+        BYTE Stat1
+
+#struct _TTS_SX2192
+        _TTS_Head Head
+
+#struct _TTS_UNIINIT
+        UINT code,
+        UINT mode,
+        USINT chMod,
+        USINT adr,
+        USINT speed,
+        USINT tor,
+        USINT tot,
+        USINT rez1,
+        USINT rez11,
+        USINT interface,
+        WORD sysMap,
+        USINT[10] rez2,
+        UINT lendi,
+        UINT lendo,
+        UDINT idati,
+        UDINT idato,
+        USINT lnc,
+        USINT msc,
+        USINT opd,
+        USINT opm,
+        USINT prot,
+        USINT sdl,
+        USINT edl,
+        USINT edh,
+        USINT acl,
+        USINT ach,
+        UINT pad,
+        UINT pas,
+        UINT chs,
+        UINT plm,
+        UINT mlm
+
+#struct _TTS_UNIINIT_ETH
+        _TTS_UNIINIT uniInit,
+        DWORD his_ip,
+        UINT his_port,
+        UINT my_port
+
+#struct _TTS_EnbCHAI
+        BYTE ESTAT,
+        BYTE EFS,
+        BYTE EENG,
+        BYTE EPCT
+
+#struct _TTS_SPE4
+        BOOL SPE0,
+        BOOL SPE1,
+        BOOL SPE2,
+        BOOL SPE3,
+        BOOL dummy4,
+        BOOL dummy5,
+        BOOL dummy6,
+        BOOL dummy7
+
+#struct _TTS_SPP4
+        BOOL SPP0,
+        BOOL SPP1,
+        BOOL SPP2,
+        BOOL SPP3,
+        BOOL dummy4,
+        BOOL dummy5,
+        BOOL dummy6,
+        BOOL dummy7
+
+#struct _TTS_IniCHAI
+        BYTE Mode,
+        USINT Filter,
+        REAL Offset,
+        REAL Gain
+
+#struct _TTS_IR2553
+        _TTS_Head Head,
+        USINT NUMVARI,
+        USINT NUMVARO,
+        USINT EDIS,
+        USINT EDIP,
+        _TTS_EnbCHAI[4] EAI,
+        USINT ESTPW,
+        USINT EUSRC,
+        USINT ESACU,
+        USINT EIACU,
+        USINT EDOS,
+        _TTS_SPE4 SPE,
+        _TTS_SPP4 SPP,
+        _TTS_IniCHAI[4] SetAI
+
+#struct _TTS_OI2872
+        _TTS_Head Head,
+        USINT NUMVARI,
+        USINT NUMVARO,
+        BYTE EKEY,
+        BYTE EDISP0,
+        BYTE EDISP1,
+        BYTE EDISP2,
+        BYTE EDISP3,
+        BYTE ECDPG,
+        UINT CDPG,
+        USINT AREP,
+        BYTE MARK,
+        UINT LIGHTTIME,
+        DWORD MODE
+
+#struct _TTS_ETCL
+        _TTS_Head Head,
+        DWORD BaseIP,
+        DWORD Mask
+
+;C-DL-0064M - Initialization table of C-DL-0064M unit
+#table TCIB_3354_init r4144_p0_C_DL0064M_init = 3354,$0000,$0370,0,1,
+                                                $83,$00,16,32
+
+;C-DL-0064M - Initialization table of driver
+#table BYTE r4144_p0_DriverInit = $01,10,'C-DL-0064M',
+                                  $02,5,'DL-01',
+                                  $03,1,$02,
+                                  $04,1,$04,
+                                  $00
+
+;C-IT-0504S - Inicializacni tabulka modulu C-IT-0504S
+#table TCIB_3326_init r4144_p1_C_IT_0504S_init = 3326,$0020,$0635,1,5,
+                                                 $80,$00,16,0,
+                                                 $81,$00,0,32,
+                                                 $00,$00,16,0,
+                                                 $00,$00,64,0,
+                                                 $80,$00,16,0,
+                                                 $00,
+                                                 $00,
+                                                 $22,
+                                                 $28,
+                                                 0,
+                                                 0
+
+;C-IT-0504S - Inicializacni tabulka driveru
+#table BYTE r4144_p1_DriverInit = $01,10,'C-IT-0504S',
+                                  $02,23,'IO-104 Satnicek PIR+TEH',
+                                  $03,4,$02,$42,$50,$93,
+                                  $04,4,$C2,$C2,$C2,$C2,
+                                  $00
+
+;C-OR-0011M-800
+#table TCIB_3367_init r4144_p2_C_OR_0011M_800_init = 3367,$0000,$A9DE,2,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00
+
+;C-OR-0011M-800 - Inicializacni tabulka driveru
+#table BYTE r4144_p2_DriverInit = $01,14,'C-OR-0011M-800',
+                                  $02,12,'RE-1 Kurenie',
+                                  $03,1,$01,
+                                  $04,1,$02,
+                                  $00
+
+;C-JC-0006M - Inicializacni tabulka driveru
+#table BYTE r4144_p3_DriverInit = $01,10,'C-JC-0006M',
+                                  $02,5,'REZ-2',
+                                  $03,1,$01,
+                                  $04,7,$02,$41,$41,$41,$41,$41,$41,
+                                  $00
+
+;C-JC-0006M
+#table TCIB_3368_old_init r4144_p3_C_JC_0006M_init = 3368,$0000,$E224,3,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00,
+                                                     30
+
+;C-JC-0006M - Inicializacni tabulka driveru
+#table BYTE r4144_p4_DriverInit = $01,10,'C-JC-0006M',
+                                  $02,5,'REZ-3',
+                                  $03,1,$01,
+                                  $04,7,$02,$41,$41,$41,$41,$41,$41,
+                                  $00
+
+;C-JC-0006M
+#table TCIB_3368_old_init r4144_p4_C_JC_0006M_init = 3368,$0000,$E228,4,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00,
+                                                     30
+
+;C-OR-0011M-800
+#table TCIB_3367_init r4144_p5_C_OR_0011M_800_init = 3367,$0000,$E294,5,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00
+
+;C-OR-0011M-800 - Inicializacni tabulka driveru
+#table BYTE r4144_p5_DriverInit = $01,14,'C-OR-0011M-800',
+                                  $02,27,'RE-4 SVD-Gabion,Rekuperacia',
+                                  $03,1,$01,
+                                  $04,1,$02,
+                                  $00
+
+;C-OR-0011M-800
+#table TCIB_3367_init r4144_p6_C_OR_0011M_800_init = 3367,$0000,$E295,6,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00
+
+;C-OR-0011M-800 - Inicializacni tabulka driveru
+#table BYTE r4144_p6_DriverInit = $01,14,'C-OR-0011M-800',
+                                  $02,12,'RE-2 Kurenie',
+                                  $03,1,$01,
+                                  $04,1,$02,
+                                  $00
+
+;C-OR-0011M-800
+#table TCIB_3367_init r4144_p7_C_OR_0011M_800_init = 3367,$0000,$E9E1,7,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00
+
+;C-OR-0011M-800 - Initialization table of driver
+#table BYTE r4144_p7_DriverInit = $01,14,'C-OR-0011M-800',
+                                  $02,14,'RE-5 SVD,Brany',
+                                  $03,1,$01,
+                                  $04,1,$02,
+                                  $00
+
+;C-JC-0006M - Inicializacni tabulka driveru
+#table BYTE r4144_p8_DriverInit = $01,10,'C-JC-0006M',
+                                  $02,12,'REZ-1 Rolety',
+                                  $03,1,$01,
+                                  $04,7,$02,$41,$41,$41,$41,$41,$41,
+                                  $00
+
+;C-JC-0006M
+#table TCIB_3368_old_init r4144_p8_C_JC_0006M_init = 3368,$0000,$F2E5,8,2,
+                                                     $80,$00,8,0,
+                                                     $81,$00,0,16,
+                                                     $00,
+                                                     80
+
+;C-KY-0001R
+#table TCIB_3384_init r4144_p9_C_KY_0001R_init = 3384,$0000,$C7CB,9,6,
+                                                 $80,$00,72,0,
+                                                 $80,$00,8,0,
+                                                 $00,$00,16,0,
+                                                 $80,$00,8,0,
+                                                 $00,$00,32,0,
+                                                 $81,$00,0,304,
+                                                 $00,
+                                                 $00,
+                                                 0,
+                                                 100,
+                                                 $22,
+                                                 $22,
+                                                 100,
+                                                 100,
+                                                 1,
+                                                 70,
+                                                 1,0,0,0,0,0,0,0
+
+;C-KY-0001R - Inicializacni tabulka driveru
+#table BYTE r4144_p9_DriverInit = $01,10,'C-KY-0001R',
+                                  $02,16,'KEY-101 Predsien',
+                                  $03,4,$0B,$44,$44,$44,
+                                  $04,1,$26,
+                                  $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r4144_p14_C_WS_0200R_Lo_init = 3356,$0000,$AFB9,14,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r4144_p14_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,12,'WS-109 Spajz',
+                                   $03,5,$03,$41,$93,$93,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-JC-0201B - Inicializacni tabulka driveru
+#table BYTE r4144_p16_DriverInit = $01,10,'C-JC-0201B',
+                                   $02,13,'ROL-108 Garaz',
+                                   $03,1,$41,
+                                   $04,2,$01,$41,
+                                   $00
+
+;C-JC-0201B
+#table TCIB_3369_old_init r4144_p16_C_JC_0201B_init = 3369,$0000,$CD58,16,2,
+                                                      $00,$00,8,0,
+                                                      $81,$00,0,2,
+                                                      70,
+                                                      30
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4144_p17_C_WS_0000R_PG_init = 3391,$0000,$F76D,17,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $28,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4144_p17_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,26,'TGL-103 Chodba-1 na schody',
+                                   $03,7,$01,$41,$44,$93,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4144_p18_C_WS_0000R_PG_init = 3391,$0000,$F909,18,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4144_p18_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,22,'TGL-105 -Satnik hlavny',
+                                   $03,7,$01,$41,$93,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4144_p20_C_WS_0000R_PG_init = 3391,$0000,$F8FE,20,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4144_p20_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,16,'TLG-107 Pracovna',
+                                   $03,7,$01,$41,$93,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4144_p21_C_WS_0000R_PG_init = 3391,$0000,$F8FF,21,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4144_p21_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,10,'TGL-113 WC',
+                                   $03,7,$01,$41,$93,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4144_p22_C_WS_0000R_PG_init = 3391,$0000,$F904,22,6,
+                                                     $00,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $00,$00,24,0,
+                                                     70,
+                                                     $28,
+                                                     $28,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4144_p22_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,23,'TGL-101.1 Predsien Lavy',
+                                   $03,7,$41,$41,$93,$93,$07,$44,$44,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4144_p23_C_WS_0000R_PG_init = 3391,$0000,$F905,23,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4144_p23_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,24,'TGL-101.2 Predsien Pravy',
+                                   $03,7,$01,$41,$44,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4144_p24_C_WS_0000R_PG_init = 3391,$0000,$F906,24,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $00,$00,24,0,
+                                                     70,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4144_p24_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,23,'TGL-112.1 Obyvacka Lavy',
+                                   $03,7,$01,$41,$93,$44,$07,$44,$44,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4144_p25_C_WS_0000R_PG_init = 3391,$0000,$F907,25,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4144_p25_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,24,'TGL-112.2 Obyvacka pravy',
+                                   $03,7,$01,$41,$44,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-RQ-0600
+#table TCIB_3361_init r4144_p26_C_RQ_0600_init = 3361,$0000,$F343,26,6,
+                                                 $80,$00,16,0,
+                                                 $00,$00,16,0,
+                                                 $83,$00,16,8,
+                                                 $00,$00,32,0,
+                                                 $00,$00,16,0,
+                                                 $00,$00,16,0,
+                                                 $00,
+                                                 70,
+                                                 0,
+                                                 $22,
+                                                 $22,
+                                                 0,
+                                                 0,
+                                                 0
+
+;C-RQ-0600 - Inicializacni tabulka driveru
+#table BYTE r4144_p26_DriverInit = $01,9,'C-RQ-0600',
+                                   $02,15,'CO2-110 Kuchyna',
+                                   $03,6,$02,$42,$84,$48,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-JC-0201B - Inicializacni tabulka driveru
+#table BYTE r4144_p27_DriverInit = $01,10,'C-JC-0201B',
+                                   $02,16,'ROL-107 Pracovna',
+                                   $03,1,$41,
+                                   $04,2,$01,$41,
+                                   $00
+
+;C-JC-0201B
+#table TCIB_3369_old_init r4144_p27_C_JC_0201B_init = 3369,$0000,$FB44,27,2,
+                                                      $00,$00,8,0,
+                                                      $81,$00,0,2,
+                                                      70,
+                                                      30
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4144_p28_C_WS_0000R_PG_init = 3391,$0020,$1345,28,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4144_p28_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,16,'TGL-X10 Terasa-1',
+                                   $03,7,$01,$41,$44,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4144_p30_C_WS_0000R_PG_init = 3391,$0000,$F77F,30,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4144_p30_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,15,'TGL-110 Kuchyna',
+                                   $03,7,$01,$41,$93,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-LC-0202B
+#table TCIB_3370_init r4146_p0_C_LC_0202B_init = 3370,$0000,$955B,0,2,
+                                                 $00,$00,8,0,
+                                                 $81,$00,0,2,
+                                                 70
+
+;C-LC-0202B - Inicializacni tabulka driveru
+#table BYTE r4146_p0_DriverInit = $01,10,'C-LC-0202B',
+                                  $02,7,'ZAS-204',
+                                  $03,1,$41,
+                                  $04,1,$01,
+                                  $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p1_C_WS_0000R_PG_init = 3391,$0000,$F922,1,6,
+                                                    $80,$00,8,0,
+                                                    $00,$00,8,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $83,$00,56,96,
+                                                    $80,$00,24,0,
+                                                    70,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p1_DriverInit = $01,13,'C-WS-0000R-PG',
+                                  $02,31,'TGL-204.3 postel-L F76E na F922',
+                                  $03,7,$01,$41,$44,$44,$07,$93,$82,
+                                  $04,1,$0C,
+                                  $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p2_C_WS_0000R_PG_init = 3391,$0000,$F900,2,6,
+                                                    $80,$00,8,0,
+                                                    $00,$00,8,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $83,$00,56,96,
+                                                    $00,$00,24,0,
+                                                    70,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p2_DriverInit = $01,13,'C-WS-0000R-PG',
+                                  $02,32,'TGL-202.L Kup.2 pri zrkadle lavy',
+                                  $03,7,$01,$41,$44,$44,$07,$44,$44,
+                                  $04,1,$0C,
+                                  $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p3_C_WS_0000R_PG_init = 3391,$0000,$F901,3,6,
+                                                    $00,$00,8,0,
+                                                    $00,$00,8,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $83,$00,56,96,
+                                                    $80,$00,24,0,
+                                                    70,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p3_DriverInit = $01,13,'C-WS-0000R-PG',
+                                  $02,33,'TGL-202.P Kup.2 pri zrkadle pravy',
+                                  $03,7,$41,$41,$44,$44,$07,$93,$82,
+                                  $04,1,$0C,
+                                  $00
+
+;C-DL-0064M - Inicializacni tabulka modulu C-DL-0064M
+#table TCIB_3354_init r4146_p4_C_DL0064M_init = 3354,$0000,$0374,4,1,
+                                                $83,$00,16,32
+
+;C-DL-0064M - Inicializacni tabulka driveru
+#table BYTE r4146_p4_DriverInit = $01,10,'C-DL-0064M',
+                                  $02,5,'DL-02',
+                                  $03,1,$02,
+                                  $04,1,$04,
+                                  $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p5_C_WS_0000R_PG_init = 3391,$0000,$F920,5,6,
+                                                    $80,$00,8,0,
+                                                    $00,$00,8,0,
+                                                    $80,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $83,$00,56,96,
+                                                    $00,$00,24,0,
+                                                    70,
+                                                    $28,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p5_DriverInit = $01,13,'C-WS-0000R-PG',
+                                  $02,18,'TGL-204.2 postel P',
+                                  $03,7,$01,$41,$93,$44,$07,$44,$44,
+                                  $04,1,$0C,
+                                  $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p6_C_WS_0000R_PG_init = 3391,$0000,$F76E,6,6,
+                                                    $80,$00,8,0,
+                                                    $00,$00,8,0,
+                                                    $00,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $83,$00,56,96,
+                                                    $00,$00,24,0,
+                                                    70,
+                                                    $22,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p6_DriverInit = $01,13,'C-WS-0000R-PG',
+                                  $02,32,'TGL-204.1 na terasu F922 na F76E',
+                                  $03,7,$01,$41,$44,$44,$07,$44,$44,
+                                  $04,1,$0C,
+                                  $00
+
+;C-JC-0201B - Inicializacni tabulka driveru
+#table BYTE r4146_p7_DriverInit = $01,10,'C-JC-0201B',
+                                  $02,20,'ROL-204.1 vlavo R.18',
+                                  $03,1,$41,
+                                  $04,2,$01,$41,
+                                  $00
+
+;C-JC-0201B
+#table TCIB_3369_old_init r4146_p7_C_JC_0201B_init = 3369,$0000,$FB45,7,2,
+                                                     $00,$00,8,0,
+                                                     $81,$00,0,2,
+                                                     70,
+                                                     30
+
+;C-JC-0201B - Inicializacni tabulka driveru
+#table BYTE r4146_p8_DriverInit = $01,10,'C-JC-0201B',
+                                  $02,24,'ROL-204.2 na terasu R.13',
+                                  $03,1,$41,
+                                  $04,2,$01,$41,
+                                  $00
+
+;C-JC-0201B
+#table TCIB_3369_old_init r4146_p8_C_JC_0201B_init = 3369,$0000,$FB46,8,2,
+                                                     $00,$00,8,0,
+                                                     $81,$00,0,2,
+                                                     70,
+                                                     30
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p9_C_WS_0000R_PG_init = 3391,$0000,$F77C,9,6,
+                                                    $80,$00,8,0,
+                                                    $00,$00,8,0,
+                                                    $80,$00,16,0,
+                                                    $00,$00,16,0,
+                                                    $83,$00,56,96,
+                                                    $00,$00,24,0,
+                                                    70,
+                                                    $28,
+                                                    $22,
+                                                    0,
+                                                    0,
+                                                    0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p9_DriverInit = $01,13,'C-WS-0000R-PG',
+                                  $02,21,'TGL-203.4 pri dverach',
+                                  $03,7,$01,$41,$93,$44,$07,$44,$44,
+                                  $04,1,$0C,
+                                  $00
+
+;C-JC-0201B - Inicializacni tabulka driveru
+#table BYTE r4146_p10_DriverInit = $01,10,'C-JC-0201B',
+                                   $02,14,'ROL-201 chodba',
+                                   $03,1,$01,
+                                   $04,2,$01,$41,
+                                   $00
+
+;C-JC-0201B
+#table TCIB_3369_old_init r4146_p10_C_JC_0201B_init = 3369,$0000,$FB47,10,2,
+                                                      $80,$00,8,0,
+                                                      $81,$00,0,2,
+                                                      70,
+                                                      30
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p11_C_WS_0000R_PG_init = 3391,$0020,$F8FC,11,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $00,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p11_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,19,'TGL-203.1 na terasu',
+                                   $03,7,$01,$41,$44,$44,$07,$44,$44,
+                                   $04,1,$0C,
+                                   $00
+
+;C-OR-0202B
+#table TCIB_3302_init r4146_p12_C_OR_0202B_init = 3302,$0000,$A5CB,12,5,
+                                                  $00,$00,8,0,
+                                                  $00,$00,16,0,
+                                                  $00,$00,16,0,
+                                                  $00,$00,8,0,
+                                                  $81,$00,0,2,
+                                                  $00,
+                                                  $22,
+                                                  $22,
+                                                  0,
+                                                  0
+
+;C-OR-0202B - Inicializacni tabulka driveru
+#table BYTE r4146_p12_DriverInit = $01,10,'C-OR-0202B',
+                                   $02,28,'ZAS-203 Zasuvky pod postelou',
+                                   $03,4,$41,$44,$44,$41,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p13_C_WS_0000R_PG_init = 3391,$0000,$F77A,13,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $28,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p13_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,22,'TGL-201 - Chodba- 2.01',
+                                   $03,7,$01,$41,$44,$93,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-IT-0504S - Inicializacni tabulka modulu C-IT-0504S
+#table TCIB_3326_init r4146_p14_C_IT_0504S_init = 3326,$0000,$ECD9,14,5,
+                                                  $00,$00,16,0,
+                                                  $81,$00,0,32,
+                                                  $00,$00,16,0,
+                                                  $80,$00,64,0,
+                                                  $80,$00,16,0,
+                                                  $00,
+                                                  $00,
+                                                  $28,
+                                                  $28,
+                                                  0,
+                                                  0
+
+;C-IT-0504S - Inicializacni tabulka driveru
+#table BYTE r4146_p14_DriverInit = $01,10,'C-IT-0504S',
+                                   $02,48,'IT-202 Kupelna 2 v povodnom vypinaci pri dverach',
+                                   $03,7,$42,$42,$93,$93,$93,$93,$93,
+                                   $04,4,$C2,$C2,$C2,$C2,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p15_C_WS_0000R_PG_init = 3391,$0000,$F91F,15,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p15_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,18,'TGL-203.3 postel-L',
+                                   $03,7,$01,$41,$44,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-IT-0504S - Inicializacni tabulka modulu C-IT-0504S
+#table TCIB_3326_init r4146_p16_C_IT_0504S_init = 3326,$0020,$002C,16,5,
+                                                  $80,$00,16,0,
+                                                  $81,$00,0,32,
+                                                  $00,$00,16,0,
+                                                  $00,$00,64,0,
+                                                  $80,$00,16,0,
+                                                  $00,
+                                                  $00,
+                                                  $22,
+                                                  $28,
+                                                  0,
+                                                  0
+
+;C-IT-0504S - Inicializacni tabulka driveru
+#table BYTE r4146_p16_DriverInit = $01,10,'C-IT-0504S',
+                                   $02,42,'IT-003 Starý Sumrak+zadna brana+Kotol 0-10',
+                                   $03,4,$02,$42,$50,$93,
+                                   $04,4,$C2,$C2,$C2,$C2,
+                                   $00
+
+;C-IR-0202S - Inicializacni tabulka modulu C-IR-0202S
+#table TCIB_3325_init r4146_p17_C_IR_0202S_init = 3325,$0000,$94F7,17,5,
+                                                  $83,$00,8,1,
+                                                  $81,$00,0,8,
+                                                  $00,$00,8,0,
+                                                  $00,$00,16,0,
+                                                  $00,$00,16,0,
+                                                  $00,
+                                                  $22,
+                                                  $22,
+                                                  0,
+                                                  0
+
+;C-IR-0202S - Inicializacni tabulka driveru
+#table BYTE r4146_p17_DriverInit = $01,10,'C-IR-0202S',
+                                   $02,43,'SIR-X01 Velka sirena. V Garazi pod WS-108.1',
+                                   $03,4,$01,$41,$44,$44,
+                                   $04,2,$01,$C2,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p18_C_WS_0000R_PG_init = 3391,$0000,$F923,18,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $00,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $28,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p18_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,18,'TGL-203.2 postel-P',
+                                   $03,7,$01,$41,$44,$93,$07,$44,$44,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WG-0503S
+#table TCIB_3353_init r4146_p19_C_WG_0503S_init = 3353,$0000,$A9CF,19,5,
+                                                  $83,$00,48,8,
+                                                  $00,$00,8,0,
+                                                  $00,$00,16,0,
+                                                  $00,$00,16,0,
+                                                  $00,$00,8,0,
+                                                  $00,
+                                                  $22,
+                                                  $22,
+                                                  0,
+                                                  0,
+                                                  $00
+
+;C-WG-0503S - Inicializacni tabulka driveru
+#table BYTE r4146_p19_DriverInit = $01,10,'C-WG-0503S',
+                                   $02,13,'KEY-108 Garaz',
+                                   $03,5,$06,$41,$44,$44,$41,
+                                   $04,1,$01,
+                                   $00
+
+;C-JC-0201B - Inicializacni tabulka driveru
+#table BYTE r4146_p20_DriverInit = $01,10,'C-JC-0201B',
+                                   $02,23,'ROL-203.1 oproti dveram',
+                                   $03,1,$41,
+                                   $04,2,$01,$41,
+                                   $00
+
+;C-JC-0201B
+#table TCIB_3369_old_init r4146_p20_C_JC_0201B_init = 3369,$0000,$FB43,20,2,
+                                                      $00,$00,8,0,
+                                                      $81,$00,0,2,
+                                                      70,
+                                                      30
+
+;C-JC-0201B - Inicializacni tabulka driveru
+#table BYTE r4146_p24_DriverInit = $01,10,'C-JC-0201B',
+                                   $02,24,'ROL-203.2 oproti posteli',
+                                   $03,1,$01,
+                                   $04,2,$01,$41,
+                                   $00
+
+;C-JC-0201B
+#table TCIB_3369_old_init r4146_p24_C_JC_0201B_init = 3369,$0000,$FB48,24,2,
+                                                      $80,$00,8,0,
+                                                      $81,$00,0,2,
+                                                      70,
+                                                      30
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r4146_p25_C_WS_0200R_Lo_init = 3356,$0000,$AFB0,25,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r4146_p25_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,20,'WS-108.1 Garaz-brana',
+                                   $03,5,$03,$41,$44,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r4146_p26_C_WS_0200R_Lo_init = 3356,$0000,$AFB4,26,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     0,
+                                                     $28,
+                                                     $28,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r4146_p26_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,22,'WS-108.2 Garaz-do domu',
+                                   $03,5,$03,$41,$93,$93,$93,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p27_C_WS_0000R_PG_init = 3391,$0020,$F8FA,27,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $00,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p27_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,22,'TGL-106.1 Kupelna-Lavy',
+                                   $03,7,$01,$41,$44,$44,$07,$44,$44,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p28_C_WS_0000R_PG_init = 3391,$0000,$F8FB,28,6,
+                                                     $00,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p28_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,23,'TGL-106.2 Kupelna-Pravy',
+                                   $03,7,$41,$41,$93,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p29_C_WS_0000R_PG_init = 3391,$0000,$F91D,29,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $00,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p29_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,38,'TGL-104.3 postel P - F911D pri dverach',
+                                   $03,7,$01,$41,$44,$44,$07,$44,$44,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p30_C_WS_0000R_PG_init = 3391,$0000,$F8FD,30,6,
+                                                     $00,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $00,$00,24,0,
+                                                     70,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p30_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,37,'TGL-104.1 pri dverach - F8FD postel p',
+                                   $03,7,$41,$41,$93,$44,$07,$44,$44,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r4146_p31_C_WS_0000R_PG_init = 3391,$0000,$F921,31,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r4146_p31_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,18,'TGL-104.2 postel L',
+                                   $03,7,$01,$41,$44,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-RQ-0600
+#table TCIB_3361_init r21040_p0_C_RQ_0600_init = 3361,$0000,$F344,0,6,
+                                                 $00,$00,16,0,
+                                                 $00,$00,16,0,
+                                                 $83,$00,16,8,
+                                                 $00,$00,32,0,
+                                                 $00,$00,16,0,
+                                                 $00,$00,16,0,
+                                                 $00,
+                                                 70,
+                                                 0,
+                                                 $22,
+                                                 $22,
+                                                 0,
+                                                 0,
+                                                 0
+
+;C-RQ-0600 - Inicializacni tabulka driveru
+#table BYTE r21040_p0_DriverInit = $01,9,'C-RQ-0600',
+                                   $02,15,'CO2-002 Vinaren',
+                                   $03,6,$42,$42,$84,$48,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r21040_p1_C_WS_0000R_PG_init = 3391,$0000,$0947,1,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r21040_p1_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,27,'TGL-002 Vinaren pri dverach',
+                                   $03,7,$01,$41,$93,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0000R-PG
+#table TCIB_3391_init r21040_p2_C_WS_0000R_PG_init = 3391,$0000,$F77D,2,6,
+                                                     $80,$00,8,0,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $83,$00,56,96,
+                                                     $80,$00,24,0,
+                                                     70,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0
+
+;C-WS-0000R-PG - Inicializacni tabulka driveru
+#table BYTE r21040_p2_DriverInit = $01,13,'C-WS-0000R-PG',
+                                   $02,28,'TGL-001-Chodba-0 pri vinarni',
+                                   $03,7,$01,$41,$93,$44,$07,$93,$82,
+                                   $04,1,$0C,
+                                   $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r21040_p3_C_WS_0200R_Lo_init = 3356,$0000,$AFBE,3,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $28,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r21040_p3_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,28,'WS-003 Technicka/pri dverach',
+                                   $03,5,$03,$41,$93,$93,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r21040_p4_C_WS_0200R_Lo_init = 3356,$0000,$AFB2,4,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r21040_p4_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,26,'WS-006 WC v technickej 003',
+                                   $03,5,$03,$41,$44,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r21040_p5_C_WS_0200R_Lo_init = 3356,$0000,$5C6F,5,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r21040_p5_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,12,'WS-005 Sklad',
+                                   $03,5,$03,$41,$93,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r21040_p6_C_WS_0200R_Lo_init = 3356,$0000,$37FB,6,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $80,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     $80,$00,16,0,
+                                                     0,
+                                                     $28,
+                                                     $28,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r21040_p6_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,24,'WS-004.2 Fitko do skladu',
+                                   $03,5,$03,$41,$93,$93,$93,
+                                   $04,1,$01,
+                                   $00
+
+;C-WS-0200R-Logus
+#table TCIB_3356_init r21040_p7_C_WS_0200R_Lo_init = 3356,$0000,$AFB6,7,5,
+                                                     $83,$00,24,8,
+                                                     $00,$00,8,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     $00,$00,16,0,
+                                                     0,
+                                                     $22,
+                                                     $22,
+                                                     0,
+                                                     0,
+                                                     0,
+                                                     70
+
+;C-WS-0200R-Logus - Inicializacni tabulka driveru
+#table BYTE r21040_p7_DriverInit = $01,16,'C-WS-0200R-Logus',
+                                   $02,21,'WS-004 Fitko z chodby',
+                                   $03,5,$03,$41,$44,$44,$44,
+                                   $04,1,$01,
+                                   $00
+
+;C-JC-0201B - Inicializacni tabulka driveru
+#table BYTE r21040_p8_DriverInit = $01,10,'C-JC-0201B',
+                                   $02,28,'X10 2xMale zaluzie na Terase',
+                                   $03,1,$01,
+                                   $04,2,$01,$41,
+                                   $00
+
+;C-JC-0201B
+#table TCIB_3369_old_init r21040_p8_C_JC_0201B_init = 3369,$0000,$FB42,8,2,
+                                                      $80,$00,8,0,
+                                                      $81,$00,0,2,
+                                                      70,
+                                                      30
+
+;CF-2141 - Inicializacní tabulka modulu CF-2141
+#table _TTS_SX2192 r82_p0_Table = 2192,$02,$00
+
+;CF-2141 - Inicializacni tabulka driveru
+#table BYTE r82_p0_DriverInit = $01,7,'CF-2141',
+                                $02,15,'ETH/CIB Gateway',
+                                $00
+
+;ETH1_UNI0 - Inicializacni tabulka UNI režimu kanálu Ethernet
+#table _TTS_UNIINIT_ETH r0_p0_Table_UNI_ETH1_UNI0 = 197,2,5,0,14,0,0,0,0,0,$07E1,0,0,0,0,0,0,0,0,0,0,516,516,__offset32(UNI_ETH1_UNI0_IN),__offset32(UNI_ETH1_UNI0_OUT),0,0,0,0,33,0,0,0,0,0,0,0,0,0,0,
+                                                    $00000000,
+                                                    61000,
+                                                    61000
+
+;ETH1_UNI0 - Inicializacni tabulka driveru
+#table BYTE r0_p0_DriverInit_ETH1_UNI0 = $01,9,'ETH1_UNI0',
+                                         $02,12,'Obecný kanál',
+                                         $00
+
+;CP-2000 - Initialization table of CP-2000 IO device
+#table _TTS_IR2553 r16_p6_IO_Table = 2553,$00,$01,
+                                     22,
+                                     1,
+                                     128,
+                                     0,
+                                     $00,$00,$00,$00,
+                                     $00,$00,$00,$00,
+                                     $00,$00,$00,$00,
+                                     $00,$00,$00,$00,
+                                     128,
+                                     0,
+                                     0,
+                                     0,
+                                     128,
+                                     0,0,0,0,0,0,0,0,
+                                     1,1,1,1,0,0,0,0,
+                                     $2C,0,0,1,
+                                     $2C,0,0,1,
+                                     $2C,0,0,1,
+                                     $2C,0,0,1
+
+;CP-2000 - Initialization table of OI-2872 device
+#table _TTS_OI2872 r16_p7_DISP_Table = 2872,$02,$01,
+                                       1,
+                                       5,
+                                       $80,
+                                       $80,
+                                       $80,
+                                       $80,
+                                       $80,
+                                       $00,
+                                       1250,
+                                       15,
+                                       $80,
+                                       60,
+                                       $00040014
+
+;CP-2000 - Inicializacní tabulka virtuálního rozhraní ETCL
+#table _TTS_ETCL r0_p0_ETH2_ETCL_Table = 2000,$00,$00,
+                                         $AC110001,
+                                         $FFFFFF00
+
+;C-DL-0064M
+#module TModulE2 $02,3354,$1030,0,9,__sizeof(r4144_p0_IN),__sizeof(r4144_p0_OUT),__offset(r4144_p0_IN),__offset(r4144_p0_OUT),__indx(r4144_p0_C_DL0064M_init),__indx(r4144_p0_DriverInit)
+
+;C-IT-0504S
+#module TModulE2 $02,3326,$1030,1,9,__sizeof(r4144_p1_IN),__sizeof(r4144_p1_OUT),__offset(r4144_p1_IN),__offset(r4144_p1_OUT),__indx(r4144_p1_C_IT_0504S_init),__indx(r4144_p1_DriverInit)
+
+;C-OR-0011M-800
+#module TModulE2 $02,3367,$1030,2,9,__sizeof(r4144_p2_IN),__sizeof(r4144_p2_OUT),__offset(r4144_p2_IN),__offset(r4144_p2_OUT),__indx(r4144_p2_C_OR_0011M_800_init),__indx(r4144_p2_DriverInit)
+
+;C-JC-0006M
+#module TModulE2 $02,3368,$1030,3,9,__sizeof(r4144_p3_IN),__sizeof(r4144_p3_OUT),__offset(r4144_p3_IN),__offset(r4144_p3_OUT),__indx(r4144_p3_C_JC_0006M_init),__indx(r4144_p3_DriverInit)
+
+;C-JC-0006M
+#module TModulE2 $02,3368,$1030,4,9,__sizeof(r4144_p4_IN),__sizeof(r4144_p4_OUT),__offset(r4144_p4_IN),__offset(r4144_p4_OUT),__indx(r4144_p4_C_JC_0006M_init),__indx(r4144_p4_DriverInit)
+
+;C-OR-0011M-800
+#module TModulE2 $02,3367,$1030,5,9,__sizeof(r4144_p5_IN),__sizeof(r4144_p5_OUT),__offset(r4144_p5_IN),__offset(r4144_p5_OUT),__indx(r4144_p5_C_OR_0011M_800_init),__indx(r4144_p5_DriverInit)
+
+;C-OR-0011M-800
+#module TModulE2 $02,3367,$1030,6,9,__sizeof(r4144_p6_IN),__sizeof(r4144_p6_OUT),__offset(r4144_p6_IN),__offset(r4144_p6_OUT),__indx(r4144_p6_C_OR_0011M_800_init),__indx(r4144_p6_DriverInit)
+
+;C-OR-0011M-800
+#module TModulE2 $02,3367,$1030,7,9,__sizeof(r4144_p7_IN),__sizeof(r4144_p7_OUT),__offset(r4144_p7_IN),__offset(r4144_p7_OUT),__indx(r4144_p7_C_OR_0011M_800_init),__indx(r4144_p7_DriverInit)
+
+;C-JC-0006M
+#module TModulE2 $02,3368,$1030,8,9,__sizeof(r4144_p8_IN),__sizeof(r4144_p8_OUT),__offset(r4144_p8_IN),__offset(r4144_p8_OUT),__indx(r4144_p8_C_JC_0006M_init),__indx(r4144_p8_DriverInit)
+
+;C-KY-0001R
+#module TModulE2 $02,3384,$1030,9,9,__sizeof(r4144_p9_IN),__sizeof(r4144_p9_OUT),__offset(r4144_p9_IN),__offset(r4144_p9_OUT),__indx(r4144_p9_C_KY_0001R_init),__indx(r4144_p9_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$1030,14,9,__sizeof(r4144_p14_IN),__sizeof(r4144_p14_OUT),__offset(r4144_p14_IN),__offset(r4144_p14_OUT),__indx(r4144_p14_C_WS_0200R_Lo_init),__indx(r4144_p14_DriverInit)
+
+;C-JC-0201B
+#module TModulE2 $02,3369,$1030,16,9,__sizeof(r4144_p16_IN),__sizeof(r4144_p16_OUT),__offset(r4144_p16_IN),__offset(r4144_p16_OUT),__indx(r4144_p16_C_JC_0201B_init),__indx(r4144_p16_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1030,17,9,__sizeof(r4144_p17_IN),__sizeof(r4144_p17_OUT),__offset(r4144_p17_IN),__offset(r4144_p17_OUT),__indx(r4144_p17_C_WS_0000R_PG_init),__indx(r4144_p17_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1030,18,9,__sizeof(r4144_p18_IN),__sizeof(r4144_p18_OUT),__offset(r4144_p18_IN),__offset(r4144_p18_OUT),__indx(r4144_p18_C_WS_0000R_PG_init),__indx(r4144_p18_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1030,20,9,__sizeof(r4144_p20_IN),__sizeof(r4144_p20_OUT),__offset(r4144_p20_IN),__offset(r4144_p20_OUT),__indx(r4144_p20_C_WS_0000R_PG_init),__indx(r4144_p20_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1030,21,9,__sizeof(r4144_p21_IN),__sizeof(r4144_p21_OUT),__offset(r4144_p21_IN),__offset(r4144_p21_OUT),__indx(r4144_p21_C_WS_0000R_PG_init),__indx(r4144_p21_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1030,22,9,__sizeof(r4144_p22_IN),__sizeof(r4144_p22_OUT),__offset(r4144_p22_IN),__offset(r4144_p22_OUT),__indx(r4144_p22_C_WS_0000R_PG_init),__indx(r4144_p22_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1030,23,9,__sizeof(r4144_p23_IN),__sizeof(r4144_p23_OUT),__offset(r4144_p23_IN),__offset(r4144_p23_OUT),__indx(r4144_p23_C_WS_0000R_PG_init),__indx(r4144_p23_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1030,24,9,__sizeof(r4144_p24_IN),__sizeof(r4144_p24_OUT),__offset(r4144_p24_IN),__offset(r4144_p24_OUT),__indx(r4144_p24_C_WS_0000R_PG_init),__indx(r4144_p24_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1030,25,9,__sizeof(r4144_p25_IN),__sizeof(r4144_p25_OUT),__offset(r4144_p25_IN),__offset(r4144_p25_OUT),__indx(r4144_p25_C_WS_0000R_PG_init),__indx(r4144_p25_DriverInit)
+
+;C-RQ-0600
+#module TModulE2 $02,3361,$1030,26,9,__sizeof(r4144_p26_IN),__sizeof(r4144_p26_OUT),__offset(r4144_p26_IN),__offset(r4144_p26_OUT),__indx(r4144_p26_C_RQ_0600_init),__indx(r4144_p26_DriverInit)
+
+;C-JC-0201B
+#module TModulE2 $02,3369,$1030,27,9,__sizeof(r4144_p27_IN),__sizeof(r4144_p27_OUT),__offset(r4144_p27_IN),__offset(r4144_p27_OUT),__indx(r4144_p27_C_JC_0201B_init),__indx(r4144_p27_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1030,28,9,__sizeof(r4144_p28_IN),__sizeof(r4144_p28_OUT),__offset(r4144_p28_IN),__offset(r4144_p28_OUT),__indx(r4144_p28_C_WS_0000R_PG_init),__indx(r4144_p28_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1030,30,9,__sizeof(r4144_p30_IN),__sizeof(r4144_p30_OUT),__offset(r4144_p30_IN),__offset(r4144_p30_OUT),__indx(r4144_p30_C_WS_0000R_PG_init),__indx(r4144_p30_DriverInit)
+
+;C-LC-0202B
+#module TModulE2 $02,3370,$1032,0,9,__sizeof(r4146_p0_IN),__sizeof(r4146_p0_OUT),__offset(r4146_p0_IN),__offset(r4146_p0_OUT),__indx(r4146_p0_C_LC_0202B_init),__indx(r4146_p0_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,1,9,__sizeof(r4146_p1_IN),__sizeof(r4146_p1_OUT),__offset(r4146_p1_IN),__offset(r4146_p1_OUT),__indx(r4146_p1_C_WS_0000R_PG_init),__indx(r4146_p1_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,2,9,__sizeof(r4146_p2_IN),__sizeof(r4146_p2_OUT),__offset(r4146_p2_IN),__offset(r4146_p2_OUT),__indx(r4146_p2_C_WS_0000R_PG_init),__indx(r4146_p2_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,3,9,__sizeof(r4146_p3_IN),__sizeof(r4146_p3_OUT),__offset(r4146_p3_IN),__offset(r4146_p3_OUT),__indx(r4146_p3_C_WS_0000R_PG_init),__indx(r4146_p3_DriverInit)
+
+;C-DL-0064M
+#module TModulE2 $02,3354,$1032,4,9,__sizeof(r4146_p4_IN),__sizeof(r4146_p4_OUT),__offset(r4146_p4_IN),__offset(r4146_p4_OUT),__indx(r4146_p4_C_DL0064M_init),__indx(r4146_p4_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,5,9,__sizeof(r4146_p5_IN),__sizeof(r4146_p5_OUT),__offset(r4146_p5_IN),__offset(r4146_p5_OUT),__indx(r4146_p5_C_WS_0000R_PG_init),__indx(r4146_p5_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,6,9,__sizeof(r4146_p6_IN),__sizeof(r4146_p6_OUT),__offset(r4146_p6_IN),__offset(r4146_p6_OUT),__indx(r4146_p6_C_WS_0000R_PG_init),__indx(r4146_p6_DriverInit)
+
+;C-JC-0201B
+#module TModulE2 $02,3369,$1032,7,9,__sizeof(r4146_p7_IN),__sizeof(r4146_p7_OUT),__offset(r4146_p7_IN),__offset(r4146_p7_OUT),__indx(r4146_p7_C_JC_0201B_init),__indx(r4146_p7_DriverInit)
+
+;C-JC-0201B
+#module TModulE2 $02,3369,$1032,8,9,__sizeof(r4146_p8_IN),__sizeof(r4146_p8_OUT),__offset(r4146_p8_IN),__offset(r4146_p8_OUT),__indx(r4146_p8_C_JC_0201B_init),__indx(r4146_p8_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,9,9,__sizeof(r4146_p9_IN),__sizeof(r4146_p9_OUT),__offset(r4146_p9_IN),__offset(r4146_p9_OUT),__indx(r4146_p9_C_WS_0000R_PG_init),__indx(r4146_p9_DriverInit)
+
+;C-JC-0201B
+#module TModulE2 $02,3369,$1032,10,9,__sizeof(r4146_p10_IN),__sizeof(r4146_p10_OUT),__offset(r4146_p10_IN),__offset(r4146_p10_OUT),__indx(r4146_p10_C_JC_0201B_init),__indx(r4146_p10_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,11,9,__sizeof(r4146_p11_IN),__sizeof(r4146_p11_OUT),__offset(r4146_p11_IN),__offset(r4146_p11_OUT),__indx(r4146_p11_C_WS_0000R_PG_init),__indx(r4146_p11_DriverInit)
+
+;C-OR-0202B
+#module TModulE2 $02,3302,$1032,12,9,__sizeof(r4146_p12_IN),__sizeof(r4146_p12_OUT),__offset(r4146_p12_IN),__offset(r4146_p12_OUT),__indx(r4146_p12_C_OR_0202B_init),__indx(r4146_p12_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,13,9,__sizeof(r4146_p13_IN),__sizeof(r4146_p13_OUT),__offset(r4146_p13_IN),__offset(r4146_p13_OUT),__indx(r4146_p13_C_WS_0000R_PG_init),__indx(r4146_p13_DriverInit)
+
+;C-IT-0504S
+#module TModulE2 $02,3326,$1032,14,9,__sizeof(r4146_p14_IN),__sizeof(r4146_p14_OUT),__offset(r4146_p14_IN),__offset(r4146_p14_OUT),__indx(r4146_p14_C_IT_0504S_init),__indx(r4146_p14_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,15,9,__sizeof(r4146_p15_IN),__sizeof(r4146_p15_OUT),__offset(r4146_p15_IN),__offset(r4146_p15_OUT),__indx(r4146_p15_C_WS_0000R_PG_init),__indx(r4146_p15_DriverInit)
+
+;C-IT-0504S
+#module TModulE2 $02,3326,$1032,16,9,__sizeof(r4146_p16_IN),__sizeof(r4146_p16_OUT),__offset(r4146_p16_IN),__offset(r4146_p16_OUT),__indx(r4146_p16_C_IT_0504S_init),__indx(r4146_p16_DriverInit)
+
+;C-IR-0202S
+#module TModulE2 $02,3325,$1032,17,9,__sizeof(r4146_p17_IN),__sizeof(r4146_p17_OUT),__offset(r4146_p17_IN),__offset(r4146_p17_OUT),__indx(r4146_p17_C_IR_0202S_init),__indx(r4146_p17_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,18,9,__sizeof(r4146_p18_IN),__sizeof(r4146_p18_OUT),__offset(r4146_p18_IN),__offset(r4146_p18_OUT),__indx(r4146_p18_C_WS_0000R_PG_init),__indx(r4146_p18_DriverInit)
+
+;C-WG-0503S
+#module TModulE2 $02,3353,$1032,19,9,__sizeof(r4146_p19_IN),__sizeof(r4146_p19_OUT),__offset(r4146_p19_IN),__offset(r4146_p19_OUT),__indx(r4146_p19_C_WG_0503S_init),__indx(r4146_p19_DriverInit)
+
+;C-JC-0201B
+#module TModulE2 $02,3369,$1032,20,9,__sizeof(r4146_p20_IN),__sizeof(r4146_p20_OUT),__offset(r4146_p20_IN),__offset(r4146_p20_OUT),__indx(r4146_p20_C_JC_0201B_init),__indx(r4146_p20_DriverInit)
+
+;C-JC-0201B
+#module TModulE2 $02,3369,$1032,24,9,__sizeof(r4146_p24_IN),__sizeof(r4146_p24_OUT),__offset(r4146_p24_IN),__offset(r4146_p24_OUT),__indx(r4146_p24_C_JC_0201B_init),__indx(r4146_p24_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$1032,25,9,__sizeof(r4146_p25_IN),__sizeof(r4146_p25_OUT),__offset(r4146_p25_IN),__offset(r4146_p25_OUT),__indx(r4146_p25_C_WS_0200R_Lo_init),__indx(r4146_p25_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$1032,26,9,__sizeof(r4146_p26_IN),__sizeof(r4146_p26_OUT),__offset(r4146_p26_IN),__offset(r4146_p26_OUT),__indx(r4146_p26_C_WS_0200R_Lo_init),__indx(r4146_p26_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,27,9,__sizeof(r4146_p27_IN),__sizeof(r4146_p27_OUT),__offset(r4146_p27_IN),__offset(r4146_p27_OUT),__indx(r4146_p27_C_WS_0000R_PG_init),__indx(r4146_p27_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,28,9,__sizeof(r4146_p28_IN),__sizeof(r4146_p28_OUT),__offset(r4146_p28_IN),__offset(r4146_p28_OUT),__indx(r4146_p28_C_WS_0000R_PG_init),__indx(r4146_p28_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,29,9,__sizeof(r4146_p29_IN),__sizeof(r4146_p29_OUT),__offset(r4146_p29_IN),__offset(r4146_p29_OUT),__indx(r4146_p29_C_WS_0000R_PG_init),__indx(r4146_p29_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,30,9,__sizeof(r4146_p30_IN),__sizeof(r4146_p30_OUT),__offset(r4146_p30_IN),__offset(r4146_p30_OUT),__indx(r4146_p30_C_WS_0000R_PG_init),__indx(r4146_p30_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$1032,31,9,__sizeof(r4146_p31_IN),__sizeof(r4146_p31_OUT),__offset(r4146_p31_IN),__offset(r4146_p31_OUT),__indx(r4146_p31_C_WS_0000R_PG_init),__indx(r4146_p31_DriverInit)
+
+;C-RQ-0600
+#module TModulE2 $02,3361,$5230,0,9,__sizeof(r21040_p0_IN),__sizeof(r21040_p0_OUT),__offset(r21040_p0_IN),__offset(r21040_p0_OUT),__indx(r21040_p0_C_RQ_0600_init),__indx(r21040_p0_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$5230,1,9,__sizeof(r21040_p1_IN),__sizeof(r21040_p1_OUT),__offset(r21040_p1_IN),__offset(r21040_p1_OUT),__indx(r21040_p1_C_WS_0000R_PG_init),__indx(r21040_p1_DriverInit)
+
+;C-WS-0000R-PG
+#module TModulE2 $02,3391,$5230,2,9,__sizeof(r21040_p2_IN),__sizeof(r21040_p2_OUT),__offset(r21040_p2_IN),__offset(r21040_p2_OUT),__indx(r21040_p2_C_WS_0000R_PG_init),__indx(r21040_p2_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$5230,3,9,__sizeof(r21040_p3_IN),__sizeof(r21040_p3_OUT),__offset(r21040_p3_IN),__offset(r21040_p3_OUT),__indx(r21040_p3_C_WS_0200R_Lo_init),__indx(r21040_p3_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$5230,4,9,__sizeof(r21040_p4_IN),__sizeof(r21040_p4_OUT),__offset(r21040_p4_IN),__offset(r21040_p4_OUT),__indx(r21040_p4_C_WS_0200R_Lo_init),__indx(r21040_p4_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$5230,5,9,__sizeof(r21040_p5_IN),__sizeof(r21040_p5_OUT),__offset(r21040_p5_IN),__offset(r21040_p5_OUT),__indx(r21040_p5_C_WS_0200R_Lo_init),__indx(r21040_p5_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$5230,6,9,__sizeof(r21040_p6_IN),__sizeof(r21040_p6_OUT),__offset(r21040_p6_IN),__offset(r21040_p6_OUT),__indx(r21040_p6_C_WS_0200R_Lo_init),__indx(r21040_p6_DriverInit)
+
+;C-WS-0200R-Logus
+#module TModulE2 $02,3356,$5230,7,9,__sizeof(r21040_p7_IN),__sizeof(r21040_p7_OUT),__offset(r21040_p7_IN),__offset(r21040_p7_OUT),__indx(r21040_p7_C_WS_0200R_Lo_init),__indx(r21040_p7_DriverInit)
+
+;C-JC-0201B
+#module TModulE2 $02,3369,$5230,8,9,__sizeof(r21040_p8_IN),__sizeof(r21040_p8_OUT),__offset(r21040_p8_IN),__offset(r21040_p8_OUT),__indx(r21040_p8_C_JC_0201B_init),__indx(r21040_p8_DriverInit)
+
+;CF-2141 - Deklarace rozhraní CIB
+#module TModulE2 $02,2192,$52,0,$E1,__sizeof(r82_p0_CIB_DIAG),__sizeof(r82_p0_CIB_CONTROL),__offset(r82_p0_CIB_DIAG),__offset(r82_p0_CIB_CONTROL),__indx(r82_p0_Table),__indx(r82_p0_DriverInit)
+
+;ETH1_UNI0 - Deklarace UNI_ETH
+#module TModulE2 $02,2000,$0,0,$FFFFFFFF,__sizeof(r0_p0_Statistic_ETH1_UNI0),__sizeof(r0_p0_Control_ETH1_UNI0),__offset(r0_p0_Statistic_ETH1_UNI0),__offset(r0_p0_Control_ETH1_UNI0),__indx(r0_p0_Table_UNI_ETH1_UNI0),__indx(r0_p0_DriverInit_ETH1_UNI0)
+
+;CP-2000 - IBus virtual interface declaration
+#module TModulE2 $02,0,$0,0,$C9,__sizeof(r0_p0_ITCL_DIAG),__sizeof(r0_p0_ITCL_CONTROL),__offset(r0_p0_ITCL_DIAG),__offset(r0_p0_ITCL_CONTROL),-1,-1
+
+;CP-2000 - TCL2 interface declaration
+#module TModulE2 $02,2190,$10,1,$C1,__sizeof(r16_p1_TCL2_DIAG),__sizeof(r16_p1_TCL2_CONTROL),__offset(r16_p1_TCL2_DIAG),__offset(r16_p1_TCL2_CONTROL),-1,-1
+
+;CP-2000 - CIB interface declaration
+#module TModulE2 $02,2190,$10,1,$E2,__sizeof(r16_p1_CIB_DIAG),__sizeof(r16_p1_CIB_CONTROL),__offset(r16_p1_CIB_DIAG),__offset(r16_p1_CIB_CONTROL),-1,-1
+
+;CP-2000 - CIB interface declaration
+#module TModulE2 $02,2191,$10,2,$E2,__sizeof(r16_p2_CIB_DIAG),__sizeof(r16_p2_CIB_CONTROL),__offset(r16_p2_CIB_DIAG),__offset(r16_p2_CIB_CONTROL),-1,-1
+
+;CP-2000 - I/O interface declaration
+#module TModulE2 $02,2553,$10,6,$09,__sizeof(r16_p6_IO_IN),__sizeof(r16_p6_IO_OUT),__offset(r16_p6_IO_IN),__offset(r16_p6_IO_OUT),__indx(r16_p6_IO_Table),-1
+
+;CP-2000 - User display interface declaration
+#module TModulE2 $02,2872,$10,7,$4A,__sizeof(r16_p7_DISP_IN),__sizeof(r16_p7_DISP_OUT),__offset(r16_p7_DISP_IN),__offset(r16_p7_DISP_OUT),__indx(r16_p7_DISP_Table),-1
+
+;CP-2000 - Deklarace virtuálního rozhraní ETCL
+#module TModulE2 $02,0,$0,0,$D2,__sizeof(r0_p0_ETH2_ETCL_DIAG),__sizeof(r0_p0_ETH2_ETCL_CONTROL),__offset(r0_p0_ETH2_ETCL_DIAG),__offset(r0_p0_ETH2_ETCL_CONTROL),__indx(r0_p0_ETH2_ETCL_Table),-1
+
+;CP-2000 - CPU module declaration
+#module TModulE2 $02,2000,$0,0,$0,0,0,0,0,-1,-1
+
+;*******************************************************************************
+;Generováno programem Mosaic
+;© 2001-2026 Teco a.s.

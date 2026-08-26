@@ -1,0 +1,5 @@
+[ProjectGroup]
+CustomLogin\CustomLogin.plc
+SimpleCustomLogin\SimpleCustomLogin.plc
+SimpleCustomLoginWithKeys\SimpleCustomLoginWithKeys.plc
+*AutoLogin\AutoLogin.plc

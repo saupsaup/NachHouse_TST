@@ -1,23 +1,98 @@
-### AL ###
-#Template for AL projects for Dynamics 365 Business Central
-#launch.json folder
-.vscode/
-#Cache folder
-.alcache/
-#Symbols folder
-.alpackages/
-#Snapshots folder
-.snapshots/
-#Testing Output folder
-.output/
-#Extension App-file
-*.app
-#Rapid Application Development File
-rad.json
-#Translation Base-file
-*.g.xlf
-#License-files
-*.bclicense
-*.flf
-#Test results file
-TestResults.xml
+# ================================
+# NachHouse CORE – Git ignore
+# ================================
+
+# --- VS Code / projektové veci, ktoré NEchceš v repozitári ---
+# (Ak chceš .vscode a workspace verzovať, nechaj tieto riadky zakomentované)
+# .vscode/
+# NachHouse.code-workspace
+
+# --- Foxtrot / Mosaic generované a pomocné priečinky ---
+# ignoruj všetky súbory vo FRM
+**/FRM/*
+# ignoruj súbory *.FRM vo FRM
+#**/FRM/*.FRM							
+
+# ---- Build / generated ----
+program.directories
+program.structure
+
+# --- Mosaic / Foxtrot súbory, ktoré sú vždy generované alebo binárky ---
+# root
+
+*.TTR
+*.DSK
+.download
+*.tmp
+*.~*
+*.bak
+*.bak.big
+*._m_
+*.prg
+*.pub
+*.lst
+*.map
+*.70?
+*.mtb
+
+#*/GPMaker/
+#//**/SendBackup/
+#**/IOConfigurator/Backup/
+**/SendRoot/WWW/**
+**/Sysgen/**
+**/WebMaker/images/**
+**/WebMaker/temp/**
+
+**/GraphMaker/
+**/Root/
+**/SendRoot/
+**/Sysgen/
+**/Backup/
+**/SendBackup/
+**/DATA_SIM/
+# *.dbx        # RAM save (odkomentuj ak chceš ignorovať)
+*.filelist
+
+# ale sleduj všetky *.NH2 kdekoľvek (aj vo FRM)
+!**/*.NH2
+!*.hwc
+!*.hwcx
+!SelectPLC.cfg
+
+
+# --- Logy (globálne) ---
+*.log
+
+#######################################################################
+# Všeobecné systémové súbory
+#######################################################################
+.DS_Store
+Thumbs.db
+desktop.ini
+
+#######################################################################
+# Archívy a exporty
+#######################################################################
+*.zip
+*.7z
+*.rar
+*.tar
+*.gz
+
+#######################################################################
+# Office a iné veľké dokumenty
+#######################################################################
+*.doc
+*.docx
+*.xls
+*.xlsx
+*.ppt
+*.pptx
+
+#######################################################################
+# Python/Node (ak niečo testuješ)
+#######################################################################
+__pycache__/
+node_modules/
+
+

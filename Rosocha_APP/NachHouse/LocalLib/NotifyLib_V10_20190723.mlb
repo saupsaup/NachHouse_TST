@@ -1,0 +1,1653 @@
+(*` {CSY}Knihovna vývojového systému Mosaic{ENU}Mosaic IDE library *)
+(*` {CSY}Jméno souboru{ENU}File name{} : D:\MosaicLib\NotifyLib_V10_20190723.mlb *)
+(*` {CSY}Knihovna : NotifyLib{ENU}Library : NotifyLib{} 1.0 *)
+(*` {CSY}Autor{ENU}Author{} : Teco a.s. *)
+(*` {CSY}Autorská práva{ENU}Copyright{} :  *)
+(*` {CSY}Verze IEC pøekladaèe{ENU}IEC compiler version{} : 4.2.2.2 *)
+(*` {CSY}Verze assembleru{ENU}Assembler version{} : 4.3.00 *)
+
+//{Knihovna : NotifyLib 1.0  }
+(*----------------------------------------------------------------------------*)
+// {LIBRARY="LOCALLIB\STDLIB_V22_20180619.MLB"}
+{LIBRARY="LOCALLIB\SYSLIB_V41_20190710.MLB"}
+{LIBRARY="LOCALLIB\COMLIB_V31_20190507.MLB"}
+{LIBRARY="LOCALLIB\FILELIB_V25_20190605.MLB"}
+{LIBRARY="LOCALLIB\ENCRYPTLIB_V12_20160923.MLB"}
+{LIBRARY="LOCALLIB\INTERNETLIB_V47_20190606.MLB"}
+
+TYPE TWebPushNotif :
+  STRUCT
+    title            : string [40];  (*`titulek*)
+    body             : string [100];  (*`hlavni text*)
+    badge            : string [255];  (*`url pro zobrazeni symbolu*)
+    icon             : string [255];  (*`url pro zobrazeni ikony*)
+    image            : string [255];  (*`url pro zobrazeni obrazku*)
+    vibrate          : string [80];  (*`definice vibrace pri zobrazeni notifikace*)
+  END_STRUCT;
+END_TYPE
+
+VAR_GLOBAL
+ NotifySubscribe AT %S74.0 : bool;
+
+END_VAR
+
+__DECL FUNCTION fcAppendString {HIDDEN} : udint
+  VAR_INPUT
+    stringToAppend   : string [255];
+    currentLen       : udint;
+    bufferSize       : udint;
+  END_VAR
+  VAR
+    pString          : PTR_TO string [255];
+  END_VAR
+  VAR_IN_OUT
+    buffer           : usint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION_BLOCK fbWebPushService
+(*`{CSY} Funkèní blok pro odesílání upozornìní
+  {ENU} Function block for notifications sending*)
+  VAR_INPUT
+    init             : bool R_EDGE;
+    send             : bool R_EDGE;
+    serverAddr       : TIPadr :=  [127,0,0,1];
+    serverPort       : uint :=  5001;
+    chanCode         : uint;
+    charset          : string [25] :=  'win1250';
+    key              : string [80];
+  END_VAR
+  VAR_OUTPUT
+    ready            : bool;
+    subscriptions    : uint;
+    done             : bool;
+    busy             : bool;
+    err              : usint;
+  END_VAR
+  VAR
+    state            : usint;
+    request          : fbHttpRequestL2;
+    postData         : THttpPostData;
+    response         : THttpBuffer;
+    action           : string [10];
+    contentType      : string [80];
+    get              : bool;
+    post             : bool;
+    totalLen         : uint;
+  END_VAR
+  VAR_IN_OUT
+    notification     : TWebPushNotif;
+  END_VAR
+END_FUNCTION_BLOCK
+
+
+
+{USES=fbWebPushService:OpenUniChannel,GetChanIndex,CloseUniChannel,FileOpen,FileRead,FileClose,FileDelete,RC4,fcAppendString,IPADR_TO_STRING,FileWrite,FileExists}
+#srcfile 'D:\MOSAICAPP\NOTIFYLIB\NOTIFYLIB\FBWEBPUSHSERVICE.ST'
+#pou fcAppendString
+#srcline 20 ;FUNCTION fcAppendString {HIDDEN} : UDINT
+
+#struct fcAppendString__temp__
+  string[257] PS0__st__
+P     61
+fcAppendString_L0:
+ LINK __SizeOf(fcAppendString__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__fcAppendString
+ LD   -1
+ WRX  pString
+; End initialize - variables
+#srcline 35 ;  IF currentLen + LEN(stringToAppend) > bufferSize THEN
+ LDX  currentLen
+#debug udint currentLen
+ LEAX stringToAppend
+#debug string stringToAppend
+ SLEN 
+ ADD
+ LDX  bufferSize
+#debug udint bufferSize
+ GT
+ JMC  fcAppendString_L1
+#srcline 36 ;    fcAppendString := 0;
+ LD   udint 0
+ WRX  __fc__fcAppendString
+#debug_left udint fcAppendString
+#srcline 37 ;  ELSE
+ JMP  fcAppendString_L2
+fcAppendString_L1:
+#srcline 38 ;    pString := ADR(buffer) + currentLen;
+ LDX  buffer
+#debug pointer buffer
+ LDX  currentLen
+#debug udint currentLen
+ ADD
+ LEAX pString
+ WRIL 
+#debug_left pointer pString
+#srcline 39 ;    pString^ := stringToAppend;
+ LD   0   ; null string
+ LEAX pString
+ LDIL    ; dereference 
+ WRI  
+ LEAX pString
+ LDIL    ; dereference 
+ LD   255
+ DST    ; Level 1
+ LEAX stringToAppend
+#debug string stringToAppend
+ SCON 
+#debug_left string pString^
+ PDST   ; Level 1
+#srcline 40 ;    fcAppendString := currentLen + LEN(stringToAppend);
+ LDX  currentLen
+#debug udint currentLen
+ LEAX stringToAppend
+#debug string stringToAppend
+ SLEN 
+ ADD
+ WRX  __fc__fcAppendString
+#debug_left udint fcAppendString
+#srcline 41 ;  END_IF;
+fcAppendString_L2:
+#srcline 42 ;END_FUNCTION
+ PRV  
+ LDX  __fc__fcAppendString
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou fbWebPushService
+#srcline 45 ;FUNCTION_BLOCK fbWebPushService
+#table byte __Init___fbWebPushService_serverAddr = 
+    127,  0,  0,  1;
+#table byte __Init___fbWebPushService_charset = 
+    'w','i','n','1','2','5','0';
+#table byte __Init___fbWebPushService_subscriptionFileName = 
+    'W','W','W','/','U','P','L','O','A','D','/','N','O','T','I','F','Y','.','S','U','B';
+
+#table byte __Init___fbWebPushService_publicKeyFileName = 
+    'W','W','W','/','N','O','T','I','F','K','E','Y','.','J','S','N';
+
+#struct fbWebPushService__temp__
+  string[22] subscriptionFileName,
+  string[17] publicKeyFileName,
+  HANDLE file,  ;identifikátor souboru
+  string[81] hostName,
+  udint pos,
+  pointer ptr,
+  pointer pString,
+  udint P0__st__,
+  dint P1__st__,
+  string[257] PS0__st__
+#data byte _str_fbWebPushService_0 = 
+  'a','p','p','l','i','c','a','t','i','o','n','/','o','c','t','e','t','-','s','t',
+  'r','e','a','m',0
+#data byte _str_fbWebPushService_1 = 
+  '/','i','n','f','o',0
+#data byte _str_fbWebPushService_2 = 
+  'a','p','p','l','i','c','a','t','i','o','n','/','o','c','t','e','t','-','s','t',
+  'r','e','a','m',0
+#data byte _str_fbWebPushService_3 = 
+  '/','s','u','b','s','c','r','i','b','e',0
+#data byte _str_fbWebPushService_4 = 
+  '{','"','t','i','t','l','e','"',':','"',0
+#data byte _str_fbWebPushService_5 = 
+  '"',0
+#data byte _str_fbWebPushService_6 = 
+  ',','"','b','o','d','y','"',':','"',0
+#data byte _str_fbWebPushService_7 = 
+  '"',0
+#data byte _str_fbWebPushService_8 = 
+  ',','"','b','a','d','g','e','"',':','"',0
+#data byte _str_fbWebPushService_9 = 
+  '"',0
+#data byte _str_fbWebPushService_10 = 
+  ',','"','i','c','o','n','"',':','"',0
+#data byte _str_fbWebPushService_11 = 
+  '"',0
+#data byte _str_fbWebPushService_12 = 
+  ',','"','i','m','a','g','e','"',':','"',0
+#data byte _str_fbWebPushService_13 = 
+  '"',0
+#data byte _str_fbWebPushService_14 = 
+  ',','"','v','i','b','r','a','t','e','"',':',0
+#data byte _str_fbWebPushService_15 = 
+  '}',0
+#data byte _str_fbWebPushService_16 = 
+  'a','p','p','l','i','c','a','t','i','o','n','/','o','c','t','e','t','-','s','t',
+  'r','e','a','m',';',' ','c','h','a','r','s','e','t','=',0
+#data byte _str_fbWebPushService_17 = 
+  '/','n','o','t','i','f','y',0
+#data byte _str_fbWebPushService_18 = 
+  '"','s','u','b','s','c','r','i','p','t','i','o','n','s','"',':',0
+#data byte _str_fbWebPushService_19 = 
+  '"','k','e','y','s','"',':',0
+#data byte _str_fbWebPushService_20 = 
+  '}',0
+P     61
+fbWebPushService_L0:
+ LINK __SizeOf(fbWebPushService__temp__)
+; Initialize - dynamic variables
+ LD   0
+ SRC  byte __Init___fbWebPushService_subscriptionFileName
+ LEAY byte subscriptionFileName
+ LD   22
+ MOV  %X0
+ LD   0
+ SRC  byte __Init___fbWebPushService_publicKeyFileName
+ LEAY byte publicKeyFileName
+ LD   17
+ MOV  %X0
+ LD   udint $FFFFFFFF    ; nil
+ WRY  ptr
+ LD   udint $FFFFFFFF    ; nil
+ WRY  pString
+; End initialize - dynamic variables
+; R_EDGE, F_EDGE 
+ LDX  init
+ LETX __EDGE_R__init
+ WRX  init
+ LDX  send
+ LETX __EDGE_R__send
+ WRX  send
+#srcline 91 ;  IF busy THEN
+ LDX  busy
+#debug bool busy
+ JMC  fbWebPushService_L1
+#srcline 92 ;    IF request.chanCode = 0 THEN
+ LDX  request~chanCode
+#debug uint request.chanCode
+ LD   uint 0
+ EQ
+ JMC  fbWebPushService_L3
+#srcline 93 ;      request.chanCode := chanCode;
+ LDX  chanCode
+#debug uint chanCode
+ WRX  request~chanCode
+#debug_left uint request.chanCode
+#srcline 94 ;      IF System_S.S42 >= 16#49 THEN // check CPU type to CP-2xxx
+ LD   System_S~S42
+#debug byte System_S.S42
+ LD   byte $49
+ LT
+ NEG
+ JMC  fbWebPushService_L5
+#srcline 95 ;        IF chanCode <= 16#FF THEN
+ LDX  chanCode
+#debug uint chanCode
+ LD   uint $FF
+ GT
+ NEG
+ JMC  fbWebPushService_L7
+#srcline 96 ;          request.chanCode := OpenUniChannel(chanCode := chanCode, myPort := 0, hisIP := serverAddr, hisPort := serverPort, protocol := UNI_TCP_CLIENT);
+ NXT
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__OpenUniChannel~chanCode
+#debug_left uint __Instance__OpenUniChannel~chanCode
+ LD   uint 0
+ WR   __Instance__OpenUniChannel~myPort
+#debug_left uint __Instance__OpenUniChannel~myPort
+ LEAX serverAddr
+#debug pointer serverAddr
+ SRC  %IB0
+ LEA  __Instance__OpenUniChannel~hisIP
+#debug_left pointer __Instance__OpenUniChannel~hisIP
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDX  serverPort
+#debug uint serverPort
+ WR   __Instance__OpenUniChannel~hisPort
+#debug_left uint __Instance__OpenUniChannel~hisPort
+ LD   usint 33
+ WR   __Instance__OpenUniChannel~protocol
+#debug_left usint __Instance__OpenUniChannel~protocol
+ PRV
+ LEA  __Instance__OpenUniChannel
+ CAL  OpenUniChannel_L0
+ WRX  request~chanCode
+#debug_left uint request.chanCode
+#srcline 97 ;        END_IF;
+fbWebPushService_L7:
+#srcline 98 ;      END_IF;
+fbWebPushService_L5:
+#srcline 99 ;    END_IF;
+fbWebPushService_L3:
+#srcline 100 ;  ELSE
+ JMP  fbWebPushService_L2
+fbWebPushService_L1:
+#srcline 101 ;    IF GetChanIndex(request.chanCode) < 0 THEN
+ NXT
+ LDX  request~chanCode
+#debug uint request.chanCode
+ WR   __Instance__GetChanIndex~chanCode
+#debug_left uint __Instance__GetChanIndex~chanCode
+ PRV
+ LEA  __Instance__GetChanIndex
+ CAL  GetChanIndex_L0
+ LD   int 0
+ LTS
+ JMC  fbWebPushService_L9
+#srcline 102 ;      CloseUniChannel(chanHandle := request.chanCode);
+ NXT
+ LEAX request
+ ADD  1  ; + offset 
+ WR   __Instance__CloseUniChannel~chanHandle
+#debug_left pointer __Instance__CloseUniChannel.chanHandle
+ PRV
+ LEA  __Instance__CloseUniChannel
+ CAL  CloseUniChannel_L0
+#srcline 103 ;      request.chanCode := 0;
+ LD   uint 0
+ WRX  request~chanCode
+#debug_left uint request.chanCode
+#srcline 104 ;    END_IF;
+fbWebPushService_L9:
+#srcline 105 ;  END_IF;
+fbWebPushService_L2:
+#srcline 107 ;  case state OF
+ LDX  state
+#debug usint state
+ WRY  P0__st__
+ LD   0
+ LDY  P0__st__
+ EQ  
+ JMC  fbWebPushService_L12
+#srcline 108 ;    0: // IDLE state
+#srcline 110 ;      IF init THEN // initialization request
+ LDX  init
+#debug bool init
+ JMC  fbWebPushService_L13
+#srcline 111 ;        ready := FALSE;
+ LD   bool 0       ; false
+ WRX  ready
+#debug_left bool ready
+#srcline 112 ;        err := 0;
+ LD   usint 0
+ WRX  err
+#debug_left usint err
+#srcline 113 ;        // set the request params
+#srcline 114 ;        contentType := 'application/octet-stream';
+ LD   0   ; null string
+ LEAX contentType
+ WRI  
+ LEAX contentType
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_0
+ SCON 
+#debug_left string contentType
+ PDST   ; Level 1
+#srcline 115 ;        action := '/info';
+ LD   0   ; null string
+ LEAX action
+ WRI  
+ LEAX action
+ LD   10
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_1
+ SCON 
+#debug_left string action
+ PDST   ; Level 1
+#srcline 116 ;        get := TRUE;
+ LD   bool -1       ; true
+ WRX  get
+#debug_left bool get
+#srcline 117 ;        totalLen := 0;
+ LD   uint 0
+ WRX  totalLen
+#debug_left uint totalLen
+#srcline 118 ;        state := 1; // goto REQUEST state
+ LD   usint 1
+ WRX  state
+#debug_left usint state
+#srcline 119 ;      END_IF;
+fbWebPushService_L13:
+#srcline 121 ;      IF ready THEN
+ LDX  ready
+#debug bool ready
+ JMC  fbWebPushService_L15
+#srcline 122 ;        IF NotifySubscribe THEN // notification subscription signaled
+ LD   NotifySubscribe
+#debug bool NotifySubscribe
+ JMC  fbWebPushService_L17
+#srcline 123 ;          NotifySubscribe := FALSE;
+ LD   bool 0       ; false
+ WR   NotifySubscribe
+#debug_left bool NotifySubscribe
+#srcline 124 ;          err := 0;
+ LD   usint 0
+ WRX  err
+#debug_left usint err
+#srcline 125 ;          // open the subscription file
+#srcline 126 ;          file := FileOpen(fileName := subscriptionFileName);
+ NXT
+ LEAY subscriptionFileName
+ WR   __Instance__FileOpen~fileName
+#debug_left pointer __Instance__FileOpen.fileName
+ LD  0
+ WR   usint __Instance__FileOpen~mode
+ PRV
+ LEA  __Instance__FileOpen
+ CAL  FileOpen_L0
+ WRY  file
+#debug_left udint file
+#srcline 127 ;          IF file <> INVALID_HANDLE_VALUE THEN
+ LDY  file
+#debug udint file
+ LD   udint 0
+ EQ
+ NEG
+ JMC  fbWebPushService_L19
+#srcline 128 ;            // read the subscription data
+#srcline 129 ;            request.postLen := TO_UINT(FileRead(hFile := file, adrBuf := PTR_TO_UDINT(ADR(postData)), size := sizeof(postData)));
+ NXT
+ LDY  file
+#debug udint file
+ WR   __Instance__FileRead~hFile
+#debug_left udint __Instance__FileRead~hFile
+ LEAX postData
+#debug pointer postData
+ WR   __Instance__FileRead~adrBuf
+#debug_left udint __Instance__FileRead~adrBuf
+ LD   1536  ; SizeOf()
+ WR   __Instance__FileRead~size
+#debug_left udint __Instance__FileRead~size
+ PRV
+ LEA  __Instance__FileRead
+ CAL  FileRead_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 130 ;            FileClose(hFile := file);
+ NXT
+ LDY  file
+#debug udint file
+ WR   __Instance__FileClose~hFile
+#debug_left udint __Instance__FileClose~hFile
+ PRV
+ LEA  __Instance__FileClose
+ CAL  FileClose_L0
+#srcline 131 ;            FileDelete(fileName := subscriptionFileName); // delete the file
+ NXT
+ LEAY subscriptionFileName
+ WR   __Instance__FileDelete~fileName
+#debug_left pointer __Instance__FileDelete.fileName
+ PRV
+ LEA  __Instance__FileDelete
+ CAL  FileDelete_L0
+#srcline 132 ;            // if data encryption requested
+#srcline 133 ;            IF LEN(key) > 0 THEN
+ LEAX key
+#debug string key
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbWebPushService_L21
+#srcline 134 ;              RC4(dataLen := request.postLen, keyLen := LEN(key), key := void(key), data := void(postData), skip := 0);
+ NXT
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__RC4~dataLen
+#debug_left uint __Instance__RC4~dataLen
+ LEAX key
+#debug string key
+ SLEN 
+ WR   __Instance__RC4~keyLen
+#debug_left uint __Instance__RC4~keyLen
+ LEAX key
+ WR   __Instance__RC4~key
+#debug_left pointer __Instance__RC4.key
+ LEAX postData
+ WR   __Instance__RC4~data
+#debug_left pointer __Instance__RC4.data
+ LD   uint 0
+ WR   __Instance__RC4~skip
+#debug_left uint __Instance__RC4~skip
+ PRV
+ LEA  __Instance__RC4
+ CAL  RC4_L0
+#srcline 135 ;            END_IF;
+fbWebPushService_L21:
+#srcline 136 ;            // set the request params
+#srcline 137 ;            contentType := 'application/octet-stream';
+ LD   0   ; null string
+ LEAX contentType
+ WRI  
+ LEAX contentType
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_2
+ SCON 
+#debug_left string contentType
+ PDST   ; Level 1
+#srcline 138 ;            action := '/subscribe';
+ LD   0   ; null string
+ LEAX action
+ WRI  
+ LEAX action
+ LD   10
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_3
+ SCON 
+#debug_left string action
+ PDST   ; Level 1
+#srcline 139 ;            post := TRUE;
+ LD   bool -1       ; true
+ WRX  post
+#debug_left bool post
+#srcline 140 ;            totalLen := 0;
+ LD   uint 0
+ WRX  totalLen
+#debug_left uint totalLen
+#srcline 141 ;            state := 1; // goto REQUEST state
+ LD   usint 1
+ WRX  state
+#debug_left usint state
+#srcline 142 ;          ELSE
+ JMP  fbWebPushService_L20
+fbWebPushService_L19:
+#srcline 143 ;            err := 1; // unable to open subscription file
+ LD   usint 1
+ WRX  err
+#debug_left usint err
+#srcline 144 ;          END_IF;
+fbWebPushService_L20:
+#srcline 145 ;        END_IF;
+fbWebPushService_L17:
+#srcline 147 ;        IF Send THEN
+ LDX  Send
+#debug bool Send
+ JMC  fbWebPushService_L23
+#srcline 148 ;          err := 0;
+ LD   usint 0
+ WRX  err
+#debug_left usint err
+#srcline 149 ;          // compose the notification payload json
+#srcline 150 ;          request.postLen := 0;
+ LD   uint 0
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 151 ;          request.postLen := TO_UINT(fcAppendString(stringToAppend := '{"title":"', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_4
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 152 ;          request.postLen := TO_UINT(fcAppendString(stringToAppend := notification.title, currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LDX  notification
+#debug string notification.title
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 153 ;          request.postLen := TO_UINT(fcAppendString(stringToAppend := '"', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_5
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 154 ;          IF LEN(notification.body) > 0 THEN
+ LDX  notification
+ ADD  41  ; + offset 
+#debug string notification.body
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbWebPushService_L25
+#srcline 155 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := ',"body":"', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_6
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 156 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := notification.body, currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LDX  notification
+ ADD  41  ; + offset 
+#debug string notification.body
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 157 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := '"', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_7
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 158 ;          END_IF;
+fbWebPushService_L25:
+#srcline 159 ;          IF LEN(notification.badge) > 0 THEN
+ LDX  notification
+ ADD  142  ; + offset 
+#debug string notification.badge
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbWebPushService_L27
+#srcline 160 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := ',"badge":"', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_8
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 161 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := notification.badge, currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LDX  notification
+ ADD  142  ; + offset 
+#debug string notification.badge
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 162 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := '"', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_9
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 163 ;          END_IF;
+fbWebPushService_L27:
+#srcline 164 ;          IF LEN(notification.icon) > 0 THEN
+ LDX  notification
+ ADD  398  ; + offset 
+#debug string notification.icon
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbWebPushService_L29
+#srcline 165 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := ',"icon":"', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_10
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 166 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := notification.icon, currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LDX  notification
+ ADD  398  ; + offset 
+#debug string notification.icon
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 167 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := '"', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_11
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 168 ;          END_IF;
+fbWebPushService_L29:
+#srcline 169 ;          IF LEN(notification.image) > 0 THEN
+ LDX  notification
+ ADD  654  ; + offset 
+#debug string notification.image
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbWebPushService_L31
+#srcline 170 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := ',"image":"', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_12
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 171 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := notification.image, currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LDX  notification
+ ADD  654  ; + offset 
+#debug string notification.image
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 172 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := '"', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_13
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 173 ;          END_IF;
+fbWebPushService_L31:
+#srcline 174 ;          IF LEN(notification.vibrate) > 0 THEN
+ LDX  notification
+ ADD  910  ; + offset 
+#debug string notification.vibrate
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbWebPushService_L33
+#srcline 175 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := ',"vibrate":', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_14
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 176 ;            request.postLen := TO_UINT(fcAppendString(stringToAppend := notification.vibrate, currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LDX  notification
+ ADD  910  ; + offset 
+#debug string notification.vibrate
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 177 ;          END_IF;
+fbWebPushService_L33:
+#srcline 178 ;          request.postLen := TO_UINT(fcAppendString(stringToAppend := '}', currentLen := TO_UDINT(request.postLen), bufferSize := sizeof(postData), buffer := void(postData)));
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__fcAppendString~stringToAppend
+ WRI 
+ LEA  __Instance__fcAppendString~stringToAppend
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_15
+ SCON 
+#debug_left string __Instance__fcAppendString~stringToAppend
+ PDST   ; Level 1
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__fcAppendString~currentLen
+#debug_left udint __Instance__fcAppendString~currentLen
+ LD   1536  ; SizeOf()
+ WR   __Instance__fcAppendString~bufferSize
+#debug_left udint __Instance__fcAppendString~bufferSize
+ LEAX postData
+ WR   __Instance__fcAppendString~buffer
+#debug_left pointer __Instance__fcAppendString.buffer
+ PRV
+ LEA  __Instance__fcAppendString
+ CAL  fcAppendString_L0
+
+ AND  $FFFF
+ WRX  request~postLen
+#debug_left uint request.postLen
+#srcline 179 ;          // if data encryption requested
+#srcline 180 ;          IF LEN(key) > 0 THEN
+ LEAX key
+#debug string key
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbWebPushService_L35
+#srcline 181 ;            RC4(dataLen := request.postLen, keyLen := LEN(key), key := void(key), data := void(postData), skip := 0);
+ NXT
+ LDX  request~postLen
+#debug uint request.postLen
+ WR   __Instance__RC4~dataLen
+#debug_left uint __Instance__RC4~dataLen
+ LEAX key
+#debug string key
+ SLEN 
+ WR   __Instance__RC4~keyLen
+#debug_left uint __Instance__RC4~keyLen
+ LEAX key
+ WR   __Instance__RC4~key
+#debug_left pointer __Instance__RC4.key
+ LEAX postData
+ WR   __Instance__RC4~data
+#debug_left pointer __Instance__RC4.data
+ LD   uint 0
+ WR   __Instance__RC4~skip
+#debug_left uint __Instance__RC4~skip
+ PRV
+ LEA  __Instance__RC4
+ CAL  RC4_L0
+#srcline 182 ;          END_IF;
+fbWebPushService_L35:
+#srcline 183 ;          // set the request params
+#srcline 184 ;          contentType := 'application/octet-stream; charset=' + charset;
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_16
+ SCON 
+ LEAX charset
+#debug string charset
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX contentType
+ WRI  
+ LEAX contentType
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string contentType
+ PDST   ; Level 1
+#srcline 185 ;          action := '/notify';
+ LD   0   ; null string
+ LEAX action
+ WRI  
+ LEAX action
+ LD   10
+ DST    ; Level 1
+ LEA  _str_fbWebPushService_17
+ SCON 
+#debug_left string action
+ PDST   ; Level 1
+#srcline 186 ;          post := TRUE;
+ LD   bool -1       ; true
+ WRX  post
+#debug_left bool post
+#srcline 187 ;          totalLen := 0;
+ LD   uint 0
+ WRX  totalLen
+#debug_left uint totalLen
+#srcline 188 ;          state := 1; // goto REQUEST state
+ LD   usint 1
+ WRX  state
+#debug_left usint state
+#srcline 189 ;        END_IF;
+fbWebPushService_L23:
+#srcline 190 ;      END_IF;
+fbWebPushService_L15:
+ JMP  fbWebPushService_L11
+fbWebPushService_L12:
+ LD   1
+ LDY  P0__st__
+ EQ  
+ JMC  fbWebPushService_L37
+#srcline 192 ;    1: // REQUEST state
+#srcline 194 ;      hostname := IPADR_TO_STRING(IPAdr := serverAddr);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ NXT
+ LEAX serverAddr
+#debug pointer serverAddr
+ SRC  %IB0
+ LEA  __Instance__IPADR_TO_STRING~IPAdr
+#debug_left pointer __Instance__IPADR_TO_STRING~IPAdr
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ PRV
+ LEA  __Instance__IPADR_TO_STRING
+ CAL  IPADR_TO_STRING_L0
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAY hostname
+ WRI  
+ LEAY hostname
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string hostname
+ PDST   ; Level 1
+#srcline 195 ;      request(Post := post, Get := get, IPadr := serverAddr, port := serverPort, Host := hostname, Action := action, ContentType := contentType, Data := postData, RecvData := void(response[totalLen]));
+ LDX  post
+#debug bool post
+ WRX  request~Post
+#debug_left bool request~Post
+ LDX  get
+#debug bool get
+ WRX  request~Get
+#debug_left bool request~Get
+ LEAX serverAddr
+#debug pointer serverAddr
+ SRC  %IB0
+ LEAX request~IPadr
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDX  serverPort
+#debug uint serverPort
+ WRX  request~port
+#debug_left uint request~port
+ LEAY hostname
+ WRX  request~Host
+#debug_left pointer request.Host
+ LEAX action
+ WRX  request~Action
+#debug_left pointer request.Action
+ LEAX contentType
+ WRX  request~ContentType
+#debug_left pointer request.ContentType
+ LEAX postData
+ WRX  request~Data
+#debug_left pointer request.Data
+ LEAX response
+ LDX  totalLen
+#debug uint totalLen
+ RCHK 511   ; Range Check
+ ADD     ; + offset 
+ WRX  request~RecvData
+#debug_left pointer request.RecvData
+ LEAX request
+ CAL  fbHttpRequestL2_L0
+#srcline 196 ;      IF request.DataReady THEN
+ LDX  request~DataReady
+#debug bool request.DataReady
+ JMC  fbWebPushService_L38
+#srcline 197 ;        totalLen := totalLen + request.DataLen;
+ LDX  totalLen
+#debug uint totalLen
+ LDX  request~DataLen
+#debug uint request.DataLen
+ ADD
+ AND  $FFFF
+ WRX  totalLen
+#debug_left uint totalLen
+#srcline 198 ;      END_IF;
+fbWebPushService_L38:
+#srcline 199 ;      IF request.Done THEN
+ LDX  request~Done
+#debug bool request.Done
+ JMC  fbWebPushService_L40
+#srcline 200 ;        CASE request.Result OF
+ LDX  request~Result
+#debug int request.Result
+ EXTW 
+ WRY  P1__st__
+ LD   200
+ LDY  P1__st__
+ EQ  
+ JMC  fbWebPushService_L43
+#srcline 201 ;          200: // OK with no data
+#srcline 202 ;          201: // OK with data
+ JMP  fbWebPushService_L42
+fbWebPushService_L43:
+ LD   201
+ LDY  P1__st__
+ EQ  
+ JMC  fbWebPushService_L44
+#srcline 203 ;            // if data should be encrypted
+#srcline 204 ;            IF LEN(key) > 0 THEN
+ LEAX key
+#debug string key
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbWebPushService_L45
+#srcline 205 ;              RC4(dataLen := totalLen, keyLen := LEN(key), key := void(key), data := void(response), skip := 0);
+ NXT
+ LDX  totalLen
+#debug uint totalLen
+ WR   __Instance__RC4~dataLen
+#debug_left uint __Instance__RC4~dataLen
+ LEAX key
+#debug string key
+ SLEN 
+ WR   __Instance__RC4~keyLen
+#debug_left uint __Instance__RC4~keyLen
+ LEAX key
+ WR   __Instance__RC4~key
+#debug_left pointer __Instance__RC4.key
+ LEAX response
+ WR   __Instance__RC4~data
+#debug_left pointer __Instance__RC4.data
+ LD   uint 0
+ WR   __Instance__RC4~skip
+#debug_left uint __Instance__RC4~skip
+ PRV
+ LEA  __Instance__RC4
+ CAL  RC4_L0
+#srcline 206 ;            END_IF;
+fbWebPushService_L45:
+#srcline 207 ;            // get subscriptions count
+#srcline 208 ;            pString := ADR(response);
+ LEAX response
+#debug pointer response
+ LEAY pString
+ WRIL 
+#debug_left pointer pString
+#srcline 209 ;            pos := FIND(pString^, '"subscriptions":');
+ LEAY pString
+ LDIL    ; dereference 
+#debug string pString^
+ LEA  _str_fbWebPushService_18
+ SFND 
+ WRY  pos
+#debug_left udint pos
+#srcline 210 ;            IF pos > 0 THEN
+ LDY  pos
+#debug udint pos
+ LD   udint 0
+ GT
+ JMC  fbWebPushService_L47
+#srcline 211 ;              pString := pString + pos + 15;
+ LEAY pString
+ LDIL 
+#debug pointer pString
+ LDY  pos
+#debug udint pos
+ ADD
+ LD   udint 15
+ ADD
+ LEAY pString
+ WRIL 
+#debug_left pointer pString
+#srcline 212 ;              subscriptions := STRING_TO_UINT(pString^);
+ LEAY pString
+ LDIL    ; dereference 
+#debug string pString^
+ SCNV $300A;  IEC_STRING _TO_ IEC_UINT
+ WRX  subscriptions
+#debug_left uint subscriptions
+#srcline 213 ;            END_IF;
+fbWebPushService_L47:
+#srcline 214 ;            // get public key
+#srcline 215 ;            pString := ADR(response);
+ LEAX response
+#debug pointer response
+ LEAY pString
+ WRIL 
+#debug_left pointer pString
+#srcline 216 ;            pos := FIND(pString^, '"keys":');
+ LEAY pString
+ LDIL    ; dereference 
+#debug string pString^
+ LEA  _str_fbWebPushService_19
+ SFND 
+ WRY  pos
+#debug_left udint pos
+#srcline 217 ;            IF pos > 0 THEN
+ LDY  pos
+#debug udint pos
+ LD   udint 0
+ GT
+ JMC  fbWebPushService_L49
+#srcline 218 ;              pString := pString + pos + 6;
+ LEAY pString
+ LDIL 
+#debug pointer pString
+ LDY  pos
+#debug udint pos
+ ADD
+ LD   udint 6
+ ADD
+ LEAY pString
+ WRIL 
+#debug_left pointer pString
+#srcline 219 ;              file := FileOpen(fileName := publicKeyFileName, mode := F_WRITE);
+ NXT
+ LEAY publicKeyFileName
+ WR   __Instance__FileOpen~fileName
+#debug_left pointer __Instance__FileOpen.fileName
+ LD   udint 1  ; TF_MODE#F_WRITE
+ WR   __Instance__FileOpen~mode
+#debug_left usint __Instance__FileOpen~mode
+ PRV
+ LEA  __Instance__FileOpen
+ CAL  FileOpen_L0
+ WRY  file
+#debug_left udint file
+#srcline 220 ;              IF file <> INVALID_HANDLE_VALUE THEN
+ LDY  file
+#debug udint file
+ LD   udint 0
+ EQ
+ NEG
+ JMC  fbWebPushService_L51
+#srcline 221 ;                pos := FIND(pString^, '}');
+ LEAY pString
+ LDIL    ; dereference 
+#debug string pString^
+ LEA  _str_fbWebPushService_20
+ SFND 
+ WRY  pos
+#debug_left udint pos
+#srcline 222 ;                ptr := pString; // vypomoc kvuli chybe v prekladaci
+ LEAY pString
+ LDIL 
+#debug pointer pString
+ LEAY ptr
+ WRIL 
+#debug_left pointer ptr
+#srcline 223 ;                FileWrite(hFile := file, adrBuf := PTR_TO_UDINT(ptr), size := pos);
+ NXT
+ LDY  file
+#debug udint file
+ WR   __Instance__FileWrite~hFile
+#debug_left udint __Instance__FileWrite~hFile
+ LEAY ptr
+ LDIL 
+#debug pointer ptr
+ WR   __Instance__FileWrite~adrBuf
+#debug_left udint __Instance__FileWrite~adrBuf
+ LDY  pos
+#debug udint pos
+ WR   __Instance__FileWrite~size
+#debug_left udint __Instance__FileWrite~size
+ PRV
+ LEA  __Instance__FileWrite
+ CAL  FileWrite_L0
+#srcline 224 ;                FileClose(hFile := file);
+ NXT
+ LDY  file
+#debug udint file
+ WR   __Instance__FileClose~hFile
+#debug_left udint __Instance__FileClose~hFile
+ PRV
+ LEA  __Instance__FileClose
+ CAL  FileClose_L0
+#srcline 225 ;                ready := TRUE; // everything is ready for notifications
+ LD   bool -1       ; true
+ WRX  ready
+#debug_left bool ready
+#srcline 226 ;              ELSE
+ JMP  fbWebPushService_L52
+fbWebPushService_L51:
+#srcline 227 ;                err := 2; // unable to create public key file
+ LD   usint 2
+ WRX  err
+#debug_left usint err
+#srcline 228 ;              END_IF;
+fbWebPushService_L52:
+#srcline 229 ;            END_IF;
+fbWebPushService_L49:
+ JMP  fbWebPushService_L42
+fbWebPushService_L44:
+#srcline 230 ;          ELSE
+#srcline 231 ;            err := 3; // Unexpected response
+ LD   usint 3
+ WRX  err
+#debug_left usint err
+#srcline 232 ;        END_CASE;
+fbWebPushService_L42:
+#srcline 233 ;        state := 0; // goto IDLE
+ LD   usint 0
+ WRX  state
+#debug_left usint state
+#srcline 234 ;      END_IF;
+fbWebPushService_L40:
+#srcline 235 ;      IF request.Err THEN
+ LDX  request~Err
+#debug bool request.Err
+ JMC  fbWebPushService_L53
+#srcline 236 ;        err := 4; // request error
+ LD   usint 4
+ WRX  err
+#debug_left usint err
+#srcline 237 ;        state := 0; // goto IDLE
+ LD   usint 0
+ WRX  state
+#debug_left usint state
+#srcline 238 ;      END_IF;
+fbWebPushService_L53:
+#srcline 240 ;      post := FALSE;
+ LD   bool 0       ; false
+ WRX  post
+#debug_left bool post
+#srcline 241 ;      get := FALSE;
+ LD   bool 0       ; false
+ WRX  get
+#debug_left bool get
+ JMP  fbWebPushService_L11
+fbWebPushService_L37:
+fbWebPushService_L11:
+#srcline 245 ;  IF NOT ready THEN
+ LDX  ready
+#debug bool ready
+ NEG
+ JMC  fbWebPushService_L55
+#srcline 246 ;    // ensure that no public key file not exists - client script will not offer notification registration
+#srcline 247 ;    IF FileExists(publicKeyFileName) THEN
+ NXT
+ LEAY publicKeyFileName
+ WR   __Instance__FileExists~fileName
+#debug_left pointer __Instance__FileExists.fileName
+ PRV
+ LEA  __Instance__FileExists
+ CAL  FileExists_L0
+ JMC  fbWebPushService_L57
+#srcline 248 ;      FileDelete(publicKeyFileName);
+ NXT
+ LEAY publicKeyFileName
+ WR   __Instance__FileDelete~fileName
+#debug_left pointer __Instance__FileDelete.fileName
+ PRV
+ LEA  __Instance__FileDelete
+ CAL  FileDelete_L0
+#srcline 249 ;    END_IF;
+fbWebPushService_L57:
+#srcline 250 ;  END_IF;
+fbWebPushService_L55:
+#srcline 252 ;  busy := state > 0;
+ LDX  state
+#debug usint state
+ LD   usint 0
+ GT
+ WRX  busy
+#debug_left bool busy
+#srcline 253 ;  done := NOT busy; // :)
+ LDX  busy
+#debug bool busy
+ NEG
+ WRX  done
+#debug_left bool done
+#srcline 255 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbWebPushService__InstanceInit__:
+ LINK 0
+ LD   0
+ SRC  byte __Init___fbWebPushService_serverAddr
+ LEAX byte serverAddr
+ LD   4
+ MOV  %X0
+ LD   uint 5001
+ WRX  serverPort
+ LD   0
+ SRC  byte __Init___fbWebPushService_charset
+ LEAX byte charset
+ LD   26
+ MOV  %X0
+ LEAX request
+ CAL  fbHttpRequestL2__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+C  ¦  Í

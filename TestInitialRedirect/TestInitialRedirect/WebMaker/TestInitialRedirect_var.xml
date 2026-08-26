@@ -1,0 +1,6 @@
+<Variables>
+	<Item Name="targetPage" Pos="03000000" Type="48" />
+	<Item Name="pageLogout[1]" Pos="03000015" Type="48" />
+	<Item Name="pageLogout[2]" Pos="0300002A" Type="48" />
+	<Item Name="pageLogout[3]" Pos="0300003F" Type="48" />
+</Variables>

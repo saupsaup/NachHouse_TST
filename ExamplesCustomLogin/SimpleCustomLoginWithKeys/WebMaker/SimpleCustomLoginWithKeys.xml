@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<web version="8.1" propfont="true" foot="© 2007 - 2018 Teco a.s." MaxUid="20041" height="560" width="980" menu="true" title="true" border="true" top="8" left="8" iniScale="100" maxScale="100" useIniScale="false" useMaxScale="false" userScale="true" webApp="false" bgdupl="false" bgcolor="16777215" icon="" id18="0" author="Teco a.s." encoding="windows-1250">
+	<panels></panels>
+	<Grid Enable="1" X="5" Y="5" />
+	<globalset newdim="1" />
+	<group caption="Basic" level="0" locked="0" altdim="false" notforid="false" Uid="20030">
+		<page caption="Page001" name="PAGE001.XML" background="" bgcolor="16777215" repeat="false" hidden="false" ajax="true" pause="1000" level="0" default="true" ucid="1765195292" width="281" height="52" Uid="20029">
+			<object caption="Welcome" X="2" Y="2" xoff="2" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="20020">
+				<label />
+			</object>
+			<object caption="" X="2" Y="4" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="20036">
+				<edit variable="testString" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="32" global="false" border="true" width="266" height="22" tabindex="1" />
+			</object>
+		</page>
+	</group>
+	<group caption="Higher rights" level="5" locked="0" altdim="false" notforid="false" Uid="20032">
+		<page caption="Page501" name="PAGE501.XML" background="" bgcolor="16777215" repeat="false" hidden="false" ajax="true" pause="1000" level="0" ucid="1765195280" width="225" height="145" Uid="20031">
+			<object caption="Settings" X="2" Y="2" xoff="2" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="20021">
+				<label />
+			</object>
+			<object caption="Service PIN:" X="4" Y="10" xoff="6" yoff="3" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="20023">
+				<label />
+			</object>
+			<object caption="" X="17" Y="9" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="20026">
+				<edit variable="webPass" type="STRING[10]" intf="0" timf="" align="left" zero="false" prec="-1" size="10" global="false" border="true" width="90" height="22" tabindex="1" />
+			</object>
+			<object caption="SET" X="4" Y="14" xoff="6" yoff="1" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="13" transparent="true" visneg="false" Uid="20027">
+				<imagebtn variable="passSet" value="0" timeout="500" type="BOOL" on="70X40_C.PNG" off="70X40_S.PNG" />
+			</object>
+			<object caption="CANCEL" X="14" Y="14" xoff="1" yoff="1" level="0" readonly="false" front="16777215" back="16777215" strong="true" italic="false" size="13" transparent="true" visneg="false" Uid="20028">
+				<imagebtn variable="passCancel" value="1" timeout="500" type="BOOL" on="70X40_C.PNG" off="70X40_S.PNG" />
+			</object>
+		</page>
+	</group>
+	<images>
+		<img name="70X40_C.PNG" type="PNG" height="40" width="70" longname="70x40_c" />
+		<img name="70X40_S.PNG" type="PNG" height="40" width="70" longname="70x40_s" />
+	</images>
+	<Languages>
+		<Language Code="5" Editor="1" />
+	</Languages>
+	<Layers active="0" pasteMode="0">
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+	</Layers>
+	<security crypt="0" count="10">
+		<user level="5" name="" pass="CE9B6732FCC5" page="PAGE501.XML" />
+		<user level="0" name="" pass="CE9B6732" page="PAGE001.XML" />
+		<user level="-1" name="2" pass="CD" />
+		<user level="-1" name="3" pass="CC" />
+		<user level="-1" name="4" pass="CB" />
+		<user level="-1" name="5" pass="CA" />
+		<user level="-1" name="6" pass="C9" />
+		<user level="-1" name="7" pass="C8" />
+		<user level="-1" name="8" pass="C7" />
+		<user level="-1" name="9" pass="C6" />
+	</security>
+	<autologin count="10">
+		<mac level="0" mac="0D:EA:DB:EA:FD:EA" note="" />
+		<mac level="9" mac="A1:E7:4C:68:0D:0D" note="" />
+		<mac level="9" mac="A1:2E:F5:8B:E4:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+	</autologin>
+	<tecoapi count="10">
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+	</tecoapi>
+</web>

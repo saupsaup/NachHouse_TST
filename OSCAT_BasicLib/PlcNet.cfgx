@@ -1,0 +1,9 @@
+[PlcNetGroupConfig]
+Version="xPRO","4.3.00"
+[/PlcNetGroupConfig]
+
+[projects]
+project1="TestLib\TestLib.nex",0,"",4294967295
+project2="OscatBasicLib_333a\OscatBasicLib_333a.nex",0,"",4294967295
+[/projects]
+

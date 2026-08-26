@@ -1,0 +1,624 @@
+TYPE
+
+TStatC_DL_0012S : STRUCT
+  dummy0 : BOOL;
+  dummy1 : BOOL;
+  RNDOK  : BOOL;
+  SHS    : BOOL;
+  RRE    : BOOL;  (* odpovì¡s chybou *)
+  RRF    : BOOL;  (* kladná odpovìï *)
+  Done   : BOOL;  (* hotová odpovìï ( kladná, záporná, s_chybou) *)
+  ARC    : BOOL;  (* alternace *)
+END_STRUCT;
+
+TContC_DL_0012S : STRUCT
+  LENM   : BOOL;
+  DBL    : BOOL;
+  RNDS   : BOOL;
+  CHS    : BOOL;
+  dummy4 : BOOL;  (* použit jako semafor busy vysílacího buferu C_DL_0012Sout *)
+  dummy5 : BOOL;
+  TRG    : BOOL;  (* vyslat zprávu *)
+  ACN    : BOOL;  (* alternace *)
+END_STRUCT;
+
+tC_DL_0012Sin : STRUCT
+  stat : TStatC_DL_0012S;
+  data : USINT;
+END_STRUCT;
+
+tC_DL_0012Sout : STRUCT
+  cont    : TContC_DL_0012S;
+  address : USINT;
+  command : USINT;
+  data    : USINT;
+END_STRUCT;
+
+TBIN_7DI : STRUCT
+  DI0    : BOOL;
+  DI1    : BOOL;
+  DI2    : BOOL;
+  DI3    : BOOL;
+  IN230  : BOOL;
+  HDO0   : BOOL;
+  HDO1   : BOOL;
+  dummy7 : BOOL;
+END_STRUCT;
+
+TBIN_4DIP : STRUCT
+  DIP0   : BOOL;
+  DIP1   : BOOL;
+  DIP2   : BOOL;
+  DIP3   : BOOL;
+  dummy4 : BOOL;
+  dummy5 : BOOL;
+  dummy6 : BOOL;
+  dummy7 : BOOL;
+END_STRUCT;
+
+TAIStat : STRUCT
+  UNF     : BOOL;
+  UNR     : BOOL;
+  OVR     : BOOL;
+  OVF     : BOOL;
+  FLS     : BOOL;
+  CJC     : BOOL;
+  dummy6  : BOOL;
+  dummy7  : BOOL;
+  CHC     : BOOL;
+  dummy9  : BOOL;
+  dummy10 : BOOL;
+  dummy11 : BOOL;
+  dummy12 : BOOL;
+  dummy13 : BOOL;
+  dummy14 : BOOL;
+  dummy15 : BOOL;
+END_STRUCT;
+
+TAI : STRUCT
+  STAT : TAIStat;
+  FS   : INT;
+  ENG  : REAL;
+  PCT  : REAL;
+END_STRUCT;
+
+TSTPW2 : STRUCT
+  ACUC    : BOOL;
+  PWRA    : BOOL;
+  dummy2  : BOOL;
+  dummy3  : BOOL;
+  WSRC    : BOOL;
+  ESRC    : BOOL;
+  WACU    : BOOL;
+  EACU    : BOOL;
+  dummy8  : BOOL;
+  dummy9  : BOOL;
+  dummy10 : BOOL;
+  dummy11 : BOOL;
+  dummy12 : BOOL;
+  dummy13 : BOOL;
+  dummy14 : BOOL;
+  dummy15 : BOOL;
+END_STRUCT;
+
+DT_IR2553_IN : STRUCT
+  DIS  : TBIN_7DI;
+  DIP  : TBIN_4DIP;
+  AI0  : TAI;
+  AI1  : TAI;
+  AI2  : TAI;
+  AI3  : TAI;
+  STPW : TSTPW2;
+  USRC : REAL;
+  SACU : REAL;
+  IACU : REAL;
+END_STRUCT;
+
+TCIB_CKY0001R_DI : STRUCT
+  DI1       : BOOL;
+  DI2       : BOOL;
+  CLICK_DI1 : BOOL;
+  CLICK_DI2 : BOOL;
+  PRESS_DI1 : BOOL;
+  PRESS_DI2 : BOOL;
+  TAMPER1   : BOOL;
+  TAMPER2   : BOOL;
+END_STRUCT;
+
+TCIB_CKY0001R_STAT : STRUCT
+  OUFT   : BOOL;
+  VLDT   : BOOL;
+  OUF1   : BOOL;
+  VLD1   : BOOL;
+  OUF2   : BOOL;
+  VLD2   : BOOL;
+  dummy6 : BOOL;
+  dummy7 : BOOL;
+END_STRUCT;
+
+TCIB_C_KY_0001R_IN : STRUCT
+  BUTTONS : BYTE;
+  RF_CODE : array [0..7] of BYTE;
+  DI      : TCIB_CKY0001R_DI;
+  STAT    : TCIB_CKY0001R_STAT;
+  THERM   : REAL;
+  AI1     : REAL;
+  AI2     : REAL;
+END_STRUCT;
+
+TCIB_C_KY_0001R_OUT : STRUCT
+  SETT  : BYTE;
+  ICONS : BYTE;
+  TIM   : INT;
+  TEXT1 : STRING[16];
+  TEXT2 : STRING[16];
+END_STRUCT;
+
+TCIB_C_WS_0000R_PG_BTN : STRUCT
+  BTN1    : BOOL;
+  BTN2    : BOOL;
+  BTN3    : BOOL;
+  BTN4    : BOOL;
+  BTN5    : BOOL;
+  BTN6    : BOOL;
+  BTN7    : BOOL;
+  BTN8    : BOOL;
+  BTN9    : BOOL;
+  BTN10   : BOOL;
+  BTN11   : BOOL;
+  BTN12   : BOOL;
+  dummy12 : BOOL;
+  dummy13 : BOOL;
+  dummy14 : BOOL;
+  PR      : BOOL;
+END_STRUCT;
+
+TCIB_C_WS_0000R_PG_CLICK : STRUCT
+  CLICKB1  : BOOL;
+  CLICKB2  : BOOL;
+  CLICKB3  : BOOL;
+  CLICKB4  : BOOL;
+  CLICKB5  : BOOL;
+  CLICKB6  : BOOL;
+  CLICKB7  : BOOL;
+  CLICKB8  : BOOL;
+  CLICKB9  : BOOL;
+  CLICKB10 : BOOL;
+  CLICKB11 : BOOL;
+  CLICKB12 : BOOL;
+  dummy12  : BOOL;
+  dummy13  : BOOL;
+  dummy14  : BOOL;
+  dummy15  : BOOL;
+END_STRUCT;
+
+TCIB_C_WS_0000R_PG_PRESS : STRUCT
+  PRESSB1  : BOOL;
+  PRESSB2  : BOOL;
+  PRESSB3  : BOOL;
+  PRESSB4  : BOOL;
+  PRESSB5  : BOOL;
+  PRESSB6  : BOOL;
+  PRESSB7  : BOOL;
+  PRESSB8  : BOOL;
+  PRESSB9  : BOOL;
+  PRESSB10 : BOOL;
+  PRESSB11 : BOOL;
+  PRESSB12 : BOOL;
+  dummy12  : BOOL;
+  dummy13  : BOOL;
+  dummy14  : BOOL;
+  dummy15  : BOOL;
+END_STRUCT;
+
+TCIB_C_WS_0000R_PG_BTNs : STRUCT
+  BTN   : TCIB_C_WS_0000R_PG_BTN;
+  CLICK : TCIB_C_WS_0000R_PG_CLICK;
+  PRESS : TCIB_C_WS_0000R_PG_PRESS;
+END_STRUCT;
+
+TCIB_C_WS_0000R_PG_CONT : STRUCT
+  DOT1A : BOOL;
+  DOT2A : BOOL;
+  DOT1B : BOOL;
+  DOT2B : BOOL;
+  DBA   : BOOL;
+  DBB   : BOOL;
+  BZ    : BOOL;
+  PX    : BOOL;
+END_STRUCT;
+
+TCIB_C_WS_0000R_PG_LED : STRUCT
+  LED1    : BOOL;
+  LED2    : BOOL;
+  LED3    : BOOL;
+  LED4    : BOOL;
+  LED5    : BOOL;
+  LED6    : BOOL;
+  LED7    : BOOL;
+  LED8    : BOOL;
+  LED9    : BOOL;
+  LED10   : BOOL;
+  LED11   : BOOL;
+  LED12   : BOOL;
+  dummy12 : BOOL;
+  dummy13 : BOOL;
+  dummy14 : BOOL;
+  dummy15 : BOOL;
+  RED1    : BOOL;
+  RED2    : BOOL;
+  RED3    : BOOL;
+  RED4    : BOOL;
+  RED5    : BOOL;
+  RED6    : BOOL;
+  dummy22 : BOOL;
+  dummy23 : BOOL;
+  GREEN1  : BOOL;
+  GREEN2  : BOOL;
+  GREEN3  : BOOL;
+  GREEN4  : BOOL;
+  GREEN5  : BOOL;
+  GREEN6  : BOOL;
+  dummy30 : BOOL;
+  dummy31 : BOOL;
+END_STRUCT;
+
+TCIB_C_WS_0000R_PG_GLASSO : STRUCT
+  CONT   : TCIB_C_WS_0000R_PG_CONT;
+  LED    : TCIB_C_WS_0000R_PG_LED;
+  BLIGHT : USINT;
+  DISPA  : INT;
+  DISPB  : INT;
+  SETA   : USINT;
+  SETB   : USINT;
+END_STRUCT;
+
+TCIB_CWG0503S_CODE : STRUCT
+  STAT : USINT;
+  VAL  : array [0..4] of USINT;
+END_STRUCT;
+
+TCIB_CWG0503S_STAT : STRUCT
+  OUF4   : BOOL;
+  VLD4   : BOOL;
+  OUF5   : BOOL;
+  VLD5   : BOOL;
+  dummy4 : BOOL;
+  dummy5 : BOOL;
+  dummy6 : BOOL;
+  dummy7 : BOOL;
+END_STRUCT;
+
+TCIB_CWG0503S_DI : STRUCT
+  DI1     : BOOL;
+  DI2     : BOOL;
+  DI3     : BOOL;
+  DI4     : BOOL;
+  DI5     : BOOL;
+  TAMPER4 : BOOL;
+  TAMPER5 : BOOL;
+  dummy7  : BOOL;
+END_STRUCT;
+
+TCIB_C_WG_0503S_IN : STRUCT
+  CODE : TCIB_CWG0503S_CODE;
+  STAT : TCIB_CWG0503S_STAT;
+  AI4  : REAL;
+  AI5  : REAL;
+  DI   : TCIB_CWG0503S_DI;
+END_STRUCT;
+
+TCIB_DO3 : STRUCT
+  DO1    : BOOL;
+  DO2    : BOOL;
+  DO3    : BOOL;
+  dummy3 : BOOL;
+  dummy4 : BOOL;
+  dummy5 : BOOL;
+  dummy6 : BOOL;
+  dummy7 : BOOL;
+END_STRUCT;
+
+TCIB_C_WG_0503S_OUT : STRUCT
+  DOs : TCIB_DO3;
+END_STRUCT;
+
+END_TYPE
+
+
+VAR_GLOBAL
+
+TER_MTS_1 AT %MB247088 : REAL;  (* Vonk.teplota-Meteo.;000 *)
+LUX_MTS_1 AT %MB253272 : REAL;  (* Súmrak-Meteo.;000 *)
+ROSOCHA_IO_IN AT %IB396 : DT_IR2553_IN;
+SYS_000_1 AT %IB396.5 : BOOL;  (* HDO;000 *)
+SYS_230 AT %IB396.4 : BOOL;  (* AC 230V;000 *)
+DOR_X12 AT %IB396.3 : BOOL;  (* Predna Brana;X01 *)
+PIR_X11_2 AT %IB396.2 : BOOL;  (* Pred Garážou;X01 *)
+PIR_XB1 AT %IB396.1 : BOOL;  (* Na bazén;X01 *)
+PIR_X00 AT %IB396.0 : BOOL;  (* Technika bazén;X00 *)
+DLM_001 AT %IB717 : tC_DL_0012Sin;  (* Dali-1;000 *)
+TEH_102 AT %IB739 : REAL;  (* Podlaha;102 *)
+PIR_102 AT %IB719.1 : BOOL;  (* Šatnícek;102 *)
+KEY_002_1 AT %IB750 : TCIB_C_KY_0001R_IN;  (* Klavesnica predsien;101 *)
+DYM_201 AT %IB781 : REAL;  (* Chodba-2;201 *)
+TER_109 AT %IB777 : REAL;  (* Miestnost;109 *)
+PIR_109 AT %IB773.5 : BOOL;  (* Spajz;109 *)
+WSB_109_2 AT %IB773.0 : BOOL;  (* Špajz;109 *)
+TER_131 AT %IB807 : REAL;  (* Chodba-1;103 *)
+TGL_131_6 AT %IB800 : TCIB_C_WS_0000R_PG_BTNs;  (* Na schody;103 *)
+LUX_103 AT %IB796 : REAL;  (* Súmrak 1P;103 *)
+PIR_131_2 AT %IB790.0 : BOOL;  (* Schod-1.1;012 *)
+TER_2X1 AT %IB832 : REAL;  (* Šatník;105 *)
+TGL_2X1_6 AT %IB825 : TCIB_C_WS_0000R_PG_BTNs;  (* Šatník;105 *)
+TEH_2X1 AT %IB817 : REAL;  (* Podlaha;105 *)
+PIR_2X1_2 AT %IB815.1 : BOOL;  (* Šatník;105 *)
+TER_107 AT %IB857 : REAL;  (* Miestnost;107 *)
+TGL_107_6 AT %IB850 : TCIB_C_WS_0000R_PG_BTNs;  (* Pracovna;107 *)
+TEH_107 AT %IB842 : REAL;  (* Podlaha;107 *)
+PIR_107_2 AT %IB840.1 : BOOL;  (* Pracovna;107 *)
+TER_113 AT %IB882 : REAL;  (* WC;113 *)
+TGL_113_6 AT %IB875 : TCIB_C_WS_0000R_PG_BTNs;  (* WC;113 *)
+TEH_103 AT %IB867 : REAL;  (* Podlaha chdba;103 *)
+PIR_113_2 AT %IB865.1 : BOOL;  (* WC;113 *)
+TGL_101_6 AT %IB900 : TCIB_C_WS_0000R_PG_BTNs;  (* Predsien;101 *)
+LUX_X12 AT %IB896 : REAL;  (* Hl.vchod;X12 *)
+TEH_101 AT %IB892 : REAL;  (* Podlaha;101 *)
+TER_101 AT %IB932 : REAL;  (* Miestnost;101 *)
+TGL_11P_6 AT %IB925 : TCIB_C_WS_0000R_PG_BTNs;  (* Predsien-P;101 *)
+PIR_X12 AT %IB915.1 : BOOL;  (* Hl.Vstup;X12 *)
+PIR_101_2 AT %IB915.0 : BOOL;  (* Predsien-P;101 *)
+TGL_1BL_6 AT %IB950 : TCIB_C_WS_0000R_PG_BTNs;  (* Obývacka-L;112 *)
+TEH_112 AT %IB942 : REAL;  (* Obývacka;112 *)
+PIR_112_2 AT %IB940.1 : BOOL;  (* Chodba;112 *)
+TER_112 AT %IB982 : REAL;  (* Miestnost;112 *)
+TGL_1BP_6 AT %IB975 : TCIB_C_WS_0000R_PG_BTNs;  (* Obývacka-P;112 *)
+PIR_13X_2 AT %IB965.1 : BOOL;  (* Obyvacka;112 *)
+PIR_110_2 AT %IB965.0 : BOOL;  (* Kuchyna;110 *)
+COX_110_0 AT %IB994 : REAL;  (* CO2 Kuchyna;110 *)
+DYM_110 AT %IB990.2 : BOOL;  (* Dym kuchyna;110 *)
+PIR_XE0 AT %IB990.1 : BOOL;  (* Chodník-bazén;X00 *)
+TER_X10 AT %IB1032 : REAL;  (* Terasa-1;X10 *)
+TGL_X10_6 AT %IB1025 : TCIB_C_WS_0000R_PG_BTNs;  (* Terasa-1;X10 *)
+PIR_X10 AT %IB1015.0 : BOOL;  (* Terasa;X10 *)
+TER_110 AT %IB1057 : REAL;  (* Kuchyna;110 *)
+TGL_110_6 AT %IB1050 : TCIB_C_WS_0000R_PG_BTNs;  (* Kuchyna;110 *)
+TEH_110 AT %IB1042 : REAL;  (* Podlaha;110 *)
+PIR_X13 AT %IB1040.1 : BOOL;  (* Chodník-garáž;X01 *)
+TER_243 AT %IB1083 : REAL;  (* Miestnost;204 *)
+TGL_243_6 AT %IB1076 : TCIB_C_WS_0000R_PG_BTNs;  (* Postel-L;204 *)
+PIR_24L_2 AT %IB1066.0 : BOOL;  (* Postel-L;204 *)
+TGL_22L_6 AT %IB1101 : TCIB_C_WS_0000R_PG_BTNs;  (* Zrkadlo-L;202 *)
+PIR_21S_2 AT %IB1091.1 : BOOL;  (* Schody-Podesta;103 *)
+PIR_1A3_2 AT %IB1091.0 : BOOL;  (* Kupelna-2;202 *)
+TER_202 AT %IB1133 : REAL;  (* Kupelna-2;202 *)
+TGL_22P_6 AT %IB1126 : TCIB_C_WS_0000R_PG_BTNs;  (* Kúpelna-2-P;202 *)
+DLM_002 AT %IB1141 : tC_DL_0012Sin;  (* Dali-2;000 *)
+TGL_242_6 AT %IB1153 : TCIB_C_WS_0000R_PG_BTNs;  (* Postel-P;204 *)
+TEH_204 AT %IB1145 : REAL;  (* Podlaha 204;204 *)
+PIR_24P_2 AT %IB1143.1 : BOOL;  (* Postel-P;204 *)
+TGL_241_6 AT %IB1178 : TCIB_C_WS_0000R_PG_BTNs;  (* Na terasu;204 *)
+PIR_X21_2 AT %IB1168.0 : BOOL;  (* Terasa-X21;X02 *)
+TGL_233_6 AT %IB1205 : TCIB_C_WS_0000R_PG_BTNs;  (* Dvere;203 *)
+TEH_233 AT %IB1197 : REAL;  (* Podlaha;203 *)
+PIR_201_2 AT %IB1195.1 : BOOL;  (* Chodba-2;201 *)
+TGL_234_6 AT %IB1231 : TCIB_C_WS_0000R_PG_BTNs;  (* Na terasu;203 *)
+PIR_X22_2 AT %IB1221.1 : BOOL;  (* Terasa-X22;X23 *)
+PIR_X23 AT %IB1221.0 : BOOL;  (* Teraska-X23;X23 *)
+TER_201 AT %IB1273 : REAL;  (* Chodba-2;201 *)
+TGL_201_6 AT %IB1266 : TCIB_C_WS_0000R_PG_BTNs;  (* Chodba-2;201 *)
+PIR_2E1_2 AT %IB1256.0 : BOOL;  (* Sch.2->1;012 *)
+TEH_202 AT %IB1301 : REAL;  (* Podlaha K2;202 *)
+LUX_202 AT %IB1289 : REAL;  (* Súmrak 2P;202 *)
+TER_203 AT %IB1322 : REAL;  (* Miestnost;203 *)
+TGL_231_6 AT %IB1315 : TCIB_C_WS_0000R_PG_BTNs;  (* Postel-L;203 *)
+PIR_231_2 AT %IB1305.0 : BOOL;  (* Postel-L;203 *)
+PIR_A03 AT %IB1330.1 : BOOL;  (* Nad rozvadzacom;003 *)
+DOR_X11 AT %IB1330.0 : BOOL;  (* Zadna brana;X01 *)
+TGL_232_6 AT %IB1374 : TCIB_C_WS_0000R_PG_BTNs;  (* Postel-P;203 *)
+TEH_203 AT %IB1370 : REAL;  (* Podlaha;203 *)
+PIR_23P_2 AT %IB1364.0 : BOOL;  (* Postel-P;203 *)
+KEY_108_0 AT %IB1389 : TCIB_C_WG_0503S_IN;  (* Klavesnica-garaz;108 *)
+DOR_108 AT %IB1407.5 : BOOL;  (* Garaz-snimac;108 *)
+PIR_108 AT %IB1407.4 : BOOL;  (* Garaz;108 *)
+WSB_108_2 AT %IB1407.0 : BOOL;  (* Garáž-brana;108 *)
+TER_108 AT %IB1427 : REAL;  (* Miestnost;108 *)
+WSB_182_2 AT %IB1423.0 : BOOL;  (* Garáž-dvere;108 *)
+TGL_16L_6 AT %IB1449 : TCIB_C_WS_0000R_PG_BTNs;  (* Kúpelna-L;106 *)
+PIR_106_2 AT %IB1439.0 : BOOL;  (* Kupelna;106 *)
+TER_106 AT %IB1481 : REAL;  (* Kupelna-1;106 *)
+TGL_16P_6 AT %IB1474 : TCIB_C_WS_0000R_PG_BTNs;  (* Kúpelna-P;106 *)
+TEH_106 AT %IB1466 : REAL;  (* Podlaha;106 *)
+TGL_14P_6 AT %IB1499 : TCIB_C_WS_0000R_PG_BTNs;  (* Postel-P;104 *)
+PIR_14P_2 AT %IB1489.0 : BOOL;  (* Postel-P;104 *)
+TGL_14D_6 AT %IB1524 : TCIB_C_WS_0000R_PG_BTNs;  (* Pri dverách;104 *)
+TEH_104 AT %IB1516 : REAL;  (* Podlaha;104 *)
+TER_104 AT %IB1556 : REAL;  (* Spálna;104 *)
+TGL_14L_6 AT %IB1549 : TCIB_C_WS_0000R_PG_BTNs;  (* Postel-L;104 *)
+PIR_14L_2 AT %IB1539.0 : BOOL;  (* Postel-L;104 *)
+COX_002_0 AT %IB1638 : REAL;  (* CO2 Vináren;002 *)
+TER_002 AT %IB1675 : REAL;  (* Miestnost;002 *)
+TGL_002_6 AT %IB1668 : TCIB_C_WS_0000R_PG_BTNs;  (* Vináren;002 *)
+TEH_002 AT %IB1660 : REAL;  (* Podlaha;002 *)
+PIR_002_2 AT %IB1658.1 : BOOL;  (* Vináren;002 *)
+TER_001 AT %IB1700 : REAL;  (* Chodba-0;001 *)
+TGL_YY1_6 AT %IB1693 : TCIB_C_WS_0000R_PG_BTNs;  (* Chodba.0;001 *)
+TEH_001 AT %IB1685 : REAL;  (* Podlaha;001 *)
+PIR_001 AT %IB1683.1 : BOOL;  (* Chodba-0;001 *)
+TEH_003 AT %IB1716 : REAL;  (* Podlaha;003 *)
+TER_003 AT %IB1712 : REAL;  (* Miestnost;003 *)
+WSB_003_2 AT %IB1708.0 : BOOL;  (* Technika;003 *)
+PIR_003 AT %IB1724.5 : BOOL;  (* PIR-technika;003 *)
+PIR_006 AT %IB1724.4 : BOOL;  (* PIR-WC-0;003 *)
+WSB_006_2 AT %IB1724.0 : BOOL;  (* WC-technika;003 *)
+TER_005 AT %IB1744 : REAL;  (* Miestnost;005 *)
+PIR_005 AT %IB1740.5 : BOOL;  (* Sklad;005 *)
+PIR_004 AT %IB1740.4 : BOOL;  (* Fitness;004 *)
+WSB_005_2 AT %IB1740.0 : BOOL;  (* Sklad;005 *)
+TEH_004 AT %IB1768 : REAL;  (* Podlaha;004 *)
+TEH_005 AT %IB1764 : REAL;  (* Podlaha;005 *)
+TER_004 AT %IB1760 : REAL;  (* Miestnost;004 *)
+WSB_04X_2 AT %IB1756.0 : BOOL;  (* Fitko-sklad;004 *)
+PIR_01X_2 AT %IB1772.5 : BOOL;  (* Sch??;012 *)
+PIR_01S_2 AT %IB1772.4 : BOOL;  (* Podesta-0;012 *)
+WSB_004_2 AT %IB1772.0 : BOOL;  (* Fitness;004 *)
+ZAS_000 AT %QB8.1 : BOOL;  (* HW-Reset;000 *)
+ZAS_DAL AT %QB8.0 : BOOL;  (* HW-reset DALI;000 *)
+ROM_112 AT %QB86 : USINT;  (* Obývacka;1 *)
+ROM_110 AT %QB85 : USINT;  (* Kuchyna;1 *)
+ROM_103 AT %QB84 : USINT;  (* Chodba;1 *)
+ROM_101 AT %QB83 : USINT;  (* Predsien;1 *)
+ROM_104 AT %QB82 : USINT;  (* Spálna;1 *)
+ROM_106 AT %QB81 : USINT;  (* Kúpelna;1 *)
+ROM_105 AT %QB80 : USINT;  (* Šatník;1 *)
+ROM_102 AT %QB79 : USINT;  (* Šatnícek;1 *)
+ROM_113 AT %QB78 : USINT;  (* WC;1 *)
+ROM_107 AT %QB77 : USINT;  (* Pracovna;1 *)
+ROM_109 AT %QB76 : USINT;  (* Špajz;1 *)
+ROM_108 AT %QB75 : USINT;  (* Garáž;1 *)
+ROM_012 AT %QB74 : USINT;  (* Schodisko;1 *)
+ROM_002 AT %QB70 : USINT;  (* Vináren;3 *)
+ROM_001 AT %QB69 : USINT;  (* Chodba-PP;3 *)
+ROM_003 AT %QB68 : USINT;  (* Technika;3 *)
+ROM_004 AT %QB67 : USINT;  (* Fitness;3 *)
+ROM_005 AT %QB66 : USINT;  (* Sklad;3 *)
+ROM_201 AT %QB63 : USINT;  (* Chodba-2P;1 *)
+ROM_202 AT %QB62 : USINT;  (* Kúpelna-2P;1 *)
+ROM_203 AT %QB61 : USINT;  (* Host 2.03;1 *)
+ROM_204 AT %QB60 : USINT;  (* Host 2.04;1 *)
+ROM_X02 AT %QB16 : USINT;  (* 2.NP Vonku;2 *)
+ROM_X01 AT %QB15 : USINT;  (* 1.NP Vonku;2 *)
+ROM_X10 AT %QB14 : USINT;  (* Terasa-1;2 *)
+ROM_X00 AT %QB13 : USINT;  (* Bazén room;3 *)
+ROM_000 AT %QB9 : USINT;  (* #Setup;0 *)
+DLM_001_Q AT %QB93 : tC_DL_0012Sout;
+TVE_107 AT %QB114.2 : BOOL;  (* Pracovna;107 *)
+TVE_105 AT %QB114.1 : BOOL;  (* Šatník;105 *)
+TVE_102 AT %QB114.0 : BOOL;  (* Šatnícek;102 *)
+TVE_108 AT %QB113.7 : BOOL;  (* Garáž;108 *)
+TVE_104 AT %QB113.6 : BOOL;  (* Spálna.1;104 *)
+TVE_106 AT %QB113.5 : BOOL;  (* Kúpelna.1;106 *)
+TVE_005 AT %QB113.4 : BOOL;  (* Sklad;005 *)
+TVE_004 AT %QB113.3 : BOOL;  (* Fitness;004 *)
+TVE_003 AT %QB113.2 : BOOL;  (* Technika;003 *)
+TVE_002 AT %QB113.1 : BOOL;  (* Vináren;002 *)
+TVE_001 AT %QB113.0 : BOOL;  (* Chodba.0;001 *)
+ROL_004_D AT %QB116.3 : BOOL;
+ROL_004_U AT %QB116.2 : BOOL;  (* Fitness??;004 *)
+ROL_001_D AT %QB116.1 : BOOL;
+ROL_001_U AT %QB116.0 : BOOL;  (* Chodba-0;001 *)
+ROL_104_D AT %QB115.7 : BOOL;
+ROL_104_U AT %QB115.6 : BOOL;  (* Spálna;104 *)
+ROL_106_D AT %QB115.5 : BOOL;
+ROL_106_U AT %QB115.4 : BOOL;  (* Kúpelna-1;106 *)
+ROL_003_D AT %QB115.3 : BOOL;
+ROL_003_U AT %QB115.2 : BOOL;  (* Technika;003 *)
+ROL_1A2_D AT %QB115.1 : BOOL;
+ROL_1A2_U AT %QB115.0 : BOOL;  (* K jazierku;112 *)
+ROL_114_D AT %QB124.1 : BOOL;
+ROL_114_U AT %QB124.0 : BOOL;  (* Schodisko;012 *)
+ROL_202_D AT %QB123.7 : BOOL;
+ROL_202_U AT %QB123.6 : BOOL;  (* Kúpelna-2;202 *)
+ROL_103_D AT %QB123.5 : BOOL;
+ROL_103_U AT %QB123.4 : BOOL;  (* Chodba-1;103 *)
+ROL_0F4_D AT %QB123.3 : BOOL;
+ROL_0F4_U AT %QB123.2 : BOOL;  (* Fitness;004 *)
+ROL_002_D AT %QB123.1 : BOOL;
+ROL_002_U AT %QB123.0 : BOOL;  (* Vinnáren;002 *)
+SVD_GA2 AT %QB132.0 : BOOL;  (* Gabión-terasa;X01 *)
+SVD_GA1 AT %QB131.7 : BOOL;  (* Gabión-garáž;X01 *)
+VEN_001_Q AT %QB131.1 : BOOL;
+VEN_001_1 AT %QB131.0 : BOOL;  (* Rekuperácia;003 *)
+ZAS_KAM AT %QB134.2 : BOOL;  (* Nahravanie-KAM;000 *)
+VVO_003_Q AT %QB134.1 : BOOL;
+VVO_003_2 AT %QB134.0 : BOOL;  (* Ventil vody;003 *)
+TVE_201 AT %QB133.7 : BOOL;  (* Chodba.2;201 *)
+TVE_202 AT %QB133.6 : BOOL;  (* Kúpelna.2;202 *)
+TVE_204 AT %QB133.5 : BOOL;  (* Host 2.04;204 *)
+TVE_203 AT %QB133.4 : BOOL;  (* Host 2.03;203 *)
+TVE_103 AT %QB133.3 : BOOL;  (* Chodba.1;103 *)
+TVE_100 AT %QB133.2 : BOOL;  (* Kuchyna;110 *)
+TVE_112 AT %QB133.1 : BOOL;  (* Obývacka;112 *)
+SVD_005 AT %QB136.2 : BOOL;  (* Sklad;005 *)
+SVD_004 AT %QB136.1 : BOOL;  (* Fitness;004 *)
+SVD_003 AT %QB136.0 : BOOL;  (* Technika;003 *)
+SVD_001 AT %QB135.7 : BOOL;  (* Chodba-0.01;001 *)
+SVD_006 AT %QB135.6 : BOOL;  (* Strop-WC;003 *)
+GAT_108_0 AT %QB135.2 : BOOL;  (* Garaz;108 *)
+GAT_X11_1 AT %QB135.1 : BOOL;  (* Zadna brana;X01 *)
+GAT_X12_1 AT %QB135.0 : BOOL;  (* Predna Brana;X01 *)
+ROL_XZ6_D AT %QB138.3 : BOOL;
+ROL_XZ6_U AT %QB138.2 : BOOL;  (* Jazierko-L;X10 *)
+ROL_XY6_D AT %QB138.1 : BOOL;
+ROL_XY6_U AT %QB138.0 : BOOL;  (* Bazen-L;X10 *)
+ROL_XX6_D AT %QB137.7 : BOOL;
+ROL_XX6_U AT %QB137.6 : BOOL;  (* Bazen-P;X10 *)
+ROL_112_D AT %QB137.5 : BOOL;
+ROL_112_U AT %QB137.4 : BOOL;  (* Na Aqárium;112 *)
+ROL_X16_D AT %QB137.3 : BOOL;
+ROL_X16_U AT %QB137.2 : BOOL;  (* Jazierko-P;X10 *)
+ROL_110_D AT %QB137.1 : BOOL;
+ROL_110_U AT %QB137.0 : BOOL;  (* Kuchyna;110 *)
+KEY_002_Q AT %QB145 : TCIB_C_KY_0001R_OUT;
+WSB_109_Q AT %QB183.0 : BOOL;
+ROL_108_D AT %QB184.1 : BOOL;
+ROL_108_U AT %QB184.0 : BOOL;  (* Garáž;108 *)
+TGL_131_Q AT %QB186 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_2X1_Q AT %QB198 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_107_Q AT %QB210 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_113_Q AT %QB222 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_101_Q AT %QB234 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_11P_Q AT %QB246 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_1BL_Q AT %QB258 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_1BP_Q AT %QB270 : TCIB_C_WS_0000R_PG_GLASSO;
+ROL_107_D AT %QB283.1 : BOOL;
+ROL_107_U AT %QB283.0 : BOOL;  (* Pracovna;107 *)
+SIR_002 AT %QB285.6 : BOOL;  (* Siréna-terasa;X10 *)
+TGL_X10_Q AT %QB285 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_110_Q AT %QB297 : TCIB_C_WS_0000R_PG_GLASSO;
+ZAS_24L AT %QB309.1 : BOOL;  (* N.Lampa-L 2.04;204 *)
+ZAS_24P AT %QB309.0 : BOOL;  (* N.Lampa-P 2.04;204 *)
+TGL_243_Q AT %QB310 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_22L_Q AT %QB322 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_22P_Q AT %QB334 : TCIB_C_WS_0000R_PG_GLASSO;
+DLM_002_Q AT %QB346 : tC_DL_0012Sout;
+TGL_242_Q AT %QB350 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_241_Q AT %QB362 : TCIB_C_WS_0000R_PG_GLASSO;
+ROL_204_D AT %QB374.1 : BOOL;
+ROL_204_U AT %QB374.0 : BOOL;  (* Vlavo;204 *)
+ROL_24T_D AT %QB376.1 : BOOL;
+ROL_24T_U AT %QB376.0 : BOOL;  (* Na terasu;204 *)
+TGL_233_Q AT %QB378 : TCIB_C_WS_0000R_PG_GLASSO;
+ROL_201_D AT %QB390.1 : BOOL;
+ROL_201_U AT %QB390.0 : BOOL;  (* Chodba-2;201 *)
+TGL_234_Q AT %QB392 : TCIB_C_WS_0000R_PG_GLASSO;
+ZAS_23P AT %QB404.1 : BOOL;  (* N.Lampa-P 2.03;203 *)
+ZAS_23L AT %QB404.0 : BOOL;  (* N.Lampa-L 2.03;203 *)
+TGL_201_Q AT %QB405 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_231_Q AT %QB433 : TCIB_C_WS_0000R_PG_GLASSO;
+KOT_003_1 AT %QB445 : REAL;  (* Kotol;003 *)
+SIR_001 AT %QB461.0 : BOOL;  (* Siréna garáž;X01 *)
+TGL_232_Q AT %QB466 : TCIB_C_WS_0000R_PG_GLASSO;
+KEY_108_Q AT %QB478 : TCIB_C_WG_0503S_OUT;
+ROL_2D3_D AT %QB479.1 : BOOL;
+ROL_2D3_U AT %QB479.0 : BOOL;  (* Ter.zad.brána;203 *)
+ROL_2P3_D AT %QB481.1 : BOOL;
+ROL_2P3_U AT %QB481.0 : BOOL;  (* Oproti posteli;203 *)
+WSB_108_Q AT %QB483.0 : BOOL;
+WSB_182_Q AT %QB484.0 : BOOL;
+TGL_16L_Q AT %QB485 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_16P_Q AT %QB497 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_14P_Q AT %QB509 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_14D_Q AT %QB521 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_14L_Q AT %QB533 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_002_Q AT %QB548 : TCIB_C_WS_0000R_PG_GLASSO;
+TGL_YY1_Q AT %QB560 : TCIB_C_WS_0000R_PG_GLASSO;
+WSB_003_Q AT %QB572.0 : BOOL;
+WSB_006_Q AT %QB573.0 : BOOL;
+WSB_005_Q AT %QB574.0 : BOOL;
+WSB_04X_Q AT %QB575.0 : BOOL;
+WSB_004_Q AT %QB576.0 : BOOL;
+ROL_XTU_D AT %QB577.1 : BOOL;
+ROL_XTU_U AT %QB577.0 : BOOL;  (* Roletka 2x;X10 *)
+
+END_VAR

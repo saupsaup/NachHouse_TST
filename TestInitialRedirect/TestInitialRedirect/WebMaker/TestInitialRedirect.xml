@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<web version="8.1" propfont="true" foot="© 2007 - 2019 Teco a.s." MaxUid="28441">
+	<panels></panels>
+	<Grid Enable="1" X="5" Y="5" />
+	<globalset newdim="1" />
+	<group caption="" Uid="28425">
+		<page caption="Index" name="REDIR.XML" background="" bgcolor="16777215" repeat="false" hidden="false" ajax="true" pause="1000" level="0" default="true" ucid="1765951767" width="205" height="37" Uid="28433">
+			<object caption="" X="5" Y="2" xoff="3" yoff="7" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28426">
+				<edit variable="targetPage" type="STRING[20]" intf="0" timf="" align="left" zero="false" prec="-1" size="20" global="true" border="true" width="170" height="22" tabindex="1" />
+			</object>
+		</page>
+	</group>
+	<group caption="" level="0" locked="0" altdim="false" notforid="false" Uid="28437">
+		<page caption="M1" name="M1.XML" background="" bgcolor="16777215" repeat="false" hidden="false" ajax="true" pause="1000" level="0" ucid="1586412910" width="116" height="48" Uid="28438">
+			<object caption="PAGE1" X="2" Y="2" xoff="2" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="32" transparent="true" visneg="false" Uid="28427">
+				<label />
+			</object>
+			<object caption="" X="1" Y="1" xoff="0" yoff="0" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28430">
+				<iframe variable="pageLogout[1]" type="STRING[20]" width="1" height="1" href="" noscroll="0"></iframe>
+			</object>
+		</page>
+		<page caption="M2" name="M2.XML" background="" bgcolor="16777215" repeat="false" hidden="false" ajax="true" pause="1000" level="0" ucid="1586412917" width="116" height="48" Uid="28439">
+			<object caption="PAGE2" X="2" Y="2" xoff="2" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="32" transparent="true" visneg="false" Uid="28428">
+				<label />
+			</object>
+			<object caption="" X="1" Y="1" xoff="0" yoff="0" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28431">
+				<iframe variable="pageLogout[2]" type="STRING[20]" width="1" height="1" href="" noscroll="0"></iframe>
+			</object>
+		</page>
+		<page caption="M3" name="M3.XML" background="" bgcolor="16777215" repeat="false" hidden="false" ajax="true" pause="1000" level="0" ucid="1586412926" width="116" height="48" Uid="28440">
+			<object caption="PAGE3" X="2" Y="2" xoff="2" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="32" transparent="true" visneg="false" Uid="28429">
+				<label />
+			</object>
+			<object caption="" X="1" Y="1" xoff="0" yoff="0" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28432">
+				<iframe variable="pageLogout[3]" type="STRING[20]" width="1" height="1" href="" noscroll="0"></iframe>
+			</object>
+		</page>
+	</group>
+	<images></images>
+	<Languages>
+		<Language Code="5" Editor="1" />
+	</Languages>
+	<Layers active="0" pasteMode="0">
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+	</Layers>
+	<security crypt="0" count="10">
+		<user level="0" name="" pass="" />
+		<user level="-1" name="1" pass="CE" />
+		<user level="-1" name="2" pass="CD" />
+		<user level="-1" name="3" pass="CC" />
+		<user level="-1" name="4" pass="CB" />
+		<user level="-1" name="5" pass="CA" />
+		<user level="-1" name="6" pass="C9" />
+		<user level="-1" name="7" pass="C8" />
+		<user level="-1" name="8" pass="C7" />
+		<user level="-1" name="9" pass="C6" />
+	</security>
+	<autologin count="10">
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+	</autologin>
+	<tecoapi count="10">
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+	</tecoapi>
+</web>

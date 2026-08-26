@@ -1,0 +1,17 @@
+VAR_GLOBAL
+  CustomizedLoginPage AT %S355.1 : BOOL := true;
+END_VAR
+
+VAR_GLOBAL RETAIN
+
+END_VAR
+
+VAR_GLOBAL
+
+END_VAR
+
+
+
+
+
+

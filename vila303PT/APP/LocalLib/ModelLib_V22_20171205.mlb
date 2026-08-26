@@ -1,0 +1,2810 @@
+(*` {CSY}Knihovna vývojového systému Mosaic{ENU}Mosaic IDE library *)
+(*` {CSY}Jméno souboru{ENU}File name{} : D:\TecoUserLibs\ModelLib_V22_20171205.mlb *)
+(*` {CSY}Knihovna : ModelLib{ENU}Library : ModelLib{} 2.2 *)
+(*` {CSY}Autor{ENU}Author{} : Teco a.s. *)
+(*` {CSY}Autorská práva{ENU}Copyright{} : (c)2004-2017 *)
+(*` {CSY}Verze IEC pøekladaèe{ENU}IEC compiler version{} : 3.12.15.1 *)
+(*` {CSY}Verze assembleru{ENU}Assembler version{} : 4.3.00 *)
+
+//{Knihovna : ModelLib 2.2  }
+(*` {CSY}Historie{ENU}History{}: *)
+(*`
+{CSY}
+v1.0 18.09.2004 Byd První verze knihovny
+v1.1 02.09.2010 Byd Doplnìny závislosti na knihovnách a pøidány komentáøe.
+v1.2 04.05.2012 Byd Vylepšená inicializace fbSimplePID
+v1.3 21.09.2012 Byd Vylepšený fbSimplePID, pøidaný fbStepControl
+v1.4 08.11.2012 Byd fbStepControl vylepšené hlídání minimální doby pulzu
+v1.5 14.11.2012 Byd fbSimplePID opraveno chování v saturaci
+v1.6 27.11.2013 Byd fbStepControl pøi saturaci je nastaven výstup Open/Close trvale 
+(døíve byl resetován pokud sepnutí trvalo déle jak t0100) 
+v1.7 21.11.2014 Byd fbSimplePID pøi inicializaci potlaèen zásah od derivaèní složky
+v1.8 09.06.2016 Byd Algoritmus èasování ošetøen proti stavu, kdy se funkèní blok nevolá v každém 
+cyklu PLC
+v1.9 01.11.2016 Byd Ošetøení bloku fbSimplePID proti vstupùm typu NaN
+v2.0 30.06.2017 Byd Ošetøení blokù fbLimIntegrator, fbIntegrator, fbDerivator, fbFirstOrder, fbSecondOrder a fbSecondOrderOsc proti vstupùm typu NaN.
+v2.1 16.11.2017 Byd Úpraven bloku fbSimplePID, tak aby po prvním spuštìní zaèal akèní zásah na hodnotì u_man.
+v2.2 05.12.2017 Byd Ošetøen pøechod fbSimplePID z manualního do automatického režimu v pásmu necitlivosti. 
+		    Beznárazový pøechod je nadále poèítán až pøi vystoupení z pásma necitlivosti, ale pro výpoèet je použita skuteèná hodnota výstupu 'u', nikoli aktuální 'u_man'.
+{ENU}
+v1.0 2004-09-18 Byd First version of library
+v1.1 2010-09-02 Byd Dependency on the libraries and comments added.
+v1.2 2012-05-04 Byd Improved initialisation of fbSimplePID
+v1.3 2012-09-21 Byd Improved fbSimplePID, added fbStepControl
+v1.4 2012-11-08 Byd Added fbStepControl improved minimal pulse time control
+v1.5 2012-11-14 Byd fbSimplePID behaviour in saturation corrected
+v1.6 2013-11-27 Byd In saturation outputs Open/Close of fbStepControl is set 
+permanently
+(before they were reset if duration of saturation was longer than t0100)
+v1.7 2014-11-21 Byd fbSimplePID derivative component action suppressed during 
+initialization
+v1.8 2016-06-09 Byd Changed timing algorithm to handle a state when function blocks are not 
+called every PLC cycle
+v1.9 2016-11-01 Byd Added handling of inputs like NaN for fbSimplePID
+v2.0 2017-06-30 Byd Added handling of inputs like NaN for fbLimIntegrator, fbIntegrator, fbDerivator, fbFirstOrder, fbSecondOrder and fbSecondOrderOsc.
+v2.1 2017-11-16 Byd fbSimplePID block was modified so that actuator value would start at u_man after first execution.
+v2.2 2017-12-05 Byd Modified transition from manual to automatic mode inside dead band. 
+		    Seamless transition is still computed when it exits dead band but current value of the output 'u' is used for the calculation, not the current value of 'u_man'.
+*)
+
+(*----------------------------------------------------------------------------*)
+{LIBRARY="LOCALLIB\STDLIB_V20_20100519.MLB"}
+// {LIBRARY="LOCALLIB\REXLIB_V17_20101208.MLB"}
+
+__DECL FUNCTION fcModelLibInvalidReal {HIDDEN} : bool
+  VAR_INPUT
+    r                : real;
+  END_VAR
+END_FUNCTION
+
+TYPE  GenericArrayForDelay : ARRAY [0..1023] OF real;  (*`{ENU}Generic type for VAR_IN_OUT{CSY}Obecný typ pro VAR_IN_OUT*)
+END_TYPE
+
+__DECL FUNCTION fcHiddenModelLibDoStep {HIDDEN} : bool
+(*`Auxiliary function for controlling periodic execution*)
+  VAR_INPUT
+    T                : real;
+  END_VAR
+  VAR_IN_OUT
+    LastT            : time;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION_BLOCK fbLimIntegrator
+(*`{CSY}Simulace integrace vstupu s omezením.
+  Poèítáno stupòovitou náhradou zleva
+
+            1    /t
+  Out(t) = --- * |  In(t) dt + Preset
+            Ti   /0
+
+  Aproximace:
+
+  Out(k) = Out(k-1) + (T/Ti) * In(k) + Preset
+  
+  {ENU}Simulation of integral of input with limits.
+  Calculated by left-endpoint rectangular approximation method (LRAM).
+
+            1    /t
+  Out(t) = --- * |  In(t) dt + Preset
+            Ti   /0
+
+  Approximation:
+
+  Out(k) = Out(k-1) + (T/Ti) * In(k) + Preset*)
+  VAR_INPUT
+    In               : real;  (*`{CSY}Vstupní signál{ENU}Input*)
+    MinO             : real;  (*`{CSY}Omezení{ENU}Limits*)
+    MaxO             : real;  (*`{CSY}Omezení{ENU}Limits*)
+    T                : real :=  0.100;  (*`{CSY}Perioda vzorkování v sekundách{ENU}Sample period [s]*)
+    Preset           : real;  (*`{CSY}Poèáteèní hodnota{ENU}Initial value for output*)
+    Reset            : bool R_EDGE;  (*`{CSY}Reset výstupu na poèáteèní hodnotu{ENU}Reset output to initial value*)
+  END_VAR
+  VAR_OUTPUT
+    Out              : real;  (*`{CSY}Integrál vstupního signálu{ENU}Output*)
+  END_VAR
+  VAR
+    Init             : bool;  (*`Initialization flag (true means initialized)*)
+    LastT            : time;  (*`Last time of block execution*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbIntegrator
+(*`{CSY}Simulace integrace vstupu.
+  Poèítáno stupòovitou náhradou zleva.
+  
+           /t
+  Out(t) = |  In(t) dt + Preset
+           /0
+
+  Aproximace:
+
+  Out(k) = Out(k-1) + T * In(k) + Preset
+  {ENU}Simulation of integral of input.
+  Calculated by left-endpoint rectangular approximation method (LRAM).
+
+           /t
+  Out(t) = |  In(t) dt + Preset
+           /0
+
+  Approximation:
+
+  Out(k) = Out(k-1) + T * In(k) + Preset*)
+  VAR_INPUT
+    In               : real;  (*`{CSY}Vstupní signál{ENU}Input*)
+    T                : real :=  0.1;  (*`{CSY}Perioda vzorkování v sekundách{ENU}Sample period [s]*)
+    Preset           : real;  (*`{CSY}Poèáteèní hodnota{ENU}Initial value for output*)
+    Reset            : bool R_EDGE;  (*`{CSY}Reset výstupu na poèáteèní hodnotu{ENU}Reset output to initial value*)
+  END_VAR
+  VAR_OUTPUT
+    Out              : real;  (*`{CSY}Integrál vstupního signálu{ENU}Output*)
+  END_VAR
+  VAR
+    Init             : bool;  (*`Initialization flag (true means initialized)*)
+    LastT            : time;  (*`Last time of block execution*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbDerivator
+(*`{CSY}Simulace derivace vstupu
+  Poèítáno lichobìžníkovou náhradou.
+
+                  d
+  Out(t) = In(t) ---
+                  dt
+
+  Aproximace:
+
+  Out(k) = (In(k) - In(k-1)) / T
+  {ENU}Simulation of derivation of input. Calculated by trapezoid
+  approximation method (TAM).
+
+                  d
+  Out(t) = In(t) ---
+                  dt
+
+  Approximation:
+
+  Out(k) = (In(k) - In(k-1)) / T*)
+  VAR_INPUT
+    In               : real;  (*`{CSY}Vstupní signál{ENU}Input*)
+    T                : real :=  0.1;  (*`{CSY}Perioda vzorkování v sekundách{ENU}Sample period [s]*)
+  END_VAR
+  VAR_OUTPUT
+    Out              : real;  (*`{CSY}Derivace vstupního signálu{ENU}Output*)
+  END_VAR
+  VAR
+    Init             : bool;  (*`Initialization flag (true means initialized)*)
+    LastT            : time;  (*`Last time of block execution*)
+    Last_In          : real;  (*`Last input value (In(k-1))*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbDelay
+(*`{CSY}Simulace dopravního zpoždìní
+
+  Out(t) = In(t - Tau)
+  Tau = T*K
+
+  Aproximace:
+
+  Out(k) = In(k-K)
+  {ENU}Simulation of transport delay of input.
+
+  Out(t) = In(t - Tau)
+  Tau = T*K
+
+  Approximation:
+
+  Out(k) = In(k-K)*)
+  VAR_INPUT
+    In               : real;  (*`{CSY}Vstupní signál{ENU}Input*)
+    K                : int;  (*`{CSY}Dopravní zpoždìní vyjádøené poètem period. Maximum je dáno velikostí zásobníku Buffer (max 1024){ENU}Multiples of sample period determining transport delay (max 1024)*)
+    T                : real :=  0.1;  (*`{CSY}Perioda vzorkování v sekundách{ENU}Sample period [s]*)
+  END_VAR
+  VAR_OUTPUT
+    Out              : real;  (*`{CSY}Zpoždìný vstupní signál{ENU}Output*)
+  END_VAR
+  VAR_IN_OUT
+    Buffer           : GenericArrayForDelay;  (*`{CSY}Zásobník minulých vzorkù. Mùže odkazovat na libovolné pole typù REAL do velikosti 1024 prvkù{ENU}Samples buffer [0..max.1023] of REAL*)
+  END_VAR
+  VAR
+    LastT            : time;  (*`Last time of block execution*)
+    Point            : int;  (*`Pointer to buffer*)
+    Init             : bool;  (*`Initialization flag (true means initialized)*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbFirstOrder
+(*`{CSY}Simulace lineárního diferenciálního systému prvního øádu
+       se statickým zesílením G a èasovou konstantou T1 dle vzorce
+
+       d Out(t)
+  T1 * -------- + Out(t) = G * In
+          dt
+
+  nebo po Laplaceho transformaci
+
+  OUT(s) * [T1 * s + 1] = G * IN(s)
+
+  {ENU}Simulation of first-order system described by differential equation
+
+       d Out(t)
+  T1 * -------- + Out(t) = G * In
+          dt
+
+  or by laplace domain equation
+
+  OUT(s) * [T1 * s + 1] = G * IN(s)*)
+  VAR_INPUT
+    In               : real;  (*`{CSY}Vstupní signál                     {ENU}Input*)
+    G                : real :=  1.0;  (*`{CSY}Statické zesílení                  {ENU}Gain*)
+    T1               : real :=  1.0;  (*`{CSY}Èasová konstanta v sekundách       {ENU}Time constant [s]*)
+    T                : real :=  0.1;  (*`{CSY}Perioda vzorkování v sekundách     {ENU}Sample period [s]*)
+    Preset           : real;  (*`{CSY}Poèáteèní hodnota                  {ENU}Initial value for output*)
+    Reset            : bool R_EDGE;  (*`{CSY}Reset výstupu na poèáteèní hodnotu {ENU}Reset output to initial value*)
+  END_VAR
+  VAR_OUTPUT
+    Out              : real;  (*`{CSY}Výstupní signál{ENU}Output*)
+  END_VAR
+  VAR
+    Init             : bool;  (*`Initialization flag (true means initialized)*)
+    LastT            : time;  (*`Last time of block execution*)
+    Exp1             : real;  (*`Constant evaluated by time constant*)
+    OldT1            : real;  (*`Old time constant - for change tracking*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbSecondOrder
+(*`{CSY}Simulace lineárního diferenciálního systému druhého øádu
+  se statickým zesílením G a èasovou konstantou T1 a T2 dle vzorce
+  
+          d^2 Out(t)             d Out(t)
+  T1 * T2 ---------- + (T1 + T2) -------- + Out(t) = G * In(t)
+             dt^2                   dt
+
+  nebo po Laplaceho transformaci
+
+  OUT(s) * [T1 * T2 * s^2 + (T1 + T2) * s + 1] = G * IN(s)
+  
+  {ENU}Simulation of second-order system described by differential equation
+
+          d^2 Out(t)             d Out(t)
+  T1 * T2 ---------- + (T1 + T2) -------- + Out(t) = G * In(t)
+             dt^2                   dt
+
+  or by laplace domain equation
+
+  OUT(s) * [T1 * T2 * s^2 + (T1 + T2) * s + 1] = G * IN(s)*)
+  VAR_INPUT
+    In               : real;  (*`{CSY}Vstupní signál                     {ENU}Input*)
+    G                : real :=  1.0;  (*`{CSY}Statické zesílení                  {ENU}Gain*)
+    T1               : real :=  1.0;  (*`{CSY}Èasová konstanta v sekundách       {ENU}Time constant [s]*)
+    T2               : real :=  1.0;  (*`{CSY}Èasová konstanta v sekundách       {ENU}Time constant [s]*)
+    T                : real :=  0.1;  (*`{CSY}Perioda vzorkování v sekundách     {ENU}Sample period [s]*)
+    Preset           : real;  (*`{CSY}Poèáteèní hodnota                  {ENU}Initial value for output*)
+    Reset            : bool R_EDGE;  (*`{CSY}Reset výstupu na poèáteèní hodnotu {ENU}Reset output to initial value*)
+  END_VAR
+  VAR_OUTPUT
+    Out              : real;  (*`{CSY}Výstupní signál{ENU}Output*)
+  END_VAR
+  VAR
+    Init             : bool;  (*`Initialization flag (true means initialized)*)
+    LastT            : time;  (*`Last time of block execution*)
+    a                : real;  (*`Auxiliary constants*)
+    b                : real;  (*`Auxiliary constants*)
+    c                : real;  (*`Auxiliary constants*)
+    d                : real;  (*`Auxiliary constants*)
+    OldT1            : real;  (*`Old time constant - for change tracking*)
+    OldT2            : real;  (*`Old time constant - for change tracking*)
+    LastIn           : real;  (*`Last input*)
+    LastOut          : real;  (*`Output to step older*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbSecondOrderOsc
+(*`{CSY}Funkèní blok slouží pro simulaci kmitajícího lineárního diferenciálního systému druhého øádu
+  se statickým zesílením G a èasovou konstantou T1 dle vzorce
+  
+              d^2 Out(t)                 d Out(t)
+  (1 / Omg^2) ---------- + 2 * Alp / Omg -------- + Out(t) = G * In(t)
+                 dt^2                       dt
+
+  nebo po Laplaceho transformaci
+
+  OUT(s) * [(1 / Omg^2) * s^2  + 2 * Alp / Omg * s + 1] = G * IN(s)
+  {ENU}Block for simulation of second-order oscillating system described by
+  differential equation
+
+              d^2 Out(t)                 d Out(t)
+  (1 / Omg^2) ---------- + 2 * Alp / Omg -------- + Out(t) = G * In(t)
+                 dt^2                       dt
+
+  or by laplace domain equation
+
+  OUT(s) * [(1 / Omg^2) * s^2  + 2 * Alp / Omg * s + 1] = G * IN(s)*)
+  VAR_INPUT
+    In               : real;  (*`{CSY}Vstupní signál                     {ENU}Input*)
+    G                : real :=  1.0;  (*`{CSY}Statické zesílení                  {ENU}Gain*)
+    Alp              : real :=  0.25;  (*`{CSY}Koeficient tlumení                 {ENU}Damping ratio*)
+    Omg              : real :=  4.0;  (*`{CSY}Vlastní úhlová frekvence [1/(rad * s)]{ENU}Natural frequency [1/(rad * s)]*)
+    T                : real :=  0.1;  (*`{CSY}Perioda vzorkování v sekundách     {ENU}Sample period [s]*)
+    Preset           : real;  (*`{CSY}Poèáteèní hodnota                  {ENU}Initial value for output*)
+    Reset            : bool R_EDGE;  (*`{CSY}Reset výstupu na poèáteèní hodnotu {ENU}Reset output to initial value*)
+  END_VAR
+  VAR_OUTPUT
+    Out              : real;  (*`{CSY}Výstupní signál{ENU}Output*)
+  END_VAR
+  VAR
+    i1               : fbIntegrator;
+    i2               : fbIntegrator;
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbSimplePID
+(*`{CSY}Algoritmus PID s filtrovanou derivaèní složkou a omezením integraèní složky pøi saturaci výstupu
+  popsán Laplaceho rovnící
+
+                /          1              Td * s        \
+  U(s) = Gain * | E(s) + ------ E(s) - ----------- Y(s) |
+                \        Ti * s         Tf * s + 1      /
+  
+  {ENG}PID algorithm with antiwind-up and filtered D-part
+  described by laplace domain equation
+
+                /          1              Td * s        \
+  U(s) = Gain * | E(s) + ------ E(s) - ----------- Y(s) |
+                \        Ti * s         Tf * s + 1      /*)
+  VAR_INPUT
+    y                : real;  (*`{CSY}Mìøená velièina{ENG}Measured value*)
+    w                : real;  (*`{CSY}Žádaná hodnota{ENG}Set point*)
+    u_man            : real;  (*`{CSY}Hodnota výstupu v ruèním režimu{ENG}Manual output value*)
+    min_u            : real :=  0.0;  (*`{CSY}Minimální hodnota výstupu{ENG}Output low limit*)
+    max_u            : real :=  100.0;  (*`{CSY}Maximální hodnota výstupu{ENG}Output high limit*)
+    Gain             : real :=  1.0;  (*`{CSY}Zesílení{ENG}Proporcional gain*)
+    Ti               : real :=  10.0;  (*`{CSY}Integraèní konstanta v sekundách{ENG}Integration time constant [s]*)
+    Td               : real :=  1.0;  (*`{CSY}Derivaèní èasová konstanta v sekundách{ENG}Derivative time constant [s]*)
+    T                : real :=  0.1;  (*`{CSY}Perioda vzorkování v sekundách{ENG}Sample periode [s]*)
+    Tf               : real :=  0.25;  (*`{CSY}Èasová konstanta filtru derivaèní složky v sekundách{ENG}D-part filter time constant [s]*)
+    dz               : real;  (*`{CSY}Symetrické pásmo necitlivosti{ENG}Symetric dead zone*)
+    manual           : bool;  (*`{CSY}Nastavení ruèního režimu (0 – automatický režim, 1 – ruèní režim){ENG}Manual mode (0 - automatic mode, 1 - manual mode)*)
+    IH               : bool;  (*`{CSY}Pozastavení integrace (0 = integrace je povolena, 1 = integrace je pozastavena){ENG}Integrator hold (0 - intergator enabled, 1 - integrator hold)*)
+  END_VAR
+  VAR_OUTPUT
+    u                : real;  (*`{CSY}Výstup regulátoru{ENG}Actuator value*)
+    uvel             : real;  (*`{CSY}Rychlost výstup regulátoru{ENG}Speed of actuator*)
+    partP            : real;  (*`{CSY}Hodnota proporcionální složky{ENG}Value of proportional part*)
+    partI            : real;  (*`{CSY}Hodnota integraèní složky{ENG}Value of integral part*)
+    partD            : real;  (*`{CSY}Hodnota derivaèní složky{ENG}Value of derivative part*)
+    e                : real;  (*`{CSY}Regulaèní odchylka{ENG}Deviation (error) value*)
+    auto             : bool;  (*`{CSY}Režim regulátoru (0 – ruèní režim, 1 – automatický režim){ENG}Controller mode (0 - manual mode, 1 - automatic mode)*)
+    satmax           : bool;  (*`{CSY}Výstup saturován na maximální hodnotì{ENG}Output is saturated at maximal value*)
+    satmin           : bool;  (*`{CSY}Výstup saturován na minimální hodnotì{ENG}Output is saturated at minimal value*)
+  END_VAR
+  VAR
+    wasman           : bool;  (*`flag for change from manual mode*)
+    Init             : bool;  (*`initialization flag (true means initialized)*)
+    e_1              : real;  (*`last deviation*)
+    y_p              : real;  (*`filtered input*)
+    y_1              : real;  (*`last output*)
+    LastT            : time;  (*`last execution time*)
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK _STEP_CONTROL_POS_SIM_
+(*`{CSY}Pomocný blok
+nepoužívat samostatnì
+{ENG}Auxiliary block
+do not use standalone*)
+  VAR_INPUT
+    o                : bool;
+    c                : bool;
+    fo               : bool;
+    fc               : bool;
+    t0100            : real;
+  END_VAR
+  VAR
+    LT               : time;
+    timdif           : real;
+    virPos           : real;
+    INIT             : bool;
+  END_VAR
+  VAR_OUTPUT
+    so               : bool;
+    sc               : bool;
+    pos              : real;
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbStepControl
+(*`{CSY}Tøístavové ovládaní servopohonu pro fbSimplePID
+  {ENG}Actuator step control for fbSimplePID*)
+  VAR_INPUT
+    Pos              : real;  (*`{CSY}Žádaná poloha servopohonu{ENG}Actuator set point*)
+    PosVel           : real;  (*`{CSY}Rychlost zmìny žádané polohy servopohonu{ENG}Velocity of actuator set point*)
+    HiSw             : bool;  (*`{CSY}Koncový spínaè plnì otevøené polohy{ENG}Switch of fully open position*)
+    LoSw             : bool;  (*`{CSY}Koncový spínaè plnì zavøené polohy{ENG}Switch of fully close position*)
+    t0100            : real :=  30.0;  (*`{CSY}Doba pøechodu z plnì zavøené do plnì otevøené polohy v sekundách{ENG}Time of transition from fully close to fully open position in seconds*)
+    tmin             : real :=  0.5;  (*`{CSY}Minimální délka pulzu a doba mezi pulzy v sekundách{ENG}Minimal length of pulse and duration between pulses in seconds*)
+    t01min           : real :=  2.0;  (*`{CSY}Minimální doba mezi pulzy opaèné polarity v sekundách{ENG}Minimal time between pulses of oposite direction in seconds*)
+  END_VAR
+  VAR_OUTPUT
+    Open             : bool;  (*`{CSY}Požadavek otvírat{ENG}Request to open*)
+    Close            : bool;  (*`{CSY}Požadavek zavírat{ENG}Request to close*)
+    Run              : bool;  (*`{CSY}Pohon v pohybu (logický souèet požadavku otvírat a zavírat){ENG}Actuator is running (logical disjunction of requests to open and close)*)
+    VirPos           : real;  (*`{CSY}Vypoètená virtuální poloha pohonu{ENG}Computed virtual position of actuator*)
+  END_VAR
+  VAR
+    wasOpen          : bool;
+    wasClose         : bool;
+    Idle             : bool;
+    t0               : TON;  (*`_TIM_REAL_;*)
+    t1               : TON;  (*`_TIM_REAL_;*)
+    ps               : _STEP_CONTROL_POS_SIM_;
+  END_VAR
+END_FUNCTION_BLOCK
+
+TYPE TGeneratorSignalType : 
+  (gst_Sin,
+   gst_Square,
+   gst_Saw,
+   gst_DblSaw 
+  );
+END_TYPE
+
+__DECL FUNCTION_BLOCK fbGenerator
+(*`{CSY}Generátor signálu
+  {ENU}Signal generator*)
+  VAR_INPUT
+    Zero             : real;  (*`{CSY}Posun nuly generovaného signálu{ENU}Zero level*)
+    Amp              : real :=  1.0;  (*`{CSY}Amplituda výstupního signálu{ENU}Output signal amplitude*)
+    Per              : real :=  1.0;  (*`{CSY}Perioda výstupního signálu{ENU}Output signal period [s]*)
+    SType            : TGeneratorSignalType;  (*`{CSY}Typ výstupního signálu{ENU}Type of output signal*)
+    Reset            : bool R_EDGE;  (*`{CSY}Reset generátoru{ENU}Generator reset*)
+  END_VAR
+  VAR_OUTPUT
+    Out              : real;  (*`{CSY}Výstup generátoru{ENU}Generator output*)
+  END_VAR
+  VAR
+    Init             : bool;
+    Start            : time;
+    Phase            : real;
+  END_VAR
+END_FUNCTION_BLOCK
+
+
+
+{USES=fbLimIntegrator:fcModelLibInvalidReal,fcHiddenModelLibDoStep}
+{USES=fbIntegrator:fcModelLibInvalidReal,fcHiddenModelLibDoStep}
+{USES=fbDerivator:fcModelLibInvalidReal,fcHiddenModelLibDoStep}
+{USES=fbDelay:fcHiddenModelLibDoStep}
+{USES=fbFirstOrder:fcHiddenModelLibDoStep,fcModelLibInvalidReal}
+{USES=fbSecondOrder:fcHiddenModelLibDoStep,fcModelLibInvalidReal}
+{USES=fbSimplePID:fcModelLibInvalidReal,fcHiddenModelLibDoStep}
+#srcfile 'C:\TECOLIBSRC\MODELLIB\MODELLIB_VCONTROL\FCMODELLIBINVALIDREAL.ST'
+#pou fcModelLibInvalidReal
+#srcline 1 ;FUNCTION fcModelLibInvalidReal {HIDDEN} : BOOL
+P     61
+fcModelLibInvalidReal_L0:
+ LINK 0
+ NXT
+#srcline 6 ;  BEGIN
+#srcline 7 ;  {ASM}
+#srcline 8
+  LDX r
+#srcline 9
+  AND  %01111111100000000000000000000000
+#srcline 10
+  EQ   %01111111100000000000000000000000
+#srcline 11
+  WRX  __fc__fcModelLibInvalidReal
+#srcline 12 ;  {END_ASM}
+#srcline 15 ;END_FUNCTION
+ PRV  
+ LDX  __fc__fcModelLibInvalidReal
+ ULNK
+RET
+E     61
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'C:\TECOLIBSRC\MODELLIB\MODELLIB_VCONTROL\BASICBLOCK.ST'
+#pou fcHiddenModelLibDoStep
+#srcline 7 ;FUNCTION fcHiddenModelLibDoStep {HIDDEN} : BOOL
+
+#struct fcHiddenModelLibDoStep__temp__
+  time TDIFF,
+  time TT
+P     61
+fcHiddenModelLibDoStep_L0:
+ LINK __SizeOf(fcHiddenModelLibDoStep__temp__)
+ NXT
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 25 ;  TT := REAL_TO_TIME(T*1000.0);
+ LDX  T
+#debug real T
+ LD   real 1000.0
+ MUF
+ RND
+ IFL
+ WRY  TT
+#debug_left time TT
+#srcline 26 ;  TDIFF := %SL52 - LastT;
+ LD   %SL52
+ LDX  LastT
+ LDIL 
+#debug time LastT
+ SUB
+ WRY  TDIFF
+#debug_left time TDIFF
+#srcline 27 ;  fcHiddenModelLibDoStep := (TDIFF >= TT);
+ LDY  TDIFF
+#debug time TDIFF
+ LDY  TT
+#debug time TT
+ LTS
+ NEG
+ WRX  __fc__fcHiddenModelLibDoStep
+#debug_left bool fcHiddenModelLibDoStep
+#srcline 28 ;  if fcHiddenModelLibDoStep then
+ LDX  __fc__fcHiddenModelLibDoStep
+#debug bool fcHiddenModelLibDoStep
+ JMC  fcHiddenModelLibDoStep_L1
+#srcline 29 ;    LastT := LastT + TT;
+ LDX  LastT
+ LDIL 
+#debug time LastT
+ LDY  TT
+#debug time TT
+ ADD
+ LDX  LastT
+ WRIL 
+#debug_left time LastT
+#srcline 30 ;  end_if;
+fcHiddenModelLibDoStep_L1:
+#srcline 31 ;  if (TDIFF < T#0s) OR (TDIFF > TT * 2) then                   (* if diference is out of range make correction! *)
+ LDY  TDIFF
+#debug time TDIFF
+ LD   time 0
+ LTS
+ LDY  TDIFF
+#debug time TDIFF
+ LDY  TT
+#debug time TT
+ LD   time 2
+ MULS
+ GTS
+ OR  
+ JMC  fcHiddenModelLibDoStep_L3
+#srcline 32 ;    //TDIFF := TDIFF; //debug
+#srcline 33 ;    LastT := %SL52;
+ LD   %SL52
+ LDX  LastT
+ WRIL 
+#debug_left time LastT
+#srcline 34 ;    fcHiddenModelLibDoStep := true;
+ LD   bool -1       ; true
+ WRX  __fc__fcHiddenModelLibDoStep
+#debug_left bool fcHiddenModelLibDoStep
+#srcline 35 ;  end_if;
+fcHiddenModelLibDoStep_L3:
+#srcline 37 ;END_FUNCTION
+ PRV  
+ LDX  __fc__fcHiddenModelLibDoStep
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou fbLimIntegrator
+#srcline 40 ;FUNCTION_BLOCK fbLimIntegrator
+P     61
+fbLimIntegrator_L0:
+ LINK 0
+; R_EDGE, F_EDGE 
+ LDX  Reset
+ LETX __EDGE_R__Reset
+ WRX  Reset
+#srcline 82 ;  if fcModelLibInvalidReal(r := In) then
+ NXT
+ LDX  In
+#debug real In
+ WR   __Instance__fcModelLibInvalidReal~r
+#debug_left real __Instance__fcModelLibInvalidReal~r
+ PRV
+ LEA  __Instance__fcModelLibInvalidReal
+ CAL  fcModelLibInvalidReal_L0
+ JMC  fbLimIntegrator_L1
+#srcline 83 ;    in := 0.0;
+ LD   real 0.0
+ WRX  in
+#debug_left real in
+#srcline 84 ;  end_if;
+fbLimIntegrator_L1:
+#srcline 86 ;  if Init AND NOT Reset then                                  (* evaluation *)
+ LDX  Init
+#debug bool Init
+ LDX  Reset
+#debug bool Reset
+ NEG
+ AND
+ JMC  fbLimIntegrator_L3
+#srcline 87 ;    if fcHiddenModelLibDoStep(T := T, LastT := LastT) then  (* if diference of last execution time and actual time is greater then sample period *)
+ NXT
+ LDX  T
+#debug real T
+ WR   __Instance__fcHiddenModelLibDoStep~T
+#debug_left real __Instance__fcHiddenModelLibDoStep~T
+ LEAX LastT
+ WR   __Instance__fcHiddenModelLibDoStep~LastT
+#debug_left pointer __Instance__fcHiddenModelLibDoStep.LastT
+ PRV
+ LEA  __Instance__fcHiddenModelLibDoStep
+ CAL  fcHiddenModelLibDoStep_L0
+ JMC  fbLimIntegrator_L5
+#srcline 88 ;      if T > 0.0 then                                         (* if time constans are valid *)
+ LDX  T
+#debug real T
+ LD   real 0.0
+ GTF
+ JMC  fbLimIntegrator_L7
+#srcline 89 ;        Out := Out + In * T;                                  (* evaluate output *)
+ LDX  Out
+#debug real Out
+ LDX  In
+#debug real In
+ LDX  T
+#debug real T
+ MUF
+ ADF
+ WRX  Out
+#debug_left real Out
+#srcline 90 ;      end_if;
+fbLimIntegrator_L7:
+#srcline 91 ;    end_if;
+fbLimIntegrator_L5:
+#srcline 92 ;  else                                                        (* initialization *)
+ JMP  fbLimIntegrator_L4
+fbLimIntegrator_L3:
+#srcline 93 ;    LastT := %SL52;                                           (* initialize last execution time *)
+ LD   %SL52
+ WRX  LastT
+#debug_left time LastT
+#srcline 94 ;    Out   := Preset;                                          (* set output to preset *)
+ LDX  Preset
+#debug real Preset
+ WRX  Out
+#debug_left real Out
+#srcline 95 ;    Init  := true;                                            (* initialized *)
+ LD   bool -1       ; true
+ WRX  Init
+#debug_left bool Init
+#srcline 96 ;  end_if;
+fbLimIntegrator_L4:
+#srcline 97 ;  Out := Limit(MN := MinO, IN := Out, MX := MaxO);            (* restriction of output *)
+ LDX  Out
+#debug real Out
+ LDX  MinO
+#debug real MinO
+ MAXF
+ LDX  MaxO
+#debug real MaxO
+ MINF
+ WRX  Out
+#debug_left real Out
+#srcline 98 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbLimIntegrator__InstanceInit__:
+ LINK 0
+ LD   real 0.1
+ WRX  T
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+#pou fbIntegrator
+#srcline 100 ;FUNCTION_BLOCK fbIntegrator
+P     61
+fbIntegrator_L0:
+ LINK 0
+; R_EDGE, F_EDGE 
+ LDX  Reset
+ LETX __EDGE_R__Reset
+ WRX  Reset
+#srcline 143 ;  if fcModelLibInvalidReal(r := In) then
+ NXT
+ LDX  In
+#debug real In
+ WR   __Instance__fcModelLibInvalidReal~r
+#debug_left real __Instance__fcModelLibInvalidReal~r
+ PRV
+ LEA  __Instance__fcModelLibInvalidReal
+ CAL  fcModelLibInvalidReal_L0
+ JMC  fbIntegrator_L1
+#srcline 144 ;    in := 0.0;
+ LD   real 0.0
+ WRX  in
+#debug_left real in
+#srcline 145 ;  end_if;
+fbIntegrator_L1:
+#srcline 146 ;  
+#srcline 147 ;  if Init AND NOT Reset then                                  (* evaluation *)
+ LDX  Init
+#debug bool Init
+ LDX  Reset
+#debug bool Reset
+ NEG
+ AND
+ JMC  fbIntegrator_L3
+#srcline 148 ;//    TT := REAL_TO_TIME(T*1000.0);
+#srcline 149 ;//    if(TT <= %SL52 - LastT) then                              (* if diference of last execution time and actual time is greater then sample period *)
+#srcline 150 ;//      if(T#0s < %SL52 - LastT - TT * 2) then                  (* if diference is to big, make correction *)
+#srcline 151 ;//        LastT := %SL52 + TT;
+#srcline 152 ;//      end_if;
+#srcline 153 ;//      LastT := LastT + TT;                                    (* add sample period to last execution *)
+#srcline 154 ;    if fcHiddenModelLibDoStep(T := T, LastT := LastT) then  (* if diference of last execution time and actual time is greater then sample period *)
+ NXT
+ LDX  T
+#debug real T
+ WR   __Instance__fcHiddenModelLibDoStep~T
+#debug_left real __Instance__fcHiddenModelLibDoStep~T
+ LEAX LastT
+ WR   __Instance__fcHiddenModelLibDoStep~LastT
+#debug_left pointer __Instance__fcHiddenModelLibDoStep.LastT
+ PRV
+ LEA  __Instance__fcHiddenModelLibDoStep
+ CAL  fcHiddenModelLibDoStep_L0
+ JMC  fbIntegrator_L5
+#srcline 155 ;      if(T > 0.0) then                                        (* if time constans are valid *)
+ LDX  T
+#debug real T
+ LD   real 0.0
+ GTF
+ JMC  fbIntegrator_L7
+#srcline 156 ;        Out := Out + In * T;                                  (* evaluate output *)
+ LDX  Out
+#debug real Out
+ LDX  In
+#debug real In
+ LDX  T
+#debug real T
+ MUF
+ ADF
+ WRX  Out
+#debug_left real Out
+#srcline 157 ;        end_if;
+fbIntegrator_L7:
+#srcline 158 ;    end_if;
+fbIntegrator_L5:
+#srcline 159 ;  else                                                        (* initialization *)
+ JMP  fbIntegrator_L4
+fbIntegrator_L3:
+#srcline 160 ;    LastT := %SL52;                                           (* initialize last execution time *)
+ LD   %SL52
+ WRX  LastT
+#debug_left time LastT
+#srcline 161 ;    Out   := Preset;                                          (* set output to preset *)
+ LDX  Preset
+#debug real Preset
+ WRX  Out
+#debug_left real Out
+#srcline 162 ;    Init  := true;                                            (* initialized *)
+ LD   bool -1       ; true
+ WRX  Init
+#debug_left bool Init
+#srcline 163 ;  end_if;
+fbIntegrator_L4:
+#srcline 164 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbIntegrator__InstanceInit__:
+ LINK 0
+ LD   real 0.1
+ WRX  T
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+#pou fbDerivator
+#srcline 166 ;FUNCTION_BLOCK fbDerivator
+
+#struct fbDerivator__temp__
+  real TTT
+P     61
+fbDerivator_L0:
+ LINK __SizeOf(fbDerivator__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 209 ;  if Init AND NOT fcModelLibInvalidReal(r := In) then                                                  (* evaluation *)
+ LDX  Init
+#debug bool Init
+ NXT
+ LDX  In
+#debug real In
+ WR   __Instance__fcModelLibInvalidReal~r
+#debug_left real __Instance__fcModelLibInvalidReal~r
+ PRV
+ LEA  __Instance__fcModelLibInvalidReal
+ CAL  fcModelLibInvalidReal_L0
+ NEG
+ AND
+ JMC  fbDerivator_L1
+#srcline 210 ;//    IF T <= TTT THEN
+#srcline 211 ;//      if(T#0s < %SL52 - LastT - TT * 2) then                    (* if diference is to big, make correction *)
+#srcline 212 ;//        LastT := %SL52 + TT;
+#srcline 213 ;//      end_if;
+#srcline 214 ;//      LastT := LastT + TT;                                      (* add sample period to last execution *)
+#srcline 215 ;    if fcHiddenModelLibDoStep(T := T, LastT := LastT) then  (* if diference of last execution time and actual time is greater then sample period *)
+ NXT
+ LDX  T
+#debug real T
+ WR   __Instance__fcHiddenModelLibDoStep~T
+#debug_left real __Instance__fcHiddenModelLibDoStep~T
+ LEAX LastT
+ WR   __Instance__fcHiddenModelLibDoStep~LastT
+#debug_left pointer __Instance__fcHiddenModelLibDoStep.LastT
+ PRV
+ LEA  __Instance__fcHiddenModelLibDoStep
+ CAL  fcHiddenModelLibDoStep_L0
+ JMC  fbDerivator_L3
+#srcline 216 ;//      TTT := TIME_TO_REAL(%SL52 - LastT) * 0.001 + T;
+#srcline 217 ;      if T > 0.0 then                                           (* if time constans are valid *)
+ LDX  T
+#debug real T
+ LD   real 0.0
+ GTF
+ JMC  fbDerivator_L5
+#srcline 218 ;//        Out := (In - Last_In)/TTT;                                (* evaluate output *)
+#srcline 219 ;        Out := (In - Last_In)/T;                                (* evaluate output *)
+ LDX  In
+#debug real In
+ LDX  Last_In
+#debug real Last_In
+ SUF
+ LDX  T
+#debug real T
+ DIF
+ WRX  Out
+#debug_left real Out
+#srcline 220 ;      end_if;
+fbDerivator_L5:
+#srcline 221 ;      Last_In := In;                                            (* store sample for next execution *)
+ LDX  In
+#debug real In
+ WRX  Last_In
+#debug_left real Last_In
+#srcline 222 ;    end_if;
+fbDerivator_L3:
+#srcline 223 ;  else                                                          (* initialization *)
+ JMP  fbDerivator_L2
+fbDerivator_L1:
+#srcline 224 ;    LastT := %SL52;                                             (* initialize last execution time *)
+ LD   %SL52
+ WRX  LastT
+#debug_left time LastT
+#srcline 225 ;    Out := 0.0;                                                 (* reset output *)
+ LD   real 0.0
+ WRX  Out
+#debug_left real Out
+#srcline 226 ;    Last_In := In;                                              (* store sample for next execution *)
+ LDX  In
+#debug real In
+ WRX  Last_In
+#debug_left real Last_In
+#srcline 227 ;    Init := true;                                               (* initialized *)
+ LD   bool -1       ; true
+ WRX  Init
+#debug_left bool Init
+#srcline 228 ;  end_if;
+fbDerivator_L2:
+#srcline 229 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbDerivator__InstanceInit__:
+ LINK 0
+ LD   real 0.1
+ WRX  T
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+#pou fbDelay
+#srcline 231 ;FUNCTION_BLOCK fbDelay
+P     61
+fbDelay_L0:
+ LINK 0
+#srcline 272 ;  if Init then
+ LDX  Init
+#debug bool Init
+ JMC  fbDelay_L1
+#srcline 273 ;//    TT := REAL_TO_TIME(T*1000.0);
+#srcline 274 ;//    if(TT <= %SL52 - LastT) then                              (* if diference of last execution time and actual time is greater then sample period *)
+#srcline 275 ;//      if(T#0s < %SL52 - LastT - TT * 2) then                  (* if diference is to big, make correction *)
+#srcline 276 ;//        LastT := %SL52 + TT;
+#srcline 277 ;//      end_if;
+#srcline 278 ;//      LastT := LastT + TT;                                    (* add sample period to last execution *)
+#srcline 279 ;    if fcHiddenModelLibDoStep(T := T, LastT := LastT) then  (* if diference of last execution time and actual time is greater then sample period *)
+ NXT
+ LDX  T
+#debug real T
+ WR   __Instance__fcHiddenModelLibDoStep~T
+#debug_left real __Instance__fcHiddenModelLibDoStep~T
+ LEAX LastT
+ WR   __Instance__fcHiddenModelLibDoStep~LastT
+#debug_left pointer __Instance__fcHiddenModelLibDoStep.LastT
+ PRV
+ LEA  __Instance__fcHiddenModelLibDoStep
+ CAL  fcHiddenModelLibDoStep_L0
+ JMC  fbDelay_L3
+#srcline 280 ;      Buffer[Point] := In;                                    (* store actual sample *)
+ LDX  In
+#debug real In
+ LDX  Buffer
+ LDX  Point
+#debug int Point
+ EXTW 
+ RCHK 1023   ; Range Check
+ MUL  4   ; SizeOf(...)
+ ADD     ; + offset 
+ WRIL 
+#debug_left real Buffer[Point]
+#srcline 281 ;      Point := Point + 1;                                     (* shift pointer to the oldest sample*)
+ LDX  Point
+#debug int Point
+ EXTW 
+ LD   int 1
+ ADD
+ EXTW
+ WRX  Point
+#debug_left int Point
+#srcline 282 ;      if Point >= K then                                      (* if pointer points behind end *)
+ LDX  Point
+#debug int Point
+ EXTW 
+ LDX  K
+#debug int K
+ EXTW 
+ LTS
+ NEG
+ JMC  fbDelay_L5
+#srcline 283 ;        Point := 0;                                           (* set pointer to begining *)
+ LD   int 0
+ WRX  Point
+#debug_left int Point
+#srcline 284 ;      end_if;
+fbDelay_L5:
+#srcline 285 ;    end_if;
+fbDelay_L3:
+#srcline 286 ;  else                                                        (* initialization *)
+ JMP  fbDelay_L2
+fbDelay_L1:
+#srcline 287 ;    LastT := %SL52;                                           (* initialize last execution time *)
+ LD   %SL52
+ WRX  LastT
+#debug_left time LastT
+#srcline 288 ;    Init := true;                                             (* initialized *)
+ LD   bool -1       ; true
+ WRX  Init
+#debug_left bool Init
+#srcline 289 ;  end_if;
+fbDelay_L2:
+#srcline 290 ;  Out := Buffer[Point];                                       (* set output to value of the oldest sample *)
+ LDX  Buffer
+ LDX  Point
+#debug int Point
+ EXTW 
+ RCHK 1023   ; Range Check
+ MUL  4   ; SizeOf(...)
+ ADD     ; + offset 
+ LDIL 
+#debug real Buffer[Point]
+ WRX  Out
+#debug_left real Out
+#srcline 291 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbDelay__InstanceInit__:
+ LINK 0
+ LD   real 0.1
+ WRX  T
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'C:\TECOLIBSRC\MODELLIB\MODELLIB_VCONTROL\BASICBLOCK2.ST'
+#pou fbFirstOrder
+#srcline 2 ;FUNCTION_BLOCK fbFirstOrder
+P     61
+fbFirstOrder_L0:
+ LINK 0
+; R_EDGE, F_EDGE 
+ LDX  Reset
+ LETX __EDGE_R__Reset
+ WRX  Reset
+#srcline 49 ;  if Init AND NOT Reset then                                  (* evaluation *)
+ LDX  Init
+#debug bool Init
+ LDX  Reset
+#debug bool Reset
+ NEG
+ AND
+ JMC  fbFirstOrder_L1
+#srcline 50 ;//    TT := REAL_TO_TIME(T*1000.0);
+#srcline 51 ;//    if(TT <= %SL52 - LastT) then                              (* while diference of last execution time and actual time is greater then sample period *)
+#srcline 52 ;//      if(T#0s < %SL52 - LastT - TT * 2) then                  (* if diference is to big, make correction *)
+#srcline 53 ;//        LastT := %SL52 + TT;
+#srcline 54 ;//      end_if;
+#srcline 55 ;//      LastT := LastT + TT;                                    (* add sample period to last execution *)
+#srcline 56 ;    if fcHiddenModelLibDoStep(T := T, LastT := LastT) then  (* if diference of last execution time and actual time is greater then sample period *)
+ NXT
+ LDX  T
+#debug real T
+ WR   __Instance__fcHiddenModelLibDoStep~T
+#debug_left real __Instance__fcHiddenModelLibDoStep~T
+ LEAX LastT
+ WR   __Instance__fcHiddenModelLibDoStep~LastT
+#debug_left pointer __Instance__fcHiddenModelLibDoStep.LastT
+ PRV
+ LEA  __Instance__fcHiddenModelLibDoStep
+ CAL  fcHiddenModelLibDoStep_L0
+ JMC  fbFirstOrder_L3
+#srcline 57 ;      if(T > 0.0   AND T1 > 0.0 AND NOT fcModelLibInvalidReal(r := In)) then                       (* if time constans are valid *)
+ LDX  T
+#debug real T
+ LD   real 0.0
+ GTF
+ LDX  T1
+#debug real T1
+ LD   real 0.0
+ GTF
+ AND
+ NXT
+ LDX  In
+#debug real In
+ WR   __Instance__fcModelLibInvalidReal~r
+#debug_left real __Instance__fcModelLibInvalidReal~r
+ PRV
+ LEA  __Instance__fcModelLibInvalidReal
+ CAL  fcModelLibInvalidReal_L0
+ NEG
+ AND
+ JMC  fbFirstOrder_L5
+#srcline 58 ;        if(OldT1 <> T1) then                                  (* if parameters were changed *)
+ LDX  OldT1
+#debug real OldT1
+ LDX  T1
+#debug real T1
+ EQF
+ NEG
+ JMC  fbFirstOrder_L7
+#srcline 59 ;          Exp1 := exp(-T / T1);                               (* evaluate constant *)
+ LDX  T
+#debug real T
+ XOR  $80000000
+ LDX  T1
+#debug real T1
+ DIF
+ EXP
+ WRX  Exp1
+#debug_left real Exp1
+#srcline 60 ;          OldT1 := T1;                                        (* store last parameter value *)
+ LDX  T1
+#debug real T1
+ WRX  OldT1
+#debug_left real OldT1
+#srcline 61 ;        end_if;
+fbFirstOrder_L7:
+#srcline 62 ;        Out := G * In + (Out - G * In) * Exp1 ;               (* evaluate output *)
+ LDX  G
+#debug real G
+ LDX  In
+#debug real In
+ MUF
+ LDX  Out
+#debug real Out
+ LDX  G
+#debug real G
+ LDX  In
+#debug real In
+ MUF
+ SUF
+ LDX  Exp1
+#debug real Exp1
+ MUF
+ ADF
+ WRX  Out
+#debug_left real Out
+#srcline 63 ;      end_if;
+fbFirstOrder_L5:
+#srcline 64 ;    end_if;
+fbFirstOrder_L3:
+#srcline 65 ;  else                                                        (* initialization *)
+ JMP  fbFirstOrder_L2
+fbFirstOrder_L1:
+#srcline 66 ;    LastT := %SL52;                                           (* initialize last execution time *)
+ LD   %SL52
+ WRX  LastT
+#debug_left time LastT
+#srcline 67 ;    Out := Preset;                                            (* set output to preset *)
+ LDX  Preset
+#debug real Preset
+ WRX  Out
+#debug_left real Out
+#srcline 68 ;    Init := true;                                             (* initialized *)
+ LD   bool -1       ; true
+ WRX  Init
+#debug_left bool Init
+#srcline 69 ;  end_if;
+fbFirstOrder_L2:
+#srcline 70 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbFirstOrder__InstanceInit__:
+ LINK 0
+ LD   real 1
+ WRX  G
+ LD   real 1
+ WRX  T1
+ LD   real 0.1
+ WRX  T
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+#pou fbSecondOrder
+#srcline 72 ;FUNCTION_BLOCK fbSecondOrder
+
+#struct fbSecondOrder__temp__
+  real Exp1,  ; Constant evaluated by time constant
+  real Exp2,  ; Constant evaluated by time constant
+  time TT
+P     61
+fbSecondOrder_L0:
+ LINK __SizeOf(fbSecondOrder__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+; R_EDGE, F_EDGE 
+ LDX  Reset
+ LETX __EDGE_R__Reset
+ WRX  Reset
+#srcline 125 ;  if Init AND NOT Reset then                                  (* evaluation *)
+ LDX  Init
+#debug bool Init
+ LDX  Reset
+#debug bool Reset
+ NEG
+ AND
+ JMC  fbSecondOrder_L1
+#srcline 126 ;//    TT := REAL_TO_TIME(T*1000.0);
+#srcline 127 ;//    if(TT <= %SL52 - LastT) then                              (* while diference of last execution time and actual time is greater then sample period *)
+#srcline 128 ;//      if(T#0s < %SL52 - LastT - TT * 2) then                   (* if diference is to big, make correction *)
+#srcline 129 ;//        LastT := %SL52 + TT;
+#srcline 130 ;//      end_if;
+#srcline 131 ;//      LastT := LastT + TT;                                     (* add sample period to last execution *)
+#srcline 132 ;    if fcHiddenModelLibDoStep(T := T, LastT := LastT) then  (* if diference of last execution time and actual time is greater then sample period *)
+ NXT
+ LDX  T
+#debug real T
+ WR   __Instance__fcHiddenModelLibDoStep~T
+#debug_left real __Instance__fcHiddenModelLibDoStep~T
+ LEAX LastT
+ WR   __Instance__fcHiddenModelLibDoStep~LastT
+#debug_left pointer __Instance__fcHiddenModelLibDoStep.LastT
+ PRV
+ LEA  __Instance__fcHiddenModelLibDoStep
+ CAL  fcHiddenModelLibDoStep_L0
+ JMC  fbSecondOrder_L3
+#srcline 133 ;      if(T > 0.0   AND T1 > 0.0   AND T2 > 0.0  ) then        (* if time constans are valid *)
+ LDX  T
+#debug real T
+ LD   real 0.0
+ GTF
+ LDX  T1
+#debug real T1
+ LD   real 0.0
+ GTF
+ AND
+ LDX  T2
+#debug real T2
+ LD   real 0.0
+ GTF
+ AND
+ JMC  fbSecondOrder_L5
+#srcline 134 ;        if(OldT1 <> T1 OR OldT2 <> T2) then                   (* if parameters were changed *)
+ LDX  OldT1
+#debug real OldT1
+ LDX  T1
+#debug real T1
+ EQF
+ NEG
+ LDX  OldT2
+#debug real OldT2
+ LDX  T2
+#debug real T2
+ EQF
+ NEG
+ OR  
+ JMC  fbSecondOrder_L7
+#srcline 135 ;          if(T1 <> T2) then                                   (* evaluate constants for T1 <> T2 *)
+ LDX  T1
+#debug real T1
+ LDX  T2
+#debug real T2
+ EQF
+ NEG
+ JMC  fbSecondOrder_L9
+#srcline 136 ;            Exp1 := exp(-T / T1);
+ LDX  T
+#debug real T
+ XOR  $80000000
+ LDX  T1
+#debug real T1
+ DIF
+ EXP
+ WRY  Exp1
+#debug_left real Exp1
+#srcline 137 ;            Exp2 := exp(-T / T2);
+ LDX  T
+#debug real T
+ XOR  $80000000
+ LDX  T2
+#debug real T2
+ DIF
+ EXP
+ WRY  Exp2
+#debug_left real Exp2
+#srcline 138 ;            a := (T1-T2 - T1 * Exp1 + T2 * Exp2) /  (T1-T2);
+ LDX  T1
+#debug real T1
+ LDX  T2
+#debug real T2
+ SUF
+ LDX  T1
+#debug real T1
+ LDY  Exp1
+#debug real Exp1
+ MUF
+ SUF
+ LDX  T2
+#debug real T2
+ LDY  Exp2
+#debug real Exp2
+ MUF
+ ADF
+ LDX  T1
+#debug real T1
+ LDX  T2
+#debug real T2
+ SUF
+ DIF
+ WRX  a
+#debug_left real a
+#srcline 139 ;            b := (T1 * Exp2 - T2 * Exp1 - (T1-T2) * Exp1 * Exp2) / (T1-T2);
+ LDX  T1
+#debug real T1
+ LDY  Exp2
+#debug real Exp2
+ MUF
+ LDX  T2
+#debug real T2
+ LDY  Exp1
+#debug real Exp1
+ MUF
+ SUF
+ LDX  T1
+#debug real T1
+ LDX  T2
+#debug real T2
+ SUF
+ LDY  Exp1
+#debug real Exp1
+ MUF
+ LDY  Exp2
+#debug real Exp2
+ MUF
+ SUF
+ LDX  T1
+#debug real T1
+ LDX  T2
+#debug real T2
+ SUF
+ DIF
+ WRX  b
+#debug_left real b
+#srcline 140 ;            c := Exp1 + Exp2;
+ LDY  Exp1
+#debug real Exp1
+ LDY  Exp2
+#debug real Exp2
+ ADF
+ WRX  c
+#debug_left real c
+#srcline 141 ;            d := Exp1 * Exp2;
+ LDY  Exp1
+#debug real Exp1
+ LDY  Exp2
+#debug real Exp2
+ MUF
+ WRX  d
+#debug_left real d
+#srcline 142 ;          else                                                (* evaluate constants for T1 == T2 *)
+ JMP  fbSecondOrder_L10
+fbSecondOrder_L9:
+#srcline 143 ;            Exp1 := exp(-T / T1);
+ LDX  T
+#debug real T
+ XOR  $80000000
+ LDX  T1
+#debug real T1
+ DIF
+ EXP
+ WRY  Exp1
+#debug_left real Exp1
+#srcline 144 ;//            a := 1. - (1. + TIME_TO_REAL(T) / TIME_TO_REAL(T1)) * Exp1;
+#srcline 145 ;            a := REAL#1. - (REAL#1. + T / T1) * Exp1;
+ LD   real 1.
+ LD   real 1.
+ LDX  T
+#debug real T
+ LDX  T1
+#debug real T1
+ DIF
+ ADF
+ LDY  Exp1
+#debug real Exp1
+ MUF
+ SUF
+ WRX  a
+#debug_left real a
+#srcline 146 ;            b := (REAL#1. - T / T1) * Exp1 - Exp1 * Exp1;
+ LD   real 1.
+ LDX  T
+#debug real T
+ LDX  T1
+#debug real T1
+ DIF
+ SUF
+ LDY  Exp1
+#debug real Exp1
+ MUF
+ LDY  Exp1
+#debug real Exp1
+ LDY  Exp1
+#debug real Exp1
+ MUF
+ SUF
+ WRX  b
+#debug_left real b
+#srcline 147 ;            c := REAL#2. * Exp1;
+ LD   real 2.
+ LDY  Exp1
+#debug real Exp1
+ MUF
+ WRX  c
+#debug_left real c
+#srcline 148 ;            d := Exp1 * Exp1;
+ LDY  Exp1
+#debug real Exp1
+ LDY  Exp1
+#debug real Exp1
+ MUF
+ WRX  d
+#debug_left real d
+#srcline 149 ;          end_if;
+fbSecondOrder_L10:
+#srcline 150 ;          OldT1 := T1; (* store last parameters values *)
+ LDX  T1
+#debug real T1
+ WRX  OldT1
+#debug_left real OldT1
+#srcline 151 ;          OldT2 := T2;
+ LDX  T2
+#debug real T2
+ WRX  OldT2
+#debug_left real OldT2
+#srcline 152 ;        end_if;
+fbSecondOrder_L7:
+#srcline 153 ;        Exp1 := Out;                                               (* store last output *)
+ LDX  Out
+#debug real Out
+ WRY  Exp1
+#debug_left real Exp1
+#srcline 154 ;        if NOT fcModelLibInvalidReal(r := In) then
+ NXT
+ LDX  In
+#debug real In
+ WR   __Instance__fcModelLibInvalidReal~r
+#debug_left real __Instance__fcModelLibInvalidReal~r
+ PRV
+ LEA  __Instance__fcModelLibInvalidReal
+ CAL  fcModelLibInvalidReal_L0
+ NEG
+ JMC  fbSecondOrder_L11
+#srcline 155 ;          Out := G * (In * a - LastIn * b) + Out * c - LastOut * d;  (* evaluate output *)
+ LDX  G
+#debug real G
+ LDX  In
+#debug real In
+ LDX  a
+#debug real a
+ MUF
+ LDX  LastIn
+#debug real LastIn
+ LDX  b
+#debug real b
+ MUF
+ SUF
+ MUF
+ LDX  Out
+#debug real Out
+ LDX  c
+#debug real c
+ MUF
+ ADF
+ LDX  LastOut
+#debug real LastOut
+ LDX  d
+#debug real d
+ MUF
+ SUF
+ WRX  Out
+#debug_left real Out
+#srcline 156 ;        end_if;
+fbSecondOrder_L11:
+#srcline 157 ;        LastOut := Exp1;                                           (* store last output *)
+ LDY  Exp1
+#debug real Exp1
+ WRX  LastOut
+#debug_left real LastOut
+#srcline 158 ;        LastIn := In;                                              (* store last input *)
+ LDX  In
+#debug real In
+ WRX  LastIn
+#debug_left real LastIn
+#srcline 159 ;      end_if;
+fbSecondOrder_L5:
+#srcline 160 ;    end_if;
+fbSecondOrder_L3:
+#srcline 161 ;  else                                                        (* initialization *)
+ JMP  fbSecondOrder_L2
+fbSecondOrder_L1:
+#srcline 162 ;    LastT := %SL52;                                           (* initialize last execution time *)
+ LD   %SL52
+ WRX  LastT
+#debug_left time LastT
+#srcline 163 ;    Out := Preset;                                            (* set output to preset *)
+ LDX  Preset
+#debug real Preset
+ WRX  Out
+#debug_left real Out
+#srcline 164 ;    LastOut := Out;                                           (* store last output *)
+ LDX  Out
+#debug real Out
+ WRX  LastOut
+#debug_left real LastOut
+#srcline 165 ;    LastIn := In;                                             (* store last input *)
+ LDX  In
+#debug real In
+ WRX  LastIn
+#debug_left real LastIn
+#srcline 166 ;    Init := true;                                             (* initialized *)
+ LD   bool -1       ; true
+ WRX  Init
+#debug_left bool Init
+#srcline 167 ;  end_if;
+fbSecondOrder_L2:
+#srcline 168 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbSecondOrder__InstanceInit__:
+ LINK 0
+ LD   real 1
+ WRX  G
+ LD   real 1
+ WRX  T1
+ LD   real 1
+ WRX  T2
+ LD   real 0.1
+ WRX  T
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+#pou fbSecondOrderOsc
+#srcline 170 ;FUNCTION_BLOCK fbSecondOrderOsc
+P     61
+fbSecondOrderOsc_L0:
+ LINK 0
+; R_EDGE, F_EDGE 
+ LDX  Reset
+ LETX __EDGE_R__Reset
+ WRX  Reset
+#srcline 232 ;  i1(In := Omg * (Omg * G * In - 2.0 * Alp * i1.Out - Omg * i2.Out), T := T, Reset := Reset);
+ LDX  Omg
+#debug real Omg
+ LDX  Omg
+#debug real Omg
+ LDX  G
+#debug real G
+ MUF
+ LDX  In
+#debug real In
+ MUF
+ LD   real 2.0
+ LDX  Alp
+#debug real Alp
+ MUF
+ LDX  i1~Out
+#debug real i1.Out
+ MUF
+ SUF
+ LDX  Omg
+#debug real Omg
+ LDX  i2~Out
+#debug real i2.Out
+ MUF
+ SUF
+ MUF
+ WRX  i1~In
+#debug_left real i1~In
+ LDX  T
+#debug real T
+ WRX  i1~T
+#debug_left real i1~T
+ LDX  Reset
+#debug bool Reset
+ WRX  i1~Reset
+#debug_left bool i1~Reset
+ LEAX i1
+ CAL  fbIntegrator_L0
+#srcline 233 ;  i2(In := i1.Out, T := T, Preset := Preset, Reset := Reset, Out => Out);
+ LDX  i1~Out
+#debug real i1.Out
+ WRX  i2~In
+#debug_left real i2~In
+ LDX  T
+#debug real T
+ WRX  i2~T
+#debug_left real i2~T
+ LDX  Preset
+#debug real Preset
+ WRX  i2~Preset
+#debug_left real i2~Preset
+ LDX  Reset
+#debug bool Reset
+ WRX  i2~Reset
+#debug_left bool i2~Reset
+ LEAX i2
+ CAL  fbIntegrator_L0
+; output assigment 
+ LDX  i2~Out
+#debug real i2~Out
+ WRX  Out
+#debug_left real Out
+#srcline 235 ;  {$IFDEF oldversion}
+#srcline 236 ;  if Init AND NOT Reset the-n                                  (* evaluation *)
+#srcline 237 ;    TT := REAL_TO_TIME(T*1000.0);
+#srcline 238 ;    if(TT <= %SL52 - LastT) then                              (* if diference of last execution time and actual time is greater then sample period *)
+#srcline 239 ;      if(T#0s < %SL52 - LastT - TT * 2) then                  (* if diference is to big, make correction *)
+#srcline 240 ;        LastT := %SL52 + TT;
+#srcline 241 ;      end_if;
+#srcline 242 ;      LastT := LastT + TT;                                    (* add sample period to last execution *)
+#srcline 243 ;      if(T > 0.0   AND Alp > 0. AND Omg > 0.) then            (* if constans are valid *)
+#srcline 244 ;        if(OldAlp <> Alp OR OldOmg <> Omg) then               (* if were any constat changed *)
+#srcline 245 ;          Exp1 := exp(-Alp * Omg * T);                        (* evaluate constats *)
+#srcline 246 ;          CosSqrt := sqrt(Alp * Alp * Omg * Omg + Omg * Omg) * cos (T * Omg - atan (-Alp)) / Omg;
+#srcline 247 ;          a := -2. * cos(T * Omg) * Exp1 + CosSqrt * Exp1 + 1.0;
+#srcline 248 ;          b :=  Exp1 * Exp1 - CosSqrt * Exp1 ;
+#srcline 249 ;          c := 2. * cos(T * Omg) * Exp1;
+#srcline 250 ;          d := -Exp1 * Exp1;
+#srcline 251 ;          OldAlp := Alp;                                      (* store last parameters values *)
+#srcline 252 ;          OldOmg := Omg;
+#srcline 253 ;        end_if;
+#srcline 254 ;        Exp1 := Out;                                               (* store last output *)
+#srcline 255 ;        Out := G * (In * a + LastIn * b) + Out * c + LastOut * d;  (* evaluate output *)
+#srcline 256 ;        LastOut := Exp1;                                           (* store last output *)
+#srcline 257 ;        LastIn := In;                                              (* store last input *)
+#srcline 258 ;        end_if;
+#srcline 259 ;    end_if;
+#srcline 260 ;  else                                                        (* initialization *)
+#srcline 261 ;    LastT := %SL52;                                           (* initialize last execution time *)
+#srcline 262 ;    Out := Preset;                                            (* set output to preset *)
+#srcline 263 ;    LastOut := Out;                                           (* store last output *)
+#srcline 264 ;    LastIn := In;                                             (* store last input *)
+#srcline 265 ;    Init := true;                                             (* initialized *)
+#srcline 266 ;  end_if;
+#srcline 267 ;  {$END_IF}
+#srcline 268 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbSecondOrderOsc__InstanceInit__:
+ LINK 0
+ LD   real 1
+ WRX  G
+ LD   real 0.25
+ WRX  Alp
+ LD   real 4
+ WRX  Omg
+ LD   real 0.1
+ WRX  T
+ LEAX i1
+ CAL  fbIntegrator__InstanceInit__
+ LEAX i2
+ CAL  fbIntegrator__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+#pou fbSimplePID
+#srcline 270 ;FUNCTION_BLOCK fbSimplePID
+
+#struct fbSimplePID__temp__
+  real temp,
+  real up,
+  real uplim,
+  bool TiEnabled
+P     61
+fbSimplePID_L0:
+ LINK __SizeOf(fbSimplePID__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 332 ;  Init := Init AND T > 0.0 AND NOT (fcModelLibInvalidReal(r := e_1) OR fcModelLibInvalidReal(r := y_p) OR  fcModelLibInvalidReal(r := y_1));
+ LDX  Init
+#debug bool Init
+ LDX  T
+#debug real T
+ LD   real 0.0
+ GTF
+ AND
+ NXT
+ LDX  e_1
+#debug real e_1
+ WR   __Instance__fcModelLibInvalidReal~r
+#debug_left real __Instance__fcModelLibInvalidReal~r
+ PRV
+ LEA  __Instance__fcModelLibInvalidReal
+ CAL  fcModelLibInvalidReal_L0
+ NXT
+ LDX  y_p
+#debug real y_p
+ WR   __Instance__fcModelLibInvalidReal~r
+#debug_left real __Instance__fcModelLibInvalidReal~r
+ PRV
+ LEA  __Instance__fcModelLibInvalidReal
+ CAL  fcModelLibInvalidReal_L0
+ OR  
+ NXT
+ LDX  y_1
+#debug real y_1
+ WR   __Instance__fcModelLibInvalidReal~r
+#debug_left real __Instance__fcModelLibInvalidReal~r
+ PRV
+ LEA  __Instance__fcModelLibInvalidReal
+ CAL  fcModelLibInvalidReal_L0
+ OR  
+ NEG
+ AND
+ WRX  Init
+#debug_left bool Init
+#srcline 334 ;  if Init then                         (* if initialized *)
+ LDX  Init
+#debug bool Init
+ JMC  fbSimplePID_L1
+#srcline 335 ;//    TT := REAL_TO_TIME(T*1000.0);
+#srcline 336 ;//    if(TT <= %SL52 - LastT) then                (* if diference of last execution time and actual time is greater then sample period *)
+#srcline 337 ;//      if(T#0s < %SL52 - LastT - TT * 2) then    (* if diference is to big, make correction *)
+#srcline 338 ;//        LastT := %SL52 + TT;
+#srcline 339 ;//      end_if;
+#srcline 340 ;//      LastT := LastT + TT;                      (* add sample period to last execution *)
+#srcline 341 ;    if fcHiddenModelLibDoStep(T := T, LastT := LastT) then  (* if diference of last execution time and actual time is greater then sample period *)
+ NXT
+ LDX  T
+#debug real T
+ WR   __Instance__fcHiddenModelLibDoStep~T
+#debug_left real __Instance__fcHiddenModelLibDoStep~T
+ LEAX LastT
+ WR   __Instance__fcHiddenModelLibDoStep~LastT
+#debug_left pointer __Instance__fcHiddenModelLibDoStep.LastT
+ PRV
+ LEA  __Instance__fcHiddenModelLibDoStep
+ CAL  fcHiddenModelLibDoStep_L0
+ JMC  fbSimplePID_L3
+#srcline 342 ;      e := (w - y);                             (* evaluate deviation *)
+ LDX  w
+#debug real w
+ LDX  y
+#debug real y
+ SUF
+ WRX  e
+#debug_left real e
+#srcline 343 ;      temp := Tf/T;                             (* evaluate ratio between filter time constant and sample period *)
+ LDX  Tf
+#debug real Tf
+ LDX  T
+#debug real T
+ DIF
+ WRY  temp
+#debug_left real temp
+#srcline 344 ;      y_p := (y_p * temp + y) / (temp + 1.0);   (* evaluate filtered input *)
+ LDX  y_p
+#debug real y_p
+ LDY  temp
+#debug real temp
+ MUF
+ LDX  y
+#debug real y
+ ADF
+ LDY  temp
+#debug real temp
+ LD   real 1.0
+ ADF
+ DIF
+ WRX  y_p
+#debug_left real y_p
+#srcline 345 ;      auto := NOT manual;                       (* set automatic mode flag *)
+ LDX  manual
+#debug bool manual
+ NEG
+ WRX  auto
+#debug_left bool auto
+#srcline 346 ;      TiEnabled := Ti > 0.0;                    (* Integral part is enabled *)
+ LDX  Ti
+#debug real Ti
+ LD   real 0.0
+ GTF
+ WRY  TiEnabled
+#debug_left bool TiEnabled
+#srcline 347 ;      if manual then                            (* if manual mode *)
+ LDX  manual
+#debug bool manual
+ JMC  fbSimplePID_L5
+#srcline 348 ;        wasman := true;                         (* set flag *)
+ LD   bool -1       ; true
+ WRX  wasman
+#debug_left bool wasman
+#srcline 349 ;        up     := u_man;                        (* set output to manual value *)
+ LDX  u_man
+#debug real u_man
+ WRY  up
+#debug_left real up
+#srcline 350 ;      else                                      (* if automatic mode *)
+ JMP  fbSimplePID_L6
+fbSimplePID_L5:
+#srcline 351 ;        (* dead zone *)
+#srcline 352 ;        if abs(e) > dz then
+ LDX  e
+#debug real e
+ ABS
+ LDX  dz
+#debug real dz
+ GTF
+ JMC  fbSimplePID_L7
+#srcline 353 ;          partP := Gain * e;
+ LDX  Gain
+#debug real Gain
+ LDX  e
+#debug real e
+ MUF
+ WRX  partP
+#debug_left real partP
+#srcline 354 ;          partD := Gain * Td * (y_1 - y_p) / T;
+ LDX  Gain
+#debug real Gain
+ LDX  Td
+#debug real Td
+ MUF
+ LDX  y_1
+#debug real y_1
+ LDX  y_p
+#debug real y_p
+ SUF
+ MUF
+ LDX  T
+#debug real T
+ DIF
+ WRX  partD
+#debug_left real partD
+#srcline 355 ;          if TiEnabled   then                      (* if I-part enabled *)
+ LDY  TiEnabled
+#debug bool TiEnabled
+ JMC  fbSimplePID_L9
+#srcline 356 ;            if wasman then                          (* if switchs from manual *)
+ LDX  wasman
+#debug bool wasman
+ JMC  fbSimplePID_L11
+#srcline 357 ;              wasman := false;                      (* reset flag and set initial value for integral part *)
+ LD   bool 0       ; false
+ WRX  wasman
+#debug_left bool wasman
+#srcline 358 ;              partI := u - Gain * (e - Td * (y_p - y_1) / T);
+ LDX  u
+#debug real u
+ LDX  Gain
+#debug real Gain
+ LDX  e
+#debug real e
+ LDX  Td
+#debug real Td
+ LDX  y_p
+#debug real y_p
+ LDX  y_1
+#debug real y_1
+ SUF
+ MUF
+ LDX  T
+#debug real T
+ DIF
+ SUF
+ MUF
+ SUF
+ WRX  partI
+#debug_left real partI
+#srcline 359 ;            end_if;
+fbSimplePID_L11:
+#srcline 360 ;            if IH then
+ LDX  IH
+#debug bool IH
+ JMC  fbSimplePID_L13
+#srcline 361 ;              temp := 0.0;
+ LD   real 0.0
+ WRY  temp
+#debug_left real temp
+#srcline 362 ;            else
+ JMP  fbSimplePID_L14
+fbSimplePID_L13:
+#srcline 363 ;              temp := Gain * T / Ti * (e + e_1) / 2.;   (* increment of I-part *)
+ LDX  Gain
+#debug real Gain
+ LDX  T
+#debug real T
+ MUF
+ LDX  Ti
+#debug real Ti
+ DIF
+ LDX  e
+#debug real e
+ LDX  e_1
+#debug real e_1
+ ADF
+ MUF
+ LD   real 2.
+ DIF
+ WRY  temp
+#debug_left real temp
+#srcline 364 ;            end_if;
+fbSimplePID_L14:
+#srcline 365 ;            up := partP + partI + partD;                (* evaluate output value w/o actual I-part increment *)
+ LDX  partP
+#debug real partP
+ LDX  partI
+#debug real partI
+ ADF
+ LDX  partD
+#debug real partD
+ ADF
+ WRY  up
+#debug_left real up
+#srcline 366 ;            satmax := up >= max_u;        (* set saturation flags *)
+ LDY  up
+#debug real up
+ LDX  max_u
+#debug real max_u
+ LTF
+ NEG
+ WRX  satmax
+#debug_left bool satmax
+#srcline 367 ;            satmin := up <= min_u;
+ LDY  up
+#debug real up
+ LDX  min_u
+#debug real min_u
+ GTF
+ NEG
+ WRX  satmin
+#debug_left bool satmin
+#srcline 368 ;            partI := partI + temp;    (* increase integral part value *)
+ LDX  partI
+#debug real partI
+ LDY  temp
+#debug real temp
+ ADF
+ WRX  partI
+#debug_left real partI
+#srcline 369 ;            up    := up + temp;       (* increase output *)
+ LDY  up
+#debug real up
+ LDY  temp
+#debug real temp
+ ADF
+ WRY  up
+#debug_left real up
+#srcline 370 ;          else                            (* if I-part disabled evalue PD algorithm *)
+ JMP  fbSimplePID_L10
+fbSimplePID_L9:
+#srcline 371 ;            up := partP + partD;
+ LDX  partP
+#debug real partP
+ LDX  partD
+#debug real partD
+ ADF
+ WRY  up
+#debug_left real up
+#srcline 372 ;            partI := 0.0;
+ LD   real 0.0
+ WRX  partI
+#debug_left real partI
+#srcline 373 ;          end_if;
+fbSimplePID_L10:
+#srcline 374 ;        else
+ JMP  fbSimplePID_L8
+fbSimplePID_L7:
+#srcline 375 ;          up := u;
+ LDX  u
+#debug real u
+ WRY  up
+#debug_left real up
+#srcline 376 ;        end_if;
+fbSimplePID_L8:
+#srcline 377 ;      end_if;
+fbSimplePID_L6:
+#srcline 378 ;      
+#srcline 379 ;      satmax := up >= max_u;           (* set saturation flags *)
+ LDY  up
+#debug real up
+ LDX  max_u
+#debug real max_u
+ LTF
+ NEG
+ WRX  satmax
+#debug_left bool satmax
+#srcline 380 ;      satmin := up <= min_u;
+ LDY  up
+#debug real up
+ LDX  min_u
+#debug real min_u
+ GTF
+ NEG
+ WRX  satmin
+#debug_left bool satmin
+#srcline 381 ;      
+#srcline 382 ;      if TiEnabled then
+ LDY  TiEnabled
+#debug bool TiEnabled
+ JMC  fbSimplePID_L15
+#srcline 383 ;        if satmax then
+ LDX  satmax
+#debug bool satmax
+ JMC  fbSimplePID_L17
+#srcline 384 ;          partI := max_u - (partP + partD);
+ LDX  max_u
+#debug real max_u
+ LDX  partP
+#debug real partP
+ LDX  partD
+#debug real partD
+ ADF
+ SUF
+ WRX  partI
+#debug_left real partI
+#srcline 385 ;        elsif satmin then
+ JMP  fbSimplePID_L18
+fbSimplePID_L17:
+ LDX  satmin
+#debug bool satmin
+ JMC  fbSimplePID_L19
+#srcline 386 ;          partI := min_u - (partP + partD);
+ LDX  min_u
+#debug real min_u
+ LDX  partP
+#debug real partP
+ LDX  partD
+#debug real partD
+ ADF
+ SUF
+ WRX  partI
+#debug_left real partI
+#srcline 387 ;        end_if;
+ JMP  fbSimplePID_L18
+fbSimplePID_L19:
+fbSimplePID_L18:
+#srcline 388 ;      end_if;
+fbSimplePID_L15:
+#srcline 389 ;        
+#srcline 390 ;      uplim  := LIMIT(min_u, up, max_u);
+ LDY  up
+#debug real up
+ LDX  min_u
+#debug real min_u
+ MAXF
+ LDX  max_u
+#debug real max_u
+ MINF
+ WRY  uplim
+#debug_left real uplim
+#srcline 391 ;      uvel   := (uplim-u)/T;
+ LDY  uplim
+#debug real uplim
+ LDX  u
+#debug real u
+ SUF
+ LDX  T
+#debug real T
+ DIF
+ WRX  uvel
+#debug_left real uvel
+#srcline 392 ;      u      := uplim;   (* saturate output *)
+ LDY  uplim
+#debug real uplim
+ WRX  u
+#debug_left real u
+#srcline 393 ;      y_1 := y_p;                     (* store last filtered output *)
+ LDX  y_p
+#debug real y_p
+ WRX  y_1
+#debug_left real y_1
+#srcline 394 ;      e_1 := e;                       (* store last deviation *)
+ LDX  e
+#debug real e
+ WRX  e_1
+#debug_left real e_1
+#srcline 395 ;    end_if;
+fbSimplePID_L3:
+#srcline 396 ;  else                                (* initialization *)
+ JMP  fbSimplePID_L2
+fbSimplePID_L1:
+#srcline 397 ;    LastT := %SL52;                   (* initialize last execution time *)
+ LD   %SL52
+ WRX  LastT
+#debug_left time LastT
+#srcline 398 ;    y_1 := y;                       (* store last filtered output *)
+ LDX  y
+#debug real y
+ WRX  y_1
+#debug_left real y_1
+#srcline 399 ;    y_p := y;                       (* store last filtered output *)
+ LDX  y
+#debug real y
+ WRX  y_p
+#debug_left real y_p
+#srcline 400 ;    e_1 := w - y;
+ LDX  w
+#debug real w
+ LDX  y
+#debug real y
+ SUF
+ WRX  e_1
+#debug_left real e_1
+#srcline 401 ;    u   := u_man;
+ LDX  u_man
+#debug real u_man
+ WRX  u
+#debug_left real u
+#srcline 402 ;    wasman := true;                   (* start will go trough same process as switch from man 2 auto *)
+ LD   bool -1       ; true
+ WRX  wasman
+#debug_left bool wasman
+#srcline 403 ;    Init := true;                     (* initialized *)
+ LD   bool -1       ; true
+ WRX  Init
+#debug_left bool Init
+#srcline 404 ;  end_if;
+fbSimplePID_L2:
+#srcline 405 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbSimplePID__InstanceInit__:
+ LINK 0
+ LD   real 0
+ WRX  min_u
+ LD   real 100
+ WRX  max_u
+ LD   real 1
+ WRX  Gain
+ LD   real 10
+ WRX  Ti
+ LD   real 1
+ WRX  Td
+ LD   real 0.1
+ WRX  T
+ LD   real 0.25
+ WRX  Tf
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+#pou _STEP_CONTROL_POS_SIM_
+#srcline 437 ;FUNCTION_BLOCK _STEP_CONTROL_POS_SIM_
+P     61
+_STEP_CONTROL_POS_SIM__L0:
+ LINK 0
+#srcline 463 ;  timdif := TIME_TO_REAL( %SL52 - LT) / 10.0; //  ms / 1000ms * 100%
+ LD   %SL52
+ LDX  LT
+#debug time LT
+ SUB
+ ILF
+ LD   real 10.0
+ DIF
+ WRX  timdif
+#debug_left real timdif
+#srcline 464 ;  
+#srcline 465 ;  IF fo THEN //koncak plne otevreno
+ LDX  fo
+#debug bool fo
+ JMC  _STEP_CONTROL_POS_SIM__L1
+#srcline 466 ;    virPos := 200.0;
+ LD   real 200.0
+ WRX  virPos
+#debug_left real virPos
+#srcline 467 ;  END_IF;
+_STEP_CONTROL_POS_SIM__L1:
+#srcline 468 ;  
+#srcline 469 ;  IF fc  THEN //koncak plne zavreno
+ LDX  fc
+#debug bool fc
+ JMC  _STEP_CONTROL_POS_SIM__L3
+#srcline 470 ;    virPos := -100.0;
+ LD   real -100.0
+ WRX  virPos
+#debug_left real virPos
+#srcline 471 ;  END_IF;
+_STEP_CONTROL_POS_SIM__L3:
+#srcline 473 ;  IF virPos < 0.0 AND o THEN //vice jak zavreno a prislo open
+ LDX  virPos
+#debug real virPos
+ LD   real 0.0
+ LTF
+ LDX  o
+#debug bool o
+ AND
+ JMC  _STEP_CONTROL_POS_SIM__L5
+#srcline 474 ;    virPos := 0.0;
+ LD   real 0.0
+ WRX  virPos
+#debug_left real virPos
+#srcline 475 ;  END_IF;
+_STEP_CONTROL_POS_SIM__L5:
+#srcline 476 ;  
+#srcline 477 ;  IF virPos > 100.0 AND c THEN //vice jak otevreno a prislo close
+ LDX  virPos
+#debug real virPos
+ LD   real 100.0
+ GTF
+ LDX  c
+#debug bool c
+ AND
+ JMC  _STEP_CONTROL_POS_SIM__L7
+#srcline 478 ;    virPos := 100.0;
+ LD   real 100.0
+ WRX  virPos
+#debug_left real virPos
+#srcline 479 ;  END_IF;
+_STEP_CONTROL_POS_SIM__L7:
+#srcline 481 ;  IF INIT AND timdif > 0.0 THEN //je inicializovat a casovy rozdil je vetsi nez 0
+ LDX  INIT
+#debug bool INIT
+ LDX  timdif
+#debug real timdif
+ LD   real 0.0
+ GTF
+ AND
+ JMC  _STEP_CONTROL_POS_SIM__L9
+#srcline 482 ;    virPos := LIMIT(-100.0, virPos + timdif / t0100 * (BOOL_TO_REAL(o) - BOOL_TO_REAL(c)), 200.0);
+ LDX  virPos
+#debug real virPos
+ LDX  timdif
+#debug real timdif
+ LDX  t0100
+#debug real t0100
+ DIF
+ LDX  o
+#debug bool o
+ AND  $3F800000
+ LDX  c
+#debug bool c
+ AND  $3F800000
+ SUF
+ MUF
+ ADF
+ LD   real -100.0
+ MAXF
+ LD   real 200.0
+ MINF
+ WRX  virPos
+#debug_left real virPos
+#srcline 483 ;  END_IF;
+_STEP_CONTROL_POS_SIM__L9:
+#srcline 484 ;  
+#srcline 485 ;  sc := virPos = -100.0;
+ LDX  virPos
+#debug real virPos
+ LD   real -100.0
+ EQF
+ WRX  sc
+#debug_left bool sc
+#srcline 486 ;  so := virPos = 200.0;
+ LDX  virPos
+#debug real virPos
+ LD   real 200.0
+ EQF
+ WRX  so
+#debug_left bool so
+#srcline 487 ;  
+#srcline 488 ;  pos  := LIMIT(0.0, virPos, 100.0);
+ LDX  virPos
+#debug real virPos
+ LD   real 0.0
+ MAXF
+ LD   real 100.0
+ MINF
+ WRX  pos
+#debug_left real pos
+#srcline 489 ;  LT   := %SL52;
+ LD   %SL52
+ WRX  LT
+#debug_left time LT
+#srcline 490 ;  INIT := true;
+ LD   bool -1       ; true
+ WRX  INIT
+#debug_left bool INIT
+#srcline 491 ;  
+#srcline 492 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou fbStepControl
+#srcline 495 ;FUNCTION_BLOCK fbStepControl
+
+#struct fbStepControl__temp__
+  real ttg,
+  real t0ET,
+  real t1ET
+P     61
+fbStepControl_L0:
+ LINK __SizeOf(fbStepControl__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 531 ;  Idle := NOT(Open OR Close); //v klidu
+ LDX  Open
+#debug bool Open
+ LDX  Close
+#debug bool Close
+ OR  
+ NEG
+ WRX  Idle
+#debug_left bool Idle
+#srcline 533 ;  Pos := LIMIT(MN := 0.0, IN := Pos, MX := 100.0); //omezeni zadane pozice na 0 az 100 procent
+ LDX  Pos
+#debug real Pos
+ LD   real 0.0
+ MAXF
+ LD   real 100.0
+ MINF
+ WRX  Pos
+#debug_left real Pos
+#srcline 534 ;  
+#srcline 535 ;  //prepocet odchylky na cas
+#srcline 536 ;  if Pos > VirPos then //bude se otvirat
+ LDX  Pos
+#debug real Pos
+ LDX  VirPos
+#debug real VirPos
+ GTF
+ JMC  fbStepControl_L1
+#srcline 537 ;    ttg := (Pos - VirPos) / (100. / t0100 + PosVel);
+ LDX  Pos
+#debug real Pos
+ LDX  VirPos
+#debug real VirPos
+ SUF
+ LD   real 100.
+ LDX  t0100
+#debug real t0100
+ DIF
+ LDX  PosVel
+#debug real PosVel
+ ADF
+ DIF
+ WRY  ttg
+#debug_left real ttg
+#srcline 538 ;  else //bude se zavirat
+ JMP  fbStepControl_L2
+fbStepControl_L1:
+#srcline 539 ;    ttg := (Pos - VirPos) / (100. / t0100 - PosVel);
+ LDX  Pos
+#debug real Pos
+ LDX  VirPos
+#debug real VirPos
+ SUF
+ LD   real 100.
+ LDX  t0100
+#debug real t0100
+ DIF
+ LDX  PosVel
+#debug real PosVel
+ SUF
+ DIF
+ WRY  ttg
+#debug_left real ttg
+#srcline 540 ;  end_if;
+fbStepControl_L2:
+#srcline 542 ;  //prepocet odchylky na cas
+#srcline 543 ;  //ttg := (Pos - VirPos) * 0.01 * t0100;
+#srcline 545 ;  //prepocet casu na real
+#srcline 546 ;  t0ET := TIME_TO_REAL(t0.ET) * 0.001;
+ LDX  t0~ET
+#debug time t0.ET
+ ILF
+ LD   real 0.001
+ MUF
+ WRY  t0ET
+#debug_left real t0ET
+#srcline 547 ;  t1ET := TIME_TO_REAL(t1.ET) * 0.001;
+ LDX  t1~ET
+#debug time t1.ET
+ ILF
+ LD   real 0.001
+ MUF
+ WRY  t1ET
+#debug_left real t1ET
+#srcline 549 ;  IF Idle THEN //prechod z klidu do otvirani / zavirani
+ LDX  Idle
+#debug bool Idle
+ JMC  fbStepControl_L3
+#srcline 550 ;    Open := (ttg > tmin  OR Pos = 100.0)  AND t0ET > tmin AND NOT(wasClose AND t0ET < t01min);
+ LDY  ttg
+#debug real ttg
+ LDX  tmin
+#debug real tmin
+ GTF
+ LDX  Pos
+#debug real Pos
+ LD   real 100.0
+ EQF
+ OR  
+ LDY  t0ET
+#debug real t0ET
+ LDX  tmin
+#debug real tmin
+ GTF
+ AND
+ LDX  wasClose
+#debug bool wasClose
+ LDY  t0ET
+#debug real t0ET
+ LDX  t01min
+#debug real t01min
+ LTF
+ AND
+ NEG
+ AND
+ WRX  Open
+#debug_left bool Open
+#srcline 551 ;    Close:= (ttg < -tmin OR Pos = 0.0) AND t0ET > tmin AND NOT(wasOpen  AND t0ET < t01min);
+ LDY  ttg
+#debug real ttg
+ LDX  tmin
+#debug real tmin
+ XOR  $80000000
+ LTF
+ LDX  Pos
+#debug real Pos
+ LD   real 0.0
+ EQF
+ OR  
+ LDY  t0ET
+#debug real t0ET
+ LDX  tmin
+#debug real tmin
+ GTF
+ AND
+ LDX  wasOpen
+#debug bool wasOpen
+ LDY  t0ET
+#debug real t0ET
+ LDX  t01min
+#debug real t01min
+ LTF
+ AND
+ NEG
+ AND
+ WRX  Close
+#debug_left bool Close
+#srcline 552 ;  ELSIF t1.Q THEN  //hlidani ukonceni pulzu
+ JMP  fbStepControl_L4
+fbStepControl_L3:
+ LDX  t1~Q
+#debug bool t1.Q
+ JMC  fbStepControl_L5
+#srcline 553 ;    Open  := Open  AND (ttg > 0.0 OR Pos = 100.0);
+ LDX  Open
+#debug bool Open
+ LDY  ttg
+#debug real ttg
+ LD   real 0.0
+ GTF
+ LDX  Pos
+#debug real Pos
+ LD   real 100.0
+ EQF
+ OR  
+ AND
+ WRX  Open
+#debug_left bool Open
+#srcline 554 ;    Close := Close AND (ttg < 0.0 OR Pos = 0.0);
+ LDX  Close
+#debug bool Close
+ LDY  ttg
+#debug real ttg
+ LD   real 0.0
+ LTF
+ LDX  Pos
+#debug real Pos
+ LD   real 0.0
+ EQF
+ OR  
+ AND
+ WRX  Close
+#debug_left bool Close
+#srcline 555 ;  END_IF;
+ JMP  fbStepControl_L4
+fbStepControl_L5:
+fbStepControl_L4:
+#srcline 557 ;  //set reset priznaku otvira se / zavira se
+#srcline 558 ;  wasClose := (wasClose OR Close) AND NOT Open;
+ LDX  wasClose
+#debug bool wasClose
+ LDX  Close
+#debug bool Close
+ OR  
+ LDX  Open
+#debug bool Open
+ NEG
+ AND
+ WRX  wasClose
+#debug_left bool wasClose
+#srcline 559 ;  wasOpen  := (wasOpen OR Open)   AND NOT Close;
+ LDX  wasOpen
+#debug bool wasOpen
+ LDX  Open
+#debug bool Open
+ OR  
+ LDX  Close
+#debug bool Close
+ NEG
+ AND
+ WRX  wasOpen
+#debug_left bool wasOpen
+#srcline 561 ;  //simulace polohy
+#srcline 562 ;  ps(o := Open, c := Close, fo := HiSw, fc := LoSw, t0100 := t0100);
+ LDX  Open
+#debug bool Open
+ WRX  ps~o
+#debug_left bool ps~o
+ LDX  Close
+#debug bool Close
+ WRX  ps~c
+#debug_left bool ps~c
+ LDX  HiSw
+#debug bool HiSw
+ WRX  ps~fo
+#debug_left bool ps~fo
+ LDX  LoSw
+#debug bool LoSw
+ WRX  ps~fc
+#debug_left bool ps~fc
+ LDX  t0100
+#debug real t0100
+ WRX  ps~t0100
+#debug_left real ps~t0100
+ LEAX ps
+ CAL  _STEP_CONTROL_POS_SIM__L0
+#srcline 563 ;  VirPos := ps.pos;
+ LDX  ps~pos
+#debug real ps.pos
+ WRX  VirPos
+#debug_left real VirPos
+#srcline 565 ;  //time measuring
+#srcline 566 ;  t0(IN := Idle, PT := T#24h);
+ LDX  Idle
+#debug bool Idle
+ WRX  t0~IN
+#debug_left bool t0~IN
+ LD   time 86400000
+ WRX  t0~PT
+#debug_left time t0~PT
+ LEAX t0
+ CAL  TON_L0
+#srcline 567 ;  t1(IN := NOT Idle, PT := REAL_TO_TIME(tmin*1000.0));
+ LDX  Idle
+#debug bool Idle
+ NEG
+ WRX  t1~IN
+#debug_left bool t1~IN
+ LDX  tmin
+#debug real tmin
+ LD   real 1000.0
+ MUF
+ RND
+ IFL
+ WRX  t1~PT
+#debug_left time t1~PT
+ LEAX t1
+ CAL  TON_L0
+#srcline 568 ;  
+#srcline 569 ;  Run := Open OR Close;
+ LDX  Open
+#debug bool Open
+ LDX  Close
+#debug bool Close
+ OR  
+ WRX  Run
+#debug_left bool Run
+#srcline 571 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbStepControl__InstanceInit__:
+ LINK 0
+ LD   real 30
+ WRX  t0100
+ LD   real 0.5
+ WRX  tmin
+ LD   real 2
+ WRX  t01min
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+#pou fbGenerator
+#srcline 577 ;FUNCTION_BLOCK fbGenerator
+
+#struct fbGenerator__temp__
+  usint P0__st__
+P     61
+fbGenerator_L0:
+ LINK __SizeOf(fbGenerator__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+; R_EDGE, F_EDGE 
+ LDX  Reset
+ LETX __EDGE_R__Reset
+ WRX  Reset
+#srcline 600 ;  Init := Init & NOT Reset;
+ LDX  Init
+#debug bool Init
+ LDX  Reset
+#debug bool Reset
+ NEG
+ AND
+ WRX  Init
+#debug_left bool Init
+#srcline 601 ;  IF Init THEN
+ LDX  Init
+#debug bool Init
+ JMC  fbGenerator_L1
+#srcline 602 ;    Phase := UDINT_TO_REAL(TIME_TO_UDINT(%SL52-Start) MOD REAL_TO_UDINT(Per*1000.0))/1000.0;
+ LD   %SL52
+ LDX  Start
+#debug time Start
+ SUB
+ LDX  Per
+#debug real Per
+ LD   real 1000.0
+ MUF
+ RND
+ UFL
+ MOD
+ ULF
+ LD   real 1000.0
+ DIF
+ WRX  Phase
+#debug_left real Phase
+#srcline 603 ;    CASE SType OF
+ LDX  SType
+#debug usint SType
+ WRY  P0__st__
+ LD   0
+ LDY  P0__st__
+ EQ  
+ JMC  fbGenerator_L4
+#srcline 604 ;      gst_Sin:
+#srcline 605 ;        Out := Zero + Amp * 0.5 * (Sin(Phase / Per * 6.28319) + 1.0);
+ LDX  Zero
+#debug real Zero
+ LDX  Amp
+#debug real Amp
+ LD   real 0.5
+ MUF
+ LDX  Phase
+#debug real Phase
+ LDX  Per
+#debug real Per
+ DIF
+ LD   real 6.28319
+ MUF
+ SIN
+ LD   real 1.0
+ ADF
+ MUF
+ ADF
+ WRX  Out
+#debug_left real Out
+ JMP  fbGenerator_L3
+fbGenerator_L4:
+ LD   1
+ LDY  P0__st__
+ EQ  
+ JMC  fbGenerator_L5
+#srcline 606 ;      gst_Square:
+#srcline 607 ;        Out := Zero + Amp * (BOOL_TO_REAL(Phase  < Per / 2.0));
+ LDX  Zero
+#debug real Zero
+ LDX  Amp
+#debug real Amp
+ LDX  Phase
+#debug real Phase
+ LDX  Per
+#debug real Per
+ LD   real 2.0
+ DIF
+ LTF
+ AND  $3F800000
+ MUF
+ ADF
+ WRX  Out
+#debug_left real Out
+ JMP  fbGenerator_L3
+fbGenerator_L5:
+ LD   2
+ LDY  P0__st__
+ EQ  
+ JMC  fbGenerator_L6
+#srcline 608 ;      gst_Saw:
+#srcline 609 ;        Out := Zero + Amp * (Phase / Per);
+ LDX  Zero
+#debug real Zero
+ LDX  Amp
+#debug real Amp
+ LDX  Phase
+#debug real Phase
+ LDX  Per
+#debug real Per
+ DIF
+ MUF
+ ADF
+ WRX  Out
+#debug_left real Out
+ JMP  fbGenerator_L3
+fbGenerator_L6:
+ LD   3
+ LDY  P0__st__
+ EQ  
+ JMC  fbGenerator_L7
+#srcline 610 ;      gst_DblSaw:
+#srcline 611 ;        Out := Zero + Amp * 2.0 * (abs(Phase / Per - 0.5));
+ LDX  Zero
+#debug real Zero
+ LDX  Amp
+#debug real Amp
+ LD   real 2.0
+ MUF
+ LDX  Phase
+#debug real Phase
+ LDX  Per
+#debug real Per
+ DIF
+ LD   real 0.5
+ SUF
+ ABS
+ MUF
+ ADF
+ WRX  Out
+#debug_left real Out
+ JMP  fbGenerator_L3
+fbGenerator_L7:
+fbGenerator_L3:
+#srcline 614 ;  ELSE
+ JMP  fbGenerator_L2
+fbGenerator_L1:
+#srcline 615 ;    Start := %SL52;
+ LD   %SL52
+ WRX  Start
+#debug_left time Start
+#srcline 616 ;    Init := true;
+ LD   bool -1       ; true
+ WRX  Init
+#debug_left bool Init
+#srcline 617 ;  END_IF;
+fbGenerator_L2:
+#srcline 619 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbGenerator__InstanceInit__:
+ LINK 0
+ LD   real 1
+ WRX  Amp
+ LD   real 1
+ WRX  Per
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+ÀT  W  ±

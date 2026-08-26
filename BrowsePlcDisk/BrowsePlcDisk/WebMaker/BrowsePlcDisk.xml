@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<web version="8.1" propfont="true" foot="© 2025" dwMode="0" flat="true" MaxUid="28422" height="1219" width="610" menu="false" title="false" border="true" flatcolor="16771043" top="0" left="0" iniScale="100" maxScale="100" useIniScale="false" useMaxScale="false" userScale="true" webApp="true" bgdupl="true" bgcolor="16777215" icon="" id18="0" author="Teco a.s." encoding="windows-1250">
+	<panels></panels>
+	<Grid Enable="1" X="5" Y="5" />
+	<globalset newdim="1" maxvar="0" />
+	<group caption="" Uid="28313">
+		<page caption="Index" name="PAGE1.XML" background="" bgcolor="16777215" repeat="false" hidden="false" ajax="true" pause="1000" level="0" default="true" Uid="28314" ucid="1765919710" width="575" height="410">
+			<object caption="" X="64" Y="12" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28412">
+				<picture href="" img="40X40_SH.PNG" />
+			</object>
+			<object caption="" X="64" Y="17" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28413">
+				<picture href="" img="40X40_SU.PNG" />
+			</object>
+			<object caption="" X="64" Y="42" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28414">
+				<picture href="" img="40X40_SD.PNG" />
+			</object>
+			<object caption="" X="64" Y="47" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28415">
+				<picture href="" img="40X40_SE.PNG" />
+			</object>
+			<object caption="" X="64" Y="27" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28416">
+				<picture href="" img="40X40__4.PNG" />
+			</object>
+			<object caption="" X="64" Y="32" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28417">
+				<picture href="" img="40X40__3.PNG" />
+			</object>
+			<object caption="" X="2" Y="12" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.0" vistype="BOOL" visneg="false" Uid="28332">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="14" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.1" vistype="BOOL" visneg="false" Uid="28333">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="17" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.2" vistype="BOOL" visneg="false" Uid="28334">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="19" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.3" vistype="BOOL" visneg="false" Uid="28335">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="22" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.4" vistype="BOOL" visneg="false" Uid="28336">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="24" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.5" vistype="BOOL" visneg="false" Uid="28337">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="27" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.6" vistype="BOOL" visneg="false" Uid="28338">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="29" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.7" vistype="BOOL" visneg="false" Uid="28339">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="32" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.8" vistype="BOOL" visneg="false" Uid="28340">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="34" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.9" vistype="BOOL" visneg="false" Uid="28341">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="37" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.10" vistype="BOOL" visneg="false" Uid="28342">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="39" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.11" vistype="BOOL" visneg="false" Uid="28343">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="42" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.12" vistype="BOOL" visneg="false" Uid="28344">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="44" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.13" vistype="BOOL" visneg="false" Uid="28345">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="47" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.14" vistype="BOOL" visneg="false" Uid="28346">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="" X="2" Y="49" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="false" visvar="Main.DirSelMask.15" vistype="BOOL" visneg="false" Uid="28347">
+				<block width="490" height="20" border="false" />
+			</object>
+			<object caption="Procházet soubory" X="2" Y="2" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="true" italic="false" size="13" transparent="true" visneg="false" Uid="28315">
+				<label />
+			</object>
+			<object caption="" X="2" Y="12" xoff="7" yoff="2" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28316">
+				<edit variable="Main.DirBrowser.view[0]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="1" />
+			</object>
+			<object caption="" X="2" Y="14" xoff="7" yoff="6" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28317">
+				<edit variable="Main.DirBrowser.view[1]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="7" />
+			</object>
+			<object caption="" X="2" Y="17" xoff="7" yoff="2" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28318">
+				<edit variable="Main.DirBrowser.view[2]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="11" />
+			</object>
+			<object caption="" X="2" Y="19" xoff="7" yoff="6" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28319">
+				<edit variable="Main.DirBrowser.view[3]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="15" />
+			</object>
+			<object caption="" X="2" Y="22" xoff="7" yoff="2" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28320">
+				<edit variable="Main.DirBrowser.view[4]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="4" />
+			</object>
+			<object caption="" X="2" Y="24" xoff="7" yoff="6" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28321">
+				<edit variable="Main.DirBrowser.view[5]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="8" />
+			</object>
+			<object caption="" X="2" Y="27" xoff="7" yoff="2" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28322">
+				<edit variable="Main.DirBrowser.view[6]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="12" />
+			</object>
+			<object caption="" X="2" Y="29" xoff="7" yoff="6" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28323">
+				<edit variable="Main.DirBrowser.view[7]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="16" />
+			</object>
+			<object caption="" X="2" Y="32" xoff="7" yoff="2" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28324">
+				<edit variable="Main.DirBrowser.view[8]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="5" />
+			</object>
+			<object caption="" X="2" Y="34" xoff="7" yoff="6" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28325">
+				<edit variable="Main.DirBrowser.view[9]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="9" />
+			</object>
+			<object caption="" X="2" Y="37" xoff="7" yoff="2" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28326">
+				<edit variable="Main.DirBrowser.view[10]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="13" />
+			</object>
+			<object caption="" X="2" Y="39" xoff="7" yoff="6" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28327">
+				<edit variable="Main.DirBrowser.view[11]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="17" />
+			</object>
+			<object caption="" X="2" Y="42" xoff="7" yoff="2" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28328">
+				<edit variable="Main.DirBrowser.view[12]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="6" />
+			</object>
+			<object caption="" X="2" Y="44" xoff="7" yoff="6" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28329">
+				<edit variable="Main.DirBrowser.view[13]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="10" />
+			</object>
+			<object caption="" X="2" Y="47" xoff="7" yoff="2" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28330">
+				<edit variable="Main.DirBrowser.view[14]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="14" />
+			</object>
+			<object caption="" X="2" Y="49" xoff="7" yoff="6" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28331">
+				<edit variable="Main.DirBrowser.view[15]" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="18" />
+			</object>
+			<object caption="" X="2" Y="12" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28380">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.0" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="14" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28381">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.1" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="17" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28382">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.2" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="19" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28383">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.3" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="22" xoff="7" yoff="2" level="0" readonly="false" front="16777215" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28384">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.4" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="24" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28385">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.5" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="27" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28386">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.6" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="29" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28387">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.7" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="32" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28388">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.8" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="34" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28389">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.9" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="37" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28390">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.10" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="39" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28391">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.11" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="42" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28392">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.12" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="44" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28393">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.13" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="47" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28394">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.14" type="BOOL" value="1" />
+			</object>
+			<object caption="" X="2" Y="49" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16776960" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28395">
+				<block width="490" height="20" border="false" variable="Main.DirSelMask.15" type="BOOL" value="1" />
+			</object>
+			<object caption="Adresář:" X="2" Y="4" xoff="7" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28396">
+				<label />
+			</object>
+			<object caption="" X="11" Y="4" xoff="5" yoff="6" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28397">
+				<edit variable="Main.DirBrowser.actDir" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="2" />
+			</object>
+			<object caption="Vybraný:" X="2" Y="7" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28398">
+				<label />
+			</object>
+			<object caption="" X="11" Y="7" xoff="5" yoff="2" level="0" readonly="true" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28399">
+				<edit variable="Main.DirBrowser.selName" type="STRING" intf="0" timf="" align="left" zero="false" prec="-1" size="60" global="true" border="false" width="488" height="20" tabindex="3" />
+			</object>
+			<object caption="" X="64" Y="12" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visvar="Main.DirBrowser.beg" vistype="BOOL" visneg="true" Uid="28400">
+				<imagebtn variable="Main.DirBrowser.top" value="1" timeout="500" type="BOOL R_EDGE" on="40X40_S_.PNG" off="40X40_CH.PNG" />
+			</object>
+			<object caption="" X="64" Y="17" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visvar="Main.DirBrowser.beg" vistype="BOOL" visneg="true" Uid="28401">
+				<imagebtn variable="Main.DirBrowser.up" value="1" timeout="500" type="BOOL R_EDGE" on="40X40_S_.PNG" off="40X40_CU.PNG" />
+			</object>
+			<object caption="" X="64" Y="42" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visvar="Main.DirBrowser.end" vistype="BOOL" visneg="true" Uid="28402">
+				<imagebtn variable="Main.DirBrowser.dn" value="1" timeout="500" type="BOOL R_EDGE" on="40X40_S_.PNG" off="40X40_CD.PNG" />
+			</object>
+			<object caption="" X="64" Y="47" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visvar="Main.DirBrowser.end" vistype="BOOL" visneg="true" Uid="28403">
+				<imagebtn variable="Main.DirBrowser.btn" value="1" timeout="500" type="BOOL R_EDGE" on="40X40_S_.PNG" off="40X40_CE.PNG" />
+			</object>
+			<object caption="" X="64" Y="27" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visvar="Main.DirBrowser.isHome" vistype="BOOL" visneg="true" Uid="28404">
+				<imagebtn variable="Main.DirBrowser.level_up" value="1" timeout="500" type="BOOL R_EDGE" on="40X40_S_.PNG" off="40X40__1.PNG" />
+			</object>
+			<object caption="" X="64" Y="32" xoff="6" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visvar="Main.DirBrowser.isDir" vistype="BOOL" visneg="false" Uid="28405">
+				<imagebtn variable="Main.DirBrowser.level_dn" value="1" timeout="500" type="BOOL R_EDGE" on="40X40_S_.PNG" off="40X40__2.PNG" />
+			</object>
+		</page>
+	</group>
+	<images>
+		<img name="40X40_C_.PNG" type="PNG" height="40" width="40" longname="40X40_c" />
+		<img name="40X40_S_.PNG" type="PNG" height="40" width="40" longname="40X40_s" />
+		<img name="40X40_CD.PNG" type="PNG" height="40" width="40" longname="40x40_cd" />
+		<img name="40X40_CE.PNG" type="PNG" height="40" width="40" longname="40x40_ce" />
+		<img name="40X40_CU.PNG" type="PNG" height="40" width="40" longname="40x40_cu" />
+		<img name="40X40_CH.PNG" type="PNG" height="40" width="40" longname="40x40_ch" />
+		<img name="40X40__1.PNG" type="PNG" height="40" width="40" longname="40X40_clu" />
+		<img name="40X40__2.PNG" type="PNG" height="40" width="40" longname="40X40_cld" />
+		<img name="40X40_SD.PNG" type="PNG" height="40" width="40" longname="40x40_sd" />
+		<img name="40X40_SE.PNG" type="PNG" height="40" width="40" longname="40x40_se" />
+		<img name="40X40_SH.PNG" type="PNG" height="40" width="40" longname="40x40_sh" />
+		<img name="40X40__3.PNG" type="PNG" height="40" width="40" longname="40X40_sld" />
+		<img name="40X40__4.PNG" type="PNG" height="40" width="40" longname="40X40_slu" />
+		<img name="40X40_SU.PNG" type="PNG" height="40" width="40" longname="40x40_su" />
+	</images>
+	<Languages>
+		<Language Code="5" Editor="1" />
+	</Languages>
+	<Layers active="0" pasteMode="0">
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+	</Layers>
+	<security crypt="1" count="10">
+		<user level="0" name="" pass="" />
+		<user level="-1" name="1" pass="CE" />
+		<user level="-1" name="2" pass="CD" />
+		<user level="-1" name="3" pass="CC" />
+		<user level="-1" name="4" pass="CB" />
+		<user level="-1" name="5" pass="CA" />
+		<user level="-1" name="6" pass="C9" />
+		<user level="-1" name="7" pass="C8" />
+		<user level="-1" name="8" pass="C7" />
+		<user level="-1" name="9" pass="C6" />
+	</security>
+	<autologin count="10">
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+	</autologin>
+	<tecoapi count="10">
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+	</tecoapi>
+</web>
