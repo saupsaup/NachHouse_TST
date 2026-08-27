@@ -2,7 +2,7 @@
 
 Target: TECOMAT FOXTROT CP-2000  
 Mosaic: PROFI+ 2026.1  
-Program version: 1.0.0.1
+Program version: 1.0.0.2
 
 This directory extends the already-created empty Mosaic project in
 `~/NachHouse/TST/ROOM_API_PILOT`.
@@ -14,6 +14,7 @@ This directory extends the already-created empty Mosaic project in
 - Config/state revisions and latest public diffs.
 - Eight retained in-memory diff frames with explicit sync request/response.
 - Atomic ADD, DELETE, COPY and SET command handshake.
+- Contiguous `SortDefault` values after `DELETE_ROOM`.
 - Latest-command idempotent retry using `ClientId + RequestId`.
 - Validated manual state test input.
 - Four deterministic sample rooms.

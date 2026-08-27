@@ -10,6 +10,7 @@ VAR
     sourceStSlot  : USINT;     (* Pozícia zdrojového stavu pri kopírovaní. ENG *)
     maxSort       : UINT;      (* Najvyššie použité predvolené poradie pri pridávaní. ENG *)
     sourceSort    : UINT;      (* Predvolené poradie zdroja pri vkladaní jeho kópie. ENG *)
+    deletedSort   : UINT;      (* Predvolené poradie uvo¾nené odstránenou miestnosou. ENG *)
     resultCode    : USINT;     (* Pracovný návratový kód API_RESULT_*. ENG *)
     resultMessage : STRING[80]; (* Pracovný slovenský text výsledku. *)
     executeChange : BOOL;      (* TRUE iba vtedy, keï sa snapshot skutoène zmenil. ENG *)
@@ -105,8 +106,20 @@ ELSE
                     resultCode := API_RESULT_NOT_FOUND;
                     resultMessage := 'Miestnost nenajdena';
                 ELSE
+                    (* Uložené poradie sa použije na zhutnenie hodnôt po zmazaní. *)
+                    deletedSort := ApiConfig.Rooms[configSlot].SortDefault;
                     ApiClearRoomConfig(ApiConfig.Rooms[configSlot]);
                     ApiClearRoomState(ApiState.Rooms[stateSlot]);
+
+                    (* Miestnosti za odstránenou pozíciou sa posunú o jedno miesto dopredu. *)
+                    FOR i := 1 TO C_MAX_ROOMS DO
+                        IF ApiConfig.Rooms[i].Used AND
+                           (ApiConfig.Rooms[i].SortDefault > deletedSort) THEN
+                            ApiConfig.Rooms[i].SortDefault :=
+                                ApiConfig.Rooms[i].SortDefault - 1;
+                        END_IF;
+                    END_FOR;
+
                     executeChange := TRUE;
                     resultMessage := 'Miestnost zmazana';
                 END_IF;

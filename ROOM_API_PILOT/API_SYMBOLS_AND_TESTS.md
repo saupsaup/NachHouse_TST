@@ -66,6 +66,9 @@ Use action `3`, target `ROOMID=101`, source `SOURCEROOMID=1`, then commit with
 
 Use action `2`, `ROOMID=100`, then commit.
 
+After deletion, the PLC decrements `SortDefault` for every remaining room that
+was ordered after the deleted room. The resulting default order is contiguous.
+
 ## Rename room 1
 
 Use action `4`, `ROOMID=1`, set non-empty `NAME` and the desired
@@ -94,3 +97,15 @@ Set `APISYNCREQUEST.CLIENTID`, `REQUESTID`, `CONFIGFROMREVISION`, and
 `APISYNCRESPONSE` returns one next retained frame for each stream. Repeat with
 the returned `ToRevision` until mode is `CURRENT`. If mode is `FULL_REQUIRED`,
 read the full `APICONFIG` or `APISTATE` snapshot.
+
+## Live CP-2000 transport findings
+
+Verified on CP-2000 firmware `v2.6.077 R3` with TecoApi `1.0.2`:
+
+- Write each `SetObject` payload field in a separate authenticated HTTP request
+  and write the corresponding `Execute` flag last. A multi-parameter
+  `SetObject` request returned `401.021` in the tested Digest-auth setup.
+- Do not read the complete `ApiSyncResponse` root in one request. It exceeds the
+  TecoApi limit of 512 elementary variables and returns `413.004`. Read the
+  response header fields, `ApiSyncResponse.ConfigDiff`, and
+  `ApiSyncResponse.StateDiff` separately.

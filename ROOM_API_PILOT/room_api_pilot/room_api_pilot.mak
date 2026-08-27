@@ -1,7 +1,7 @@
 ;# Varování: Tento soubor je spravován vývojovým prostredím Mosaic.
 ;# Nedoporucuje se upravovat ho rucne!
 
-#program room_api_pilot , V1.0.0.1
+#program room_api_pilot , V1.0.0.2
 ;**************************************
 ;<ActionName/>
 ;<Programmer/>
