@@ -2,6 +2,43 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "PLC: Compile + Upload + Activate + Verify RUN",
+			"type": "process",
+			"command": "node",
+			"args": ["${workspaceFolder}/.vscode/deploy-plc.cjs"],
+			"options": {"cwd": "${workspaceFolder}"},
+			"problemMatcher": [],
+			"presentation": {"reveal": "always", "panel": "dedicated", "clear": true},
+			"runOptions": {"instanceLimit": 1}
+		},
+		{
+			"label": "PLC: Compile + Upload TTR (without activation)",
+			"type": "process",
+			"command": "node",
+			"args": ["${workspaceFolder}/.vscode/deploy-plc.cjs", "--upload"],
+			"options": {"cwd": "${workspaceFolder}"},
+			"problemMatcher": [],
+			"presentation": {"reveal": "always", "panel": "dedicated", "clear": true},
+			"runOptions": {"instanceLimit": 1}
+		},
+		{
+			"label": "PLC: Activate uploaded TTR + Verify RUN",
+			"type": "process",
+			"command": "node",
+			"args": ["${workspaceFolder}/.vscode/deploy-plc.cjs", "--activate"],
+			"options": {"cwd": "${workspaceFolder}"},
+			"problemMatcher": [],
+			"presentation": {"reveal": "always", "panel": "dedicated", "clear": true},
+			"runOptions": {"instanceLimit": 1}
+		},
+		{
+			"label": "PLC: Check connection and build",
+			"type": "process",
+			"command": "node",
+			"args": ["${workspaceFolder}/.vscode/deploy-plc.cjs", "--check"], 
+			"problemMatcher": []
+		},
+		{
 			"label": "Map N:",
 			"type": "shell",
 			"command": "prlctl",
@@ -17,7 +54,7 @@
 		{
 			"label": "Compile: pilot_Api_V11",
 			"type": "shell",
-			"dependsOn": "Map N:",
+//			"dependsOn": "Map N:",
 			"command": "prlctl",
 			"args": [
 				"exec",

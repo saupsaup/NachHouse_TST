@@ -1,0 +1,32 @@
+{
+	"folders": [
+		{
+      "name": "pilot_Api_V11",
+			"path": "API/pilot_Api_V11_LOAD_800"
+		},
+    {
+      "name": "HELP",
+      "path": "../HELP"
+    }		
+	],
+  "settings": {
+    //"mosaic.plcHost": "192.168.33.200:61682",
+    //"mosaic.makPathWin": "N:\\LIBS\\Clean_DISK\\NhCleanDisk\\NhCleanDisk.mak",
+    "favorites.groups": [
+      "Default"
+    ],
+    "favorites.currentGroup": "Default",
+    "favorites.resources": [],
+    "favorites.sortOrder": "MANUAL",
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#deed91",
+      "titleBar.activeForeground": "#040404",
+      "titleBar.inactiveBackground": "#6A477E99",
+      "titleBar.inactiveForeground": "#040303",
+      "statusBar.background": "#6A477E",
+      "statusBar.foreground": "#0c0b0b",
+      "statusBar.noFolderBackground": "#6A477E"
+    },
+    "window.title": "API/pilot_Api_V11 — ${activeEditorShort}${separator}${appName}"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": false,
+  "mosaic.vmName": "ae0a527c-1a74-4e39-9845-1622f6a3c782",
+  "mosaic.shareRoot": "\\\\Mac\\NachHouse_DEV",
+  "mosaic.mosaicBin": "C:\\Program Files (x86)\\Teco\\Mosaic 2026.1\\Application\\",
+  "mosaic.plcHost": "192.168.33.200:61682",
+  "mosaic.makPathWin": "N:\\TST\\API\\pilot_Api_V11_LOAD_800\\pilot_Api_V11.mak"
+}

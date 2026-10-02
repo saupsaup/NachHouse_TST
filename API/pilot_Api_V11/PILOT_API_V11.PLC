@@ -26,7 +26,7 @@ ipaddr="192.168.33.200"
 isdyn=0
 dynip=""
 iptout=1000
-iptcp=1
+iptcp=0
 altport=0
 udpport=61682
 altsecureport=0
@@ -82,7 +82,7 @@ mustcompile=0
 [/plcwusb]
 
 [txtextsyneditor]
-GModif=1
+GModif=0
 GMakeBackup=1
 GAutoIndent=1
 GUseTab=1
