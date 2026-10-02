@@ -6,5 +6,5 @@
   "mosaic.shareRoot": "\\\\Mac\\NachHouse_DEV",
   "mosaic.mosaicBin": "C:\\Program Files (x86)\\Teco\\Mosaic 2026.1\\Application\\",
   "mosaic.plcHost": "192.168.33.200:61682",
-  "mosaic.makPathWin": "N:\\WORKTREES\\pilot_Api_V11.2.2_LOAD_800_TEST\\API\\pilot_Api_V11\\pilot_Api_V11.mak"
+  "mosaic.makPathWin": "N:\\TST\\API\\pilot_Api_V11\\pilot_Api_V11.mak"
 }
