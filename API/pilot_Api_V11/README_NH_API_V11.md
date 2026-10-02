@@ -201,6 +201,16 @@ Dna 30. 8. 2026 presiel finalny E2E test na Foxtrote 2 `192.168.43.201`:
 
 Klient pocas testu prijal 1907 natívnych diff sprav. Pred dokoncenim ramcov zaznamenal 1122 priebeznych CRC nezhod; je to ocakavany dokaz, ze prvky buffera prichadzaju postupne a ACK smie nasledovat az po novom `FrameId` a platnom CRC.
 
+## 12. LOAD_800
+
+Vetva V2.2.0.0 obsahuje samostatny kompaktny model `NhLoadDevices[1..800]`
+pre zatazove testy smart-home zariadeni. `NhApiTest.Action=7` prepina modelovu
+scenu odchod; `NhApiTest.Presence=TRUE` aktivuje odchod a `FALSE` obnovi
+normalny stav. Stav a pocitadla testu publikuje `NhLoadTest`.
+
+Automaticky test sa spusta ulohou `PLC: Run LOAD 800 tests`. Namerane vysledky,
+bezpecnostne kontroly a odporucania su v `LOAD_800_REPORT.md`.
+
 ## MY.1 Moje poznamky
 - ked klient bude chciet bieco poslat do RX maj by si vyziadat aktualny stav .State -ale kedze DIFF vzdy posle zmenu kde je aj .State, tak klient berie co m posledne - je to ok ? 
 

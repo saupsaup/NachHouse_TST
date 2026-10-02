@@ -192,13 +192,13 @@ FUNCTION NhApiStateEqual : BOOL
       (A.Online = B.Online) AND (A.Twilight = B.Twilight);
 END_FUNCTION
 
-FUNCTION NhApiFindRoom : USINT
+FUNCTION NhApiFindRoom : UINT
    // Finds a room slot by stable RoomId. SK: Najde room slot podla stabilneho RoomId.
    VAR_INPUT
       RoomId : UDINT; // Stable ID to find. SK: Hladane stabilne ID.
    END_VAR
    VAR
-      Index : USINT;  // Scanned room slot. SK: Prehladavany room slot.
+      Index : UINT;  // Scanned room slot. SK: Prehladavany room slot.
    END_VAR
    NhApiFindRoom := 0;
    FOR Index := 1 TO NH_API_MAX_ROOMS DO
@@ -209,10 +209,10 @@ FUNCTION NhApiFindRoom : USINT
    END_FOR;
 END_FUNCTION
 
-FUNCTION NhApiFindFreeRoom : USINT
+FUNCTION NhApiFindFreeRoom : UINT
    // Finds the first free internal room slot. SK: Najde prvy volny interny room slot.
    VAR
-      Index : USINT; // Scanned room slot. SK: Prehladavany room slot.
+      Index : UINT; // Scanned room slot. SK: Prehladavany room slot.
    END_VAR
    NhApiFindFreeRoom := 0;
    FOR Index := 1 TO NH_API_MAX_ROOMS DO

@@ -9,7 +9,8 @@ VAR_GLOBAL CONSTANT
    NH_API_RX_WORD_COUNT           : UINT := 64;           // Shared RX capacity in DWORD words. SK: Kapacita spolocneho RX pola v DWORD.
    NH_API_TX_BYTE_CAPACITY        : UINT := 2048;         // Shared TX capacity in bytes. SK: Kapacita spolocneho TX pola v bajtoch.
    NH_API_RX_BYTE_CAPACITY        : UINT := 256;          // Shared RX capacity in bytes. SK: Kapacita spolocneho RX pola v bajtoch.
-   NH_API_MAX_ROOMS               : USINT := 40;          // Maximum number of pilot room records. SK: Najvacsi pocet room zaznamov pilotu.
+   NH_API_MAX_ROOMS               : UINT := 40;           // Maximum number of pilot room records. SK: Najvacsi pocet room zaznamov pilotu.
+   NH_LOAD_DEVICE_COUNT           : UINT := 800;          // Number of compact smart-home model devices. SK: Pocet kompaktnych modelovych smart-home zariadeni.
    NH_API_TRANSACTION_TIMEOUT_MS  : UDINT := 30000;       // Maximum owner inactivity time. SK: Maximalny cas necinnosti vlastnika.
    NH_API_BROADCAST_HOLD_MS       : UDINT := 500;         // Minimum time one best-effort broadcast frame stays stable. SK: Minimalny cas stability jedneho broadcast ramca.
 
@@ -70,6 +71,7 @@ VAR_GLOBAL CONSTANT
    NH_API_TEST_COPY_ROOM          : USINT := 4;            // Test interface copies a room. SK: Testovacie rozhranie skopiruje miestnost.
    NH_API_TEST_SET_CONFIG         : USINT := 5;            // Test interface changes room config. SK: Testovacie rozhranie zmeni room config.
    NH_API_TEST_REQUEST_SNAPSHOT   : USINT := 6;            // Test interface publishes a broadcast snapshot. SK: Testovacie rozhranie publikuje broadcast snapshot.
+   NH_API_TEST_AWAY               : USINT := 7;            // Test interface applies the LOAD_800 departure scene. SK: Testovacie rozhranie vykona modelovu scenu odchod LOAD_800.
 END_VAR
 
 TYPE
@@ -119,6 +121,13 @@ TYPE
       Online          : BOOL;       // Test availability. SK: Testovacia dostupnost.
       Twilight        : BOOL;       // Test twilight state. SK: Testovaci twilight stav.
    END_STRUCT
+
+   NH_LOAD_TEST_STATUS : STRUCT // Observable LOAD_800 test status. SK: Pozorovatelny stav testu LOAD_800.
+      DepartureActive : BOOL;  // TRUE while the model is in departure mode. SK: TRUE pocas modeloveho rezimu odchod.
+      LastChangedCount: UINT;  // Device records changed by the last scene. SK: Pocet zaznamov zmenenych poslednou scenou.
+      LastApplyMs     : UDINT; // PLC time spent applying the scene. SK: Cas PLC potrebny na vykonanie sceny.
+      Sequence        : UDINT; // Increments after every completed model scene. SK: Zvysi sa po kazdej dokoncenej modelovej scene.
+   END_STRUCT
 END_TYPE
 
 VAR_GLOBAL
@@ -126,6 +135,8 @@ VAR_GLOBAL
    NhApiTX         {PUBLIC_API} : ARRAY[0..511] OF DWORD;     // Stable PLC-to-clients frame. SK: Stabilny ramec PLC smerom ku klientom.
    NhApiRX         {PUBLIC_API} : ARRAY[0..63] OF DWORD;      // Shared owner-to-PLC request frame. SK: Spolocny ramec poziadavky vlastnika smerom do PLC.
    NhApiTest       {PUBLIC_API} : NH_API_TEST_CONTROL;        // Direct PLC-originated test control. SK: Priame riadenie testov vyvolanych PLC.
+   NhLoadTest      {PUBLIC_API} : NH_LOAD_TEST_STATUS;        // LOAD_800 status and measurements. SK: Stav a merania LOAD_800.
+   NhLoadDevices   {PUBLIC_API} : ARRAY[1..800] OF DWORD;     // Compact model state: high byte kind, low bits value. SK: Kompaktny modelovy stav: horny bajt typ, dolne bity hodnota.
 
    NhRoomsConfig                : ARRAY[1..40] OF NH_ROOM_CONFIG; // Authoritative PLC room configuration. SK: Autoritativna PLC konfiguracia miestnosti.
    NhRoomsState                 : ARRAY[1..40] OF NH_ROOM_STATE;  // Authoritative PLC room state. SK: Autoritativny PLC stav miestnosti.
@@ -141,8 +152,8 @@ VAR_GLOBAL
    NhCommandResult             : USINT;                        // Result sent in the final command frame. SK: Vysledok poslany v poslednom prikazovom ramci.
    NhResultPending             : BOOL;                         // Final command result still has to be sent. SK: Konecny vysledok prikazu este treba odoslat.
 
-   NhConfigShadow              : ARRAY[1..40] OF NH_ROOM_CONFIG; // Last published config image. SK: Posledny publikovany obraz configu.
-   NhStateShadow               : ARRAY[1..40] OF NH_ROOM_STATE;  // Last published state image. SK: Posledny publikovany obraz state.
+   NhConfigShadow              : ARRAY[1..40] OF NH_ROOM_CONFIG; // Last published config image. SK: Posledny publikovany obraz konfiguracie.
+   NhStateShadow               : ARRAY[1..40] OF NH_ROOM_STATE;  // Last published state image. SK: Posledny publikovany obraz stavu.
 
    NhPendingConfig             : ARRAY[1..40] OF NH_ROOM_CONFIG; // Frozen config diff records. SK: Zmrazene zaznamy config diffu.
    NhPendingConfigOperation    : ARRAY[1..40] OF USINT;          // Operations of config diff records. SK: Operacie zaznamov config diffu.
@@ -164,8 +175,8 @@ VAR_GLOBAL
    NhSnapshotStage             : USINT;                          // 1 config, 2 state, 3 done. SK: 1 config, 2 state, 3 done.
    NhSnapshotNext              : USINT;                          // First snapshot record in the next frame. SK: Prvy snapshot zaznam v dalsom ramci.
    NhSnapshotPart              : USINT;                          // Next snapshot part index. SK: Index dalsej casti snapshotu.
-   NhSnapshotParts             : USINT;                          // Part count of the current snapshot section. SK: Pocet casti aktualnej snapshot sekcie.
-   NhSnapshotCount             : USINT;                          // Number of valid frozen rooms. SK: Pocet platnych zmrazenych miestnosti.
-   NhSnapshotConfig            : ARRAY[1..40] OF NH_ROOM_CONFIG; // Frozen config snapshot. SK: Zmrazeny config snapshot.
-   NhSnapshotState             : ARRAY[1..40] OF NH_ROOM_STATE;  // Frozen state snapshot. SK: Zmrazeny state snapshot.
+   NhSnapshotParts             : USINT;                          // Part count of the current snapshot section. SK: Pocet casti aktualnej sekcie.
+   NhSnapshotCount             : USINT;                          // Number of valid frozen rooms. SK: Pocet platnych miestnosti.
+   NhSnapshotConfig            : ARRAY[1..40] OF NH_ROOM_CONFIG; // Frozen config snapshot. SK: Zmrazeny obraz konfiguracie.
+   NhSnapshotState             : ARRAY[1..40] OF NH_ROOM_STATE;  // Frozen state snapshot. SK: Zmrazeny obraz stavu.
 END_VAR

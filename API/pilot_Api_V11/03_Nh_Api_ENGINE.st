@@ -4,7 +4,7 @@
 FUNCTION NhApiClearRoom : BOOL
    // Clears configuration and state of one internal room slot. SK: Vynuluje konfiguraciu a stav jedneho interneho room slotu.
    VAR_INPUT
-      Index : USINT; // Internal room slot 1..40. SK: Interny room slot 1..40.
+      Index : UINT; // Internal model-device slot 1..800. SK: Interny slot modeloveho zariadenia 1..800.
    END_VAR
    NhRoomsConfig[Index].Used := FALSE;
    NhRoomsConfig[Index].RoomId := 0;
@@ -27,7 +27,7 @@ END_FUNCTION
 FUNCTION NhApiInitialize : BOOL
    // Initializes API buffers, handshake and deterministic pilot data once. SK: Jednorazovo inicializuje API buffery, handshake a deterministicke pilotne data.
    VAR
-      Index : USINT; // Initialization index. SK: Inicializacny index.
+      Index : UINT; // Initialization index. SK: Inicializacny index.
    END_VAR
    NhApiInitialize := NhApiInitialized;
    IF NhApiInitialized THEN RETURN; END_IF;
@@ -40,10 +40,10 @@ FUNCTION NhApiInitialize : BOOL
 
    FOR Index := 1 TO 30 DO
       NhRoomsConfig[Index].Used := TRUE;
-      NhRoomsConfig[Index].RoomId := USINT_TO_UDINT(Index);
+      NhRoomsConfig[Index].RoomId := UINT_TO_UDINT(Index);
       NhRoomsConfig[Index].ProjectName := 'TEST';
       NhRoomsConfig[Index].IconId := SEL(Index >= 26, 16, 19);
-      NhRoomsConfig[Index].SortDefault := USINT_TO_UINT(Index);
+      NhRoomsConfig[Index].SortDefault := Index;
       CASE Index OF
          1: NhRoomsConfig[Index].Name := 'Hall 1'; NhRoomsConfig[Index].ProjectName := '1.08';
          2: NhRoomsConfig[Index].Name := 'Kitchen'; NhRoomsConfig[Index].ProjectName := '1.07';
@@ -76,9 +76,9 @@ FUNCTION NhApiInitialize : BOOL
          29: NhRoomsConfig[Index].Name := 'Garden'; NhRoomsConfig[Index].ProjectName := 'E.04';
          30: NhRoomsConfig[Index].Name := 'Sauna'; NhRoomsConfig[Index].ProjectName := '0.09';
       END_CASE;
-      NhRoomsState[Index].RoomId := USINT_TO_UDINT(Index);
-      NhRoomsState[Index].Temperature := 20.0 + USINT_TO_REAL(Index) * 0.1;
-      NhRoomsState[Index].Humidity := 40.0 + USINT_TO_REAL(Index MOD 15);
+      NhRoomsState[Index].RoomId := UINT_TO_UDINT(Index);
+      NhRoomsState[Index].Temperature := 20.0 + UINT_TO_REAL(Index) * 0.1;
+      NhRoomsState[Index].Humidity := 40.0 + UINT_TO_REAL(Index MOD 15);
       NhRoomsState[Index].Presence := (Index MOD 4) = 0;
       CASE Index MOD 4 OF
          0: NhRoomsState[Index].DayPhase := 140;
@@ -86,7 +86,7 @@ FUNCTION NhApiInitialize : BOOL
          2: NhRoomsState[Index].DayPhase := 144;
          3: NhRoomsState[Index].DayPhase := 146;
       END_CASE;
-      NhRoomsState[Index].CategoryMask := USINT_TO_DWORD(Index MOD 8);
+      NhRoomsState[Index].CategoryMask := UINT_TO_DWORD(Index MOD 8);
       NhRoomsState[Index].AlarmLevel := 0;
       NhRoomsState[Index].Online := (Index MOD 3) <> 0;
       NhRoomsState[Index].Twilight := (Index MOD 3) <> 1;
@@ -95,6 +95,23 @@ FUNCTION NhApiInitialize : BOOL
    FOR Index := 1 TO NH_API_MAX_ROOMS DO
       NhConfigShadow[Index] := NhRoomsConfig[Index];
       NhStateShadow[Index] := NhRoomsState[Index];
+   END_FOR;
+
+   // Deterministic compact LOAD_800 device model. SK: Deterministicky kompaktny model 800 zariadeni.
+   FOR Index := 1 TO NH_LOAD_DEVICE_COUNT DO
+      IF Index <= 300 THEN
+         NhLoadDevices[Index] := 16#01000064; // light, level 100
+      ELSIF Index <= 420 THEN
+         NhLoadDevices[Index] := 16#02000064; // roller, position 100
+      ELSIF Index <= 520 THEN
+         NhLoadDevices[Index] := 16#030000D2; // heating, 21.0 C
+      ELSIF Index <= 600 THEN
+         NhLoadDevices[Index] := 16#040000DC; // climate, 22.0 C
+      ELSIF Index <= 640 THEN
+         NhLoadDevices[Index] := 16#05000001; // water, enabled
+      ELSE
+         NhLoadDevices[Index] := 16#06000000 OR UINT_TO_DWORD(Index MOD 256); // sensor control group
+      END_IF;
    END_FOR;
 
    NhApiInfo.ApiVersion := NH_API_VERSION;
@@ -115,6 +132,10 @@ FUNCTION NhApiInitialize : BOOL
    NhApiTest.Finished := FALSE;
    NhApiTest.Action := NH_API_TEST_NONE;
    NhApiTest.ResultCode := NH_API_RESULT_NONE;
+   NhLoadTest.DepartureActive := FALSE;
+   NhLoadTest.LastChangedCount := 0;
+   NhLoadTest.LastApplyMs := 0;
+   NhLoadTest.Sequence := 0;
    NhApiInitialized := TRUE;
    NhApiInitialize := TRUE;
 END_FUNCTION
@@ -208,7 +229,7 @@ FUNCTION NhApiApplyAdd : USINT
       Record : NH_ROOM_CONFIG; // New room configuration. SK: Konfiguracia novej miestnosti.
    END_VAR
    VAR
-      Slot : USINT; // Free internal room slot. SK: Volny interny room slot.
+      Slot : UINT; // Free internal room slot. SK: Volny interny room slot.
    END_VAR
    IF (Record.RoomId = 0) OR (LEN(Record.Name) = 0) THEN NhApiApplyAdd := NH_API_RESULT_INVALID; RETURN; END_IF;
    IF NhApiFindRoom(RoomId := Record.RoomId) <> 0 THEN NhApiApplyAdd := NH_API_RESULT_ALREADY_EXISTS; RETURN; END_IF;
@@ -217,7 +238,7 @@ FUNCTION NhApiApplyAdd : USINT
    NhRoomsConfig[Slot] := Record;
    NhRoomsConfig[Slot].Used := TRUE;
    IF NhRoomsConfig[Slot].IconId = 0 THEN NhRoomsConfig[Slot].IconId := 16; END_IF;
-   IF NhRoomsConfig[Slot].SortDefault = 0 THEN NhRoomsConfig[Slot].SortDefault := USINT_TO_UINT(Slot); END_IF;
+   IF NhRoomsConfig[Slot].SortDefault = 0 THEN NhRoomsConfig[Slot].SortDefault := Slot; END_IF;
    NhRoomsState[Slot].RoomId := Record.RoomId;
    NhRoomsState[Slot].Temperature := 20.0;
    NhRoomsState[Slot].Humidity := 40.0;
@@ -236,7 +257,7 @@ FUNCTION NhApiApplyDelete : USINT
       RoomId : UDINT; // ID of the room to delete. SK: ID mazanej miestnosti.
    END_VAR
    VAR
-      Slot : USINT;   // Located internal slot. SK: Najdeny interny slot.
+      Slot : UINT;   // Located internal slot. SK: Najdeny interny slot.
    END_VAR
    Slot := NhApiFindRoom(RoomId := RoomId);
    IF Slot = 0 THEN NhApiApplyDelete := NH_API_RESULT_NOT_FOUND; RETURN; END_IF;
@@ -250,7 +271,7 @@ FUNCTION NhApiApplyConfig : USINT
       Record : NH_ROOM_CONFIG; // Complete new configuration. SK: Uplna nova konfiguracia.
    END_VAR
    VAR
-      Slot : USINT;            // Located internal slot. SK: Najdeny interny slot.
+      Slot : UINT;            // Located internal slot. SK: Najdeny interny slot.
    END_VAR
    Slot := NhApiFindRoom(RoomId := Record.RoomId);
    IF Slot = 0 THEN NhApiApplyConfig := NH_API_RESULT_NOT_FOUND; RETURN; END_IF;
@@ -266,7 +287,7 @@ FUNCTION NhApiApplyState : USINT
       Record : NH_ROOM_STATE; // Complete new state. SK: Uplny novy stav.
    END_VAR
    VAR
-      Slot : USINT;           // Located internal slot. SK: Najdeny interny slot.
+      Slot : UINT;           // Located internal slot. SK: Najdeny interny slot.
    END_VAR
    Slot := NhApiFindRoom(RoomId := Record.RoomId);
    IF Slot = 0 THEN NhApiApplyState := NH_API_RESULT_NOT_FOUND; RETURN; END_IF;
@@ -286,8 +307,8 @@ FUNCTION NhApiApplyCopy : USINT
       Target       : NH_ROOM_CONFIG;// Target ID and optional replacements. SK: Cielove ID a volitelne nahrady.
    END_VAR
    VAR
-      SourceSlot : USINT; // Source internal slot. SK: Zdrojovy interny slot.
-      TargetSlot : USINT; // Target free slot. SK: Cielovy volny slot.
+      SourceSlot : UINT; // Source internal slot. SK: Zdrojovy interny slot.
+      TargetSlot : UINT; // Target free slot. SK: Cielovy volny slot.
    END_VAR
    SourceSlot := NhApiFindRoom(RoomId := SourceRoomId);
    IF SourceSlot = 0 THEN NhApiApplyCopy := NH_API_RESULT_NOT_FOUND; RETURN; END_IF;
@@ -297,7 +318,7 @@ FUNCTION NhApiApplyCopy : USINT
    IF TargetSlot = 0 THEN NhApiApplyCopy := NH_API_RESULT_NO_FREE_SLOT; RETURN; END_IF;
    NhRoomsConfig[TargetSlot] := NhRoomsConfig[SourceSlot];
    NhRoomsConfig[TargetSlot].RoomId := Target.RoomId;
-   NhRoomsConfig[TargetSlot].SortDefault := USINT_TO_UINT(TargetSlot);
+   NhRoomsConfig[TargetSlot].SortDefault := TargetSlot;
    IF LEN(Target.Name) > 0 THEN NhRoomsConfig[TargetSlot].Name := Target.Name; END_IF;
    IF LEN(Target.ProjectName) > 0 THEN NhRoomsConfig[TargetSlot].ProjectName := Target.ProjectName; END_IF;
    IF Target.IconId > 0 THEN NhRoomsConfig[TargetSlot].IconId := Target.IconId; END_IF;
@@ -309,7 +330,7 @@ END_FUNCTION
 FUNCTION NhApiCaptureConfigChanges : BOOL
    // Freezes all unpublished configuration changes. SK: Zmrazi vsetky nepublikovane zmeny konfiguracie.
    VAR
-      Index : USINT; // Scanned room slot. SK: Prehladavany room slot.
+      Index : UINT; // Scanned room slot. SK: Prehladavany room slot.
    END_VAR
    NhPendingConfigCount := 0;
    FOR Index := 1 TO NH_API_MAX_ROOMS DO
@@ -338,7 +359,7 @@ END_FUNCTION
 FUNCTION NhApiCaptureStateChanges : BOOL
    // Freezes all unpublished dynamic-state changes. SK: Zmrazi vsetky nepublikovane zmeny dynamickeho stavu.
    VAR
-      Index : USINT; // Scanned room slot. SK: Prehladavany room slot.
+      Index : UINT; // Scanned room slot. SK: Prehladavany room slot.
    END_VAR
    NhPendingStateCount := 0;
    FOR Index := 1 TO NH_API_MAX_ROOMS DO
@@ -378,7 +399,7 @@ END_FUNCTION
 FUNCTION NhApiStartSnapshot : BOOL
    // Freezes the authoritative room image for a complete snapshot. SK: Zmrazi autoritativny obraz miestnosti pre kompletny snapshot.
    VAR
-      Index : USINT; // Scanned source room slot. SK: Prehladavany zdrojovy room slot.
+      Index : UINT; // Scanned source room slot. SK: Prehladavany zdrojovy room slot.
    END_VAR
    NhSnapshotCount := 0;
    FOR Index := 1 TO NH_API_MAX_ROOMS DO
@@ -701,7 +722,9 @@ END_FUNCTION
 FUNCTION NhApiProcessTest : BOOL
    // Applies one WebMaker/debug test action when the global API is free. SK: Vykona jednu WebMaker/debug testovaciu akciu, ked je globalne API volne.
    VAR
-      Slot         : USINT;          // Located room slot. SK: Najdeny room slot.
+      Slot         : UINT;           // Located room slot. SK: Najdeny room slot.
+      Index        : UINT;           // LOAD_800 model device index. SK: Index modeloveho zariadenia LOAD_800.
+      StartMs      : UDINT;          // Scene application start time. SK: Cas zaciatku vykonania sceny.
       ConfigRecord : NH_ROOM_CONFIG; // Constructed config record. SK: Zostaveny config zaznam.
       StateRecord  : NH_ROOM_STATE;  // Constructed state record. SK: Zostaveny state zaznam.
    END_VAR
@@ -716,6 +739,40 @@ FUNCTION NhApiProcessTest : BOOL
       NhTransactionMode := NH_API_MODE_BROADCAST_SNAPSHOT;
       NhCommandResult := NH_API_RESULT_OK;
       NhApiPublishNextBroadcastFrame();
+   ELSIF NhApiTest.Action = NH_API_TEST_AWAY THEN
+      StartMs := NhApiSystemTimeMs();
+      FOR Index := 1 TO 640 DO
+         IF NhApiTest.Presence THEN
+            IF Index <= 300 THEN
+               NhLoadDevices[Index] := 16#01000000;
+            ELSIF Index <= 420 THEN
+               NhLoadDevices[Index] := 16#02000000;
+            ELSIF Index <= 520 THEN
+               NhLoadDevices[Index] := 16#030000AA;
+            ELSIF Index <= 600 THEN
+               NhLoadDevices[Index] := 16#040000B4;
+            ELSE
+               NhLoadDevices[Index] := 16#05000000;
+            END_IF;
+         ELSE
+            IF Index <= 300 THEN
+               NhLoadDevices[Index] := 16#01000064;
+            ELSIF Index <= 420 THEN
+               NhLoadDevices[Index] := 16#02000064;
+            ELSIF Index <= 520 THEN
+               NhLoadDevices[Index] := 16#030000D2;
+            ELSIF Index <= 600 THEN
+               NhLoadDevices[Index] := 16#040000DC;
+            ELSE
+               NhLoadDevices[Index] := 16#05000001;
+            END_IF;
+         END_IF;
+      END_FOR;
+      NhLoadTest.DepartureActive := NhApiTest.Presence;
+      NhLoadTest.LastChangedCount := 640;
+      NhLoadTest.LastApplyMs := NhApiSystemTimeMs() - StartMs;
+      NhLoadTest.Sequence := NhLoadTest.Sequence + 1;
+      NhCommandResult := NH_API_RESULT_OK;
    ELSIF NhApiTest.Action = NH_API_TEST_DELETE_ROOM THEN
       NhCommandResult := NhApiApplyDelete(RoomId := NhApiTest.RoomId);
    ELSIF NhApiTest.Action = NH_API_TEST_SET_STATE THEN

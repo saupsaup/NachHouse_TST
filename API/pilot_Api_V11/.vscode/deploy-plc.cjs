@@ -31,7 +31,7 @@ function windows(exe, args, credentials = false) {
   }
   ps += '& ' + psQuote(bin + '\\' + exe) + ' ' + args.map(psQuote).join(' ') + '; exit $LASTEXITCODE';
   const encoded = Buffer.from(ps, 'utf16le').toString('base64');
-  const r = spawnSync('prlctl', ['exec', vm, '--current-user', 'cmd', '/c', 'powershell.exe -NoProfile -EncodedCommand ' + encoded], {encoding:'utf8', timeout:120000, maxBuffer:8*1024*1024});
+  const r = spawnSync('prlctl', ['exec', vm, 'cmd', '/c', 'powershell.exe -NoProfile -EncodedCommand ' + encoded], {encoding:'utf8', timeout:120000, maxBuffer:8*1024*1024});
   if (r.error) throw r.error;
   const output = (r.stdout || '') + (r.stderr || '');
   console.log(output.trim());

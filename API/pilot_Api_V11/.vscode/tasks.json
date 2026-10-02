@@ -39,6 +39,16 @@
 			"problemMatcher": []
 		},
 		{
+			"label": "PLC: Run LOAD 800 tests",
+			"type": "process",
+			"command": "node",
+			"args": ["${workspaceFolder}/.vscode/load-800-test.cjs"],
+			"options": {"cwd": "${workspaceFolder}"},
+			"problemMatcher": [],
+			"presentation": {"reveal": "always", "panel": "dedicated", "clear": true},
+			"runOptions": {"instanceLimit": 1}
+		},
+		{
 			"label": "Map N:",
 			"type": "shell",
 			"command": "prlctl",

@@ -2,7 +2,7 @@ VAR_GLOBAL
    // Test PLC deployment only. Upload and verify this file before requesting activation.
    NhDeployRequest {PUBLIC_API} : BOOL := FALSE;
    NhDeployResult  {PUBLIC_API} : USINT := 0; // 0=none, 1=call returned TRUE, 2=API busy, 3=call returned FALSE (not final outcome)
-   NhDeployBuild   {PUBLIC_API} : UDINT := 2026100219;
+   NhDeployBuild   {PUBLIC_API} : UDINT := 2026100221;
 END_VAR
 
 PROGRAM prgMain
