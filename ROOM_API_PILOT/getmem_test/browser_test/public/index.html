@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GETMEM test</title>
+  <style>
+    :root { color-scheme: light dark; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    body { max-width: 760px; margin: 40px auto; padding: 0 20px; line-height: 1.45; }
+    button { padding: 10px 16px; font: inherit; cursor: pointer; }
+    table { border-collapse: collapse; margin: 20px 0; width: 100%; }
+    th, td { border-bottom: 1px solid #8886; padding: 7px; text-align: left; }
+    th { width: 45%; font-weight: normal; opacity: .72; }
+    pre { padding: 14px; overflow: auto; background: #8882; }
+    .ok { color: #159447; }
+    .error { color: #d33b32; }
+  </style>
+</head>
+<body>
+  <h1>GETMEM – browser test</h1>
+  <p>WSS revision signal + pevné read-only čítanie <code>GETMEM:%R1000 1000</code>.</p>
+
+  <h2>1. Revision signal</h2>
+  <button id="connectButton" type="button">Pripojiť WSS</button>
+  <span id="wsStatus">Odpojené.</span>
+
+  <table>
+    <tbody>
+      <tr><th>WSS</th><td><code>wss://192.168.33.200:5030/</code></td></tr>
+      <tr><th>Subprotokol</th><td id="wsProtocol">–</td></tr>
+      <tr><th>GetMemRevision</th><td id="signalRevision">–</td></tr>
+      <tr><th>Posledný revision event</th><td id="signalEvent">–</td></tr>
+    </tbody>
+  </table>
+
+  <h2>2. Binárne dáta</h2>
+  <button id="readButton" type="button">Načítať GETMEM ručne</button>
+  <span id="status">Pripravené.</span>
+
+  <table>
+    <tbody>
+      <tr><th>Prijatých bajtov</th><td id="byteLength">–</td></tr>
+      <tr><th>Signature</th><td id="signature">–</td></tr>
+      <tr><th>FormatVersion</th><td id="formatVersion">–</td></tr>
+      <tr><th>HeaderSize</th><td id="headerSize">–</td></tr>
+      <tr><th>PayloadLength</th><td id="payloadLength">–</td></tr>
+      <tr><th>Revision</th><td id="revision">–</td></tr>
+      <tr><th>Seed</th><td id="seed">–</td></tr>
+      <tr><th>Spúšťač čítania</th><td id="triggerSource">–</td></tr>
+      <tr><th>Kontrola rámca</th><td id="validation">–</td></tr>
+      <tr><th>Čas požiadavky</th><td id="duration">–</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Prvých 64 bajtov</h2>
+  <pre id="hexDump">–</pre>
+
+  <script>
+    "use strict";
+
+    const WSS_URL = "wss://192.168.33.200:5030/";
+    const REVISION_SYMBOL = "GETMEMREVISION";
+    let revisionSocket = null;
+    let observedRevision = null;
+    let readActive = false;
+    let queuedRead = null;
+
+    const fields = Object.fromEntries(
+      ["byteLength", "signature", "formatVersion", "headerSize", "payloadLength",
+       "revision", "seed", "triggerSource", "validation", "duration", "hexDump",
+       "status", "readButton", "connectButton", "wsStatus", "wsProtocol",
+       "signalRevision", "signalEvent"]
+        .map((id) => [id, document.getElementById(id)])
+    );
+
+    function ascii(bytes, start, length) {
+      return String.fromCharCode(...bytes.subarray(start, start + length));
+    }
+
+    function hex(bytes, length) {
+      return Array.from(bytes.subarray(0, length), (value, index) => {
+        const separator = index > 0 && index % 16 === 0 ? "\n" : " ";
+        return `${separator}${value.toString(16).padStart(2, "0")}`;
+      }).join("").trim();
+    }
+
+    function validateFrame(bytes, headerSize, payloadLength, seed) {
+      const errors = [];
+      if (bytes.length !== 1000) errors.push("dĺžka nie je 1000 B");
+      if (ascii(bytes, 0, 4) !== "GMEM") errors.push("chybné signature");
+      if (bytes[4] !== 1) errors.push("neznámy formát");
+      if (headerSize !== 16) errors.push("header nemá 16 B");
+      if (headerSize + payloadLength !== bytes.length) errors.push("nesedí payload length");
+
+      for (let index = headerSize; index < bytes.length; index += 1) {
+        if (bytes[index] !== ((index & 0xff) ^ seed)) {
+          errors.push(`chybný payload na offsete ${index}`);
+          break;
+        }
+      }
+      return errors;
+    }
+
+    function setWsStatus(text, className = "") {
+      fields.wsStatus.textContent = ` ${text}`;
+      fields.wsStatus.className = className;
+    }
+
+    function entryValue(entry) {
+      if (entry && typeof entry === "object" && "val" in entry) return entry.val;
+      return entry;
+    }
+
+    function handleRevision(entry, source) {
+      const revision = Number(entryValue(entry));
+      if (!Number.isInteger(revision) || revision < 0) return;
+
+      const previous = observedRevision;
+      observedRevision = revision;
+      fields.signalRevision.textContent = revision;
+      fields.signalEvent.textContent = source;
+
+      if (previous === null || revision !== previous) {
+        queueGetMem(revision, source);
+      }
+    }
+
+    function connectRevisionSocket() {
+      if (revisionSocket &&
+          (revisionSocket.readyState === WebSocket.OPEN ||
+           revisionSocket.readyState === WebSocket.CONNECTING)) {
+        revisionSocket.close(1000, "Manual disconnect");
+        return;
+      }
+
+      setWsStatus("Pripájam…");
+      fields.connectButton.textContent = "Odpojiť WSS";
+      revisionSocket = new WebSocket(WSS_URL, "raw");
+
+      revisionSocket.addEventListener("open", () => {
+        fields.wsProtocol.textContent = revisionSocket.protocol || "–";
+        setWsStatus("Pripojené.", "ok");
+        revisionSocket.send(JSON.stringify({
+          cmd: "get",
+          data: [REVISION_SYMBOL],
+        }));
+      });
+
+      revisionSocket.addEventListener("message", (event) => {
+        let packet;
+        try {
+          packet = JSON.parse(event.data);
+        } catch {
+          return;
+        }
+
+        if (packet.get && packet.get[REVISION_SYMBOL]) {
+          handleRevision(packet.get[REVISION_SYMBOL], "GET snapshot");
+        }
+        if (packet.diff && packet.diff[REVISION_SYMBOL]) {
+          handleRevision(packet.diff[REVISION_SYMBOL], "WSS diff");
+        }
+      });
+
+      revisionSocket.addEventListener("error", () => {
+        setWsStatus("Chyba WSS alebo certifikátu.", "error");
+      });
+
+      revisionSocket.addEventListener("close", () => {
+        fields.connectButton.textContent = "Pripojiť WSS";
+        if (!fields.wsStatus.classList.contains("error")) {
+          setWsStatus("Odpojené.");
+        }
+      });
+    }
+
+    function queueGetMem(expectedRevision, source) {
+      if (readActive) {
+        queuedRead = { expectedRevision, source };
+        return;
+      }
+      void readGetMem(expectedRevision, source);
+    }
+
+    async function readGetMem(expectedRevision, source) {
+      readActive = true;
+      fields.readButton.disabled = true;
+      fields.status.className = "";
+      fields.status.textContent = ` Čítam (${source})…`;
+      const started = performance.now();
+
+      try {
+        const response = await fetch("/api/getmem", { cache: "no-store" });
+        if (!response.ok) {
+          const problem = await response.json().catch(() => ({ error: response.statusText }));
+          throw new Error(problem.error || `HTTP ${response.status}`);
+        }
+
+        const bytes = new Uint8Array(await response.arrayBuffer());
+        const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+        const signature = ascii(bytes, 0, 4);
+        const formatVersion = bytes[4];
+        const headerSize = bytes[5];
+        const payloadLength = view.getUint16(6, true);
+        const revision = view.getUint32(8, true);
+        const seed = bytes[12];
+        const errors = validateFrame(bytes, headerSize, payloadLength, seed);
+        if (expectedRevision !== null && revision !== expectedRevision) {
+          errors.push(`revision mismatch: WSS ${expectedRevision}, buffer ${revision}`);
+        }
+
+        fields.byteLength.textContent = bytes.length;
+        fields.signature.textContent = signature;
+        fields.formatVersion.textContent = formatVersion;
+        fields.headerSize.textContent = headerSize;
+        fields.payloadLength.textContent = payloadLength;
+        fields.revision.textContent = revision;
+        fields.seed.textContent = seed;
+        fields.triggerSource.textContent = source;
+        fields.validation.textContent = errors.length ? errors.join(", ") : "OK";
+        fields.validation.className = errors.length ? "error" : "ok";
+        fields.duration.textContent = `${(performance.now() - started).toFixed(1)} ms`;
+        fields.hexDump.textContent = hex(bytes, 64);
+        fields.status.textContent = errors.length ? " Rámec obsahuje chybu." : " Hotovo.";
+        fields.status.className = errors.length ? "error" : "ok";
+      } catch (error) {
+        fields.status.textContent = ` Chyba: ${error.message}`;
+        fields.status.className = "error";
+      } finally {
+        readActive = false;
+        fields.readButton.disabled = false;
+        if (queuedRead) {
+          const next = queuedRead;
+          queuedRead = null;
+          queueMicrotask(() => queueGetMem(next.expectedRevision, next.source));
+        }
+      }
+    }
+
+    fields.connectButton.addEventListener("click", connectRevisionSocket);
+    fields.readButton.addEventListener("click", () => queueGetMem(null, "manuálne"));
+    connectRevisionSocket();
+  </script>
+</body>
+</html>

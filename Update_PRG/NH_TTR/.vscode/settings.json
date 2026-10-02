@@ -1,0 +1,14 @@
+{
+	// ============================================================
+	// ⚙️ MOSAIC / VM – verzia V200
+	// ============================================================
+//	"mosaic.plcHost": "192.168.33.200:61682",
+//	"mosaic.vmName": "ae0a527c-1a74-4e39-9845-1622f6a3c782",
+//	"mosaic.shareRoot": "\\\\Mac\\NachHouse",
+//	"mosaic.mosaicBin": "C:\\Program Files (x86)\\Teco\\Mosaic 2025.1\\Application\\",
+
+		"mosaic.makPathWin": "N:\\TST\\Update_PRG\\NH_TTR\\NH_TTR.mak",
+		"mosaic.projectDir": "N:\\TST\\Update_PRG\\NH_TTR", 
+
+
+}

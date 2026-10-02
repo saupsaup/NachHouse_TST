@@ -1,10 +1,23 @@
 <?xml version="1.0" encoding="windows-1250" ?>
-<web version="8.1" propfont="true" foot="© 2026" dwMode="1" flat="true" autosel="true" MaxUid="12883">
+<web version="8.1" propfont="true" foot="© 2026" dwMode="1" flat="true" autosel="true" MaxUid="12887">
 	<panels></panels>
 	<Grid Enable="1" X="5" Y="5" />
 	<globalset newdim="1" noxslt="1" />
 	<group caption="" Uid="12881">
-		<page caption="Index" name="PAGE1.XML" ajax="true" pause="1000" default="true" Uid="12882" ucid="0" width="0" height="0"></page>
+		<page caption="Index" name="PAGE1.XML" ajax="true" pause="1000" default="true" Uid="12882" ucid="1787814458" width="470" height="220">
+			<object caption="" X="21" Y="18" xoff="0" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="16" transparent="false" visneg="false" Uid="12883">
+				<edit variable="ApiConfig.Rooms[].Used" type="BOOL" intf="0" timf="" align="left" zero="false" prec="-1" size="1" global="true" border="true" width="20" height="25" tabindex="1" />
+			</object>
+			<object caption="" X="21" Y="22" xoff="0" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="16" transparent="false" visneg="false" Uid="12884">
+				<edit variable="ApiConfig.Rooms[1].Name" type="STRING[64]" intf="0" timf="" align="left" zero="false" prec="-1" size="30" global="true" border="true" width="310" height="25" tabindex="2" />
+			</object>
+			<object caption="" X="24" Y="18" xoff="6" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="16" transparent="false" visneg="false" Uid="12885">
+				<edit variable="ApiConfig.Rooms[].RoomId" type="UDINT" intf="0" timf="" align="left" zero="false" prec="-1" size="10" global="true" border="true" width="110" height="25" tabindex="4" />
+			</object>
+			<object caption="" X="21" Y="25" xoff="0" yoff="3" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="16" transparent="false" visneg="false" Uid="12886">
+				<edit variable="ApiConfig.Rooms[1].Name" type="STRING[64]" intf="0" timf="" align="left" zero="false" prec="-1" size="30" global="true" border="true" width="310" height="25" tabindex="3" />
+			</object>
+		</page>
 	</group>
 	<images></images>
 	<Languages>

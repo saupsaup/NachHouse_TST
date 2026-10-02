@@ -1,36 +1,46 @@
 (*
-   Všetky objekty vidite¾né klientom sú globálne a oznaèené atribútom PUBLIC_API.
-   Klient musí najprv zapísa celı obsah poiadavky a príznak Execute a ako poslednı.
-   Snapshoty ApiConfig a ApiState sú pod¾a kontraktu urèené iba na èítanie.
-   Názvy verejnıch objektov tvoria stabilnı anglickı API kontrakt. ENG
+   Vï¿½etky objekty viditeï¿½nï¿½ klientom sï¿½ globï¿½lne a oznaï¿½enï¿½ atribï¿½tom PUBLIC_API.
+   Klient musï¿½ najprv zapï¿½saï¿½ celï¿½ obsah poï¿½iadavky a prï¿½znak Execute aï¿½ ako poslednï¿½.
+   Snapshoty ApiConfig a ApiState sï¿½ podï¿½a kontraktu urï¿½enï¿½ iba na ï¿½ï¿½tanie.
+   Nï¿½zvy verejnï¿½ch objektov tvoria stabilnï¿½ anglickï¿½ API kontrakt. ENG
 *)
 
 VAR_GLOBAL
-    ApiInfo       {PUBLIC_API} : T_API_INFO;   (* Informácie o verzii, revíziách, limite a poslednom príkaze. ENG *)
-    ApiConfig     {PUBLIC_API} : T_API_CONFIG; (* Úplnı konfiguraènı snapshot urèenı klientovi iba na èítanie. ENG *)
-    ApiState      {PUBLIC_API} : T_API_STATE;  (* Úplnı stavovı snapshot urèenı klientovi iba na èítanie. ENG *)
+    ApiInfo       {PUBLIC_API} : T_API_INFO;   (* Informï¿½cie o verzii, revï¿½ziï¿½ch, limite a poslednom prï¿½kaze. ENG *)
+    ApiConfig     {PUBLIC_API} : T_API_CONFIG; (* ï¿½plnï¿½ konfiguraï¿½nï¿½ snapshot urï¿½enï¿½ klientovi iba na ï¿½ï¿½tanie. ENG *)
+    ApiState      {PUBLIC_API} : T_API_STATE;  (* ï¿½plnï¿½ stavovï¿½ snapshot urï¿½enï¿½ klientovi iba na ï¿½ï¿½tanie. ENG *)
 
-    ApiConfigDiff {PUBLIC_API} : T_API_CONFIG_DIFF; (* Najnovší vytvorenı rámec zmien konfigurácie. ENG *)
-    ApiStateDiff  {PUBLIC_API} : T_API_STATE_DIFF;  (* Najnovší vytvorenı rámec zmien stavu. ENG *)
+    ApiConfigDiff {PUBLIC_API} : T_API_CONFIG_DIFF; (* Najnovï¿½ï¿½ vytvorenï¿½ rï¿½mec zmien konfigurï¿½cie. ENG *)
+    ApiStateDiff  {PUBLIC_API} : T_API_STATE_DIFF;  (* Najnovï¿½ï¿½ vytvorenï¿½ rï¿½mec zmien stavu. ENG *)
 
-    (* Dvojfázovı kanál príkazov miestnosti: payload, Execute, spracovanie, Finished. ENG *)
-    ApiCommandRoom     {PUBLIC_API} : T_API_COMMAND_ROOM;  (* Obsah poiadavky zapisovanı klientom. ENG *)
-    ApiCommandExecute  {PUBLIC_API} : BOOL;                (* Spúšací príznak; klient ho zapisuje ako poslednı. ENG *)
-    ApiCommandBusy     {PUBLIC_API} : BOOL;                (* TRUE poèas spracovania príkazu v PLC. ENG *)
-    ApiCommandFinished {PUBLIC_API} : BOOL;                (* TRUE po dokonèení; klient môe preèíta vısledok. ENG *)
-    ApiCommandResult   {PUBLIC_API} : T_API_COMMAND_RESULT; (* Vısledok práve dokonèeného alebo zopakovaného príkazu. ENG *)
+    (* Dvojfï¿½zovï¿½ kanï¿½l prï¿½kazov miestnosti: payload, Execute, spracovanie, Finished. ENG *)
+    ApiCommandRoom     {PUBLIC_API} : T_API_COMMAND_ROOM;  (* Obsah poï¿½iadavky zapisovanï¿½ klientom. ENG *)
+    ApiCommandExecute  {PUBLIC_API} : BOOL;                (* Spï¿½ï¿½ï¿½acï¿½ prï¿½znak; klient ho zapisuje ako poslednï¿½. ENG *)
+    ApiCommandBusy     {PUBLIC_API} : BOOL;                (* TRUE poï¿½as spracovania prï¿½kazu v PLC. ENG *)
+    ApiCommandFinished {PUBLIC_API} : BOOL;                (* TRUE po dokonï¿½enï¿½; klient mï¿½ï¿½e preï¿½ï¿½taï¿½ vï¿½sledok. ENG *)
+    ApiCommandResult   {PUBLIC_API} : T_API_COMMAND_RESULT; (* Vï¿½sledok prï¿½ve dokonï¿½enï¿½ho alebo zopakovanï¿½ho prï¿½kazu. ENG *)
 
-    (* Dvojfázovı kanál obnovy cache a naèítania jedného nadväzujúceho diffu. ENG *)
-    ApiSyncRequest  {PUBLIC_API} : T_API_SYNC_REQUEST;  (* Revízie, od ktorıch chce klient pokraèova. ENG *)
-    ApiSyncExecute  {PUBLIC_API} : BOOL;                (* Spúšací príznak synchronizácie zapisovanı ako poslednı. ENG *)
-    ApiSyncBusy     {PUBLIC_API} : BOOL;                (* TRUE poèas prípravy synchronizaènej odpovede. ENG *)
-    ApiSyncFinished {PUBLIC_API} : BOOL;                (* TRUE po pripravení odpovede pre klienta. ENG *)
-    ApiSyncResponse {PUBLIC_API} : T_API_SYNC_RESPONSE; (* Vısledné reimy a najviac jeden diff kadej vetvy. ENG *)
+    (* Dvojfï¿½zovï¿½ kanï¿½l obnovy cache a naï¿½ï¿½tania jednï¿½ho nadvï¿½zujï¿½ceho diffu. ENG *)
+    ApiSyncRequest  {PUBLIC_API} : T_API_SYNC_REQUEST;  (* Revï¿½zie, od ktorï¿½ch chce klient pokraï¿½ovaï¿½. ENG *)
+    ApiSyncExecute  {PUBLIC_API} : BOOL;                (* Spï¿½ï¿½ï¿½acï¿½ prï¿½znak synchronizï¿½cie zapisovanï¿½ ako poslednï¿½. ENG *)
+    ApiSyncBusy     {PUBLIC_API} : BOOL;                (* TRUE poï¿½as prï¿½pravy synchronizaï¿½nej odpovede. ENG *)
+    ApiSyncFinished {PUBLIC_API} : BOOL;                (* TRUE po pripravenï¿½ odpovede pre klienta. ENG *)
+    ApiSyncResponse {PUBLIC_API} : T_API_SYNC_RESPONSE; (* Vï¿½slednï¿½ reï¿½imy a najviac jeden diff kaï¿½dej vetvy. ENG *)
 
-    (* Samostatnı kanál ruèného nastavovania pilotnıch stavov bez reálneho IO. *)
-    ApiTestStateRequest  {PUBLIC_API} : T_API_TEST_STATE_REQUEST; (* Testovacie stavové hodnoty zapisované klientom. ENG *)
-    ApiTestStateExecute  {PUBLIC_API} : BOOL;                     (* Spúšací príznak testovacieho zápisu. ENG *)
-    ApiTestStateBusy     {PUBLIC_API} : BOOL;                     (* TRUE poèas validácie a zápisu testovacieho stavu. ENG *)
-    ApiTestStateFinished {PUBLIC_API} : BOOL;                     (* TRUE po dokonèení testovacieho zápisu. ENG *)
-    ApiTestStateResult   {PUBLIC_API} : T_API_COMMAND_RESULT;     (* Vısledok posledného testovacieho zápisu. ENG *)
+    (* Samostatnï¿½ kanï¿½l ruï¿½nï¿½ho nastavovania pilotnï¿½ch stavov bez reï¿½lneho IO. *)
+    ApiTestStateRequest  {PUBLIC_API} : T_API_TEST_STATE_REQUEST; (* Testovacie stavovï¿½ hodnoty zapisovanï¿½ klientom. ENG *)
+    ApiTestStateExecute  {PUBLIC_API} : BOOL;                     (* Spï¿½ï¿½ï¿½acï¿½ prï¿½znak testovacieho zï¿½pisu. ENG *)
+    ApiTestStateBusy     {PUBLIC_API} : BOOL;                     (* TRUE poï¿½as validï¿½cie a zï¿½pisu testovacieho stavu. ENG *)
+    ApiTestStateFinished {PUBLIC_API} : BOOL;                     (* TRUE po dokonï¿½enï¿½ testovacieho zï¿½pisu. ENG *)
+    ApiTestStateResult   {PUBLIC_API} : T_API_COMMAND_RESULT;     (* Vï¿½sledok poslednï¿½ho testovacieho zï¿½pisu. ENG *)
+
+	ApiVarsPublic 	{PUBLIC_API} : ARRAY[0..999] OF DWORD; (* Jedina komunikacna oblast binarnychch Vars, ktoru naplna PLC zmenami*)
+	
+	SizeApiHeder 	: UDINT;	
+	SizeStructRoom	: UDINT;
+	SizeApiVars	: UDINT;
+	
+	Ptr_T_ROOM_STATE_Src    : PTR_TO T_ROOM_STATE;
+   Ptr_T_ROOM_STATE_Dest   : PTR_TO T_ROOM_STATE;
+
 END_VAR

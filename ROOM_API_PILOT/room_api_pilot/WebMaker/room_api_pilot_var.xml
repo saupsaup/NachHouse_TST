@@ -1,1 +1,3 @@
-<Variables></Variables>
+<Variables>
+	<Item Name="ApiConfig.Rooms[1].Name" Pos="03000194" Tdi="8F8933D8" Type="48" />
+</Variables>

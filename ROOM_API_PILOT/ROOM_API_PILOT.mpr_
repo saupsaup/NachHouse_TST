@@ -1,2 +1,3 @@
 [ProjectGroup]
 *room_api_pilot\room_api_pilot.plc
+getmem_test\getmem_test.plc

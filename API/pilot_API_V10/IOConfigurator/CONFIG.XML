@@ -1,0 +1,158 @@
+<TecoConfiguration xmlns="http://www.tecomat.com">
+  <Configuration version="2022.2" system="FOXTROT2">
+    <Device xmlns="http://www.tecomat.com" alias="Centrální jednotka" enabled="true" rack="0" position="0" expanded="true">
+      <Info>
+        <ProductCode>2000</ProductCode>
+        <ProductName>CP-2000</ProductName>
+        <VendorID>00000000</VendorID>
+        <DeviceGroup>CPU</DeviceGroup>
+        <Descriptor>2000_CP-2000.tdd</Descriptor>
+      </Info>
+      <Mount>11NDNN</Mount>
+      <Objects xmlns="http://www.tecomat.com">
+        <Data/>
+        <Aliases/>
+        <Notes/>
+        <Tags xmlns="http://www.tecomat.com"/>
+      </Objects>
+      <SerialChannels>
+        <Channel xmlns="http://www.tecomat.com" Mode="RF2" Alias="Kanál rozhraní RFox2" enabled="true" Ports="0x89" Name="COM1" LAddr="0101" SysMap="CH1" SysMapCode="0101" SysMapObject="RFox2.IntfID[0]" Mount="?????A" Port="0x89">
+          <Info>
+            <Descriptor>RF2_SC.tdd</Descriptor>
+          </Info>
+          <Objects xmlns="http://www.tecomat.com">
+            <Data/>
+            <Aliases/>
+            <Notes/>
+            <Tags/>
+          </Objects>
+          <Interfaces/>
+          <Editor/>
+        </Channel>
+      </SerialChannels>
+      <Ethernets>
+        <Ethernet Name="ETH_INTF1" SysMap="ETH1" SysMapCode="E1" SysMapObject="Ethernets.IntfID[0]" Icon="eth_interface" excluded="false">
+          <Channel Options="UNI" Ports="-1" Name="SOCK0" SysMap="UNI0" SysMapCode="07" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK1" SysMap="UNI1" SysMapCode="17" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK2" SysMap="UNI2" SysMapCode="27" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK3" SysMap="UNI3" SysMapCode="37" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK4" SysMap="UNI4" SysMapCode="47" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK5" SysMap="UNI5" SysMapCode="57" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK6" SysMap="UNI6" SysMapCode="67" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK7" SysMap="UNI7" SysMapCode="77" excluded="false"/>
+          <Channel Options="PLC" Ports="-1" Name="SOCK8" SysMap="PLC0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLD" Ports="-1" Name="SOCK9" SysMap="PLD0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLCx" Ports="-1" Name="SOCK10" SysMap="PLCx0" SysMapCode="06" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK11" SysMap="HMI0" SysMapCode="00" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK12" SysMap="HMI1" SysMapCode="10" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK13" SysMap="HMI2" SysMapCode="20" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK14" SysMap="HMI3" SysMapCode="30" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK15" SysMap="HMI4" SysMapCode="40" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK16" SysMap="HMI5" SysMapCode="50" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK17" SysMap="HMI6" SysMapCode="60" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK18" SysMap="HMI7" SysMapCode="70" excluded="false"/>
+        </Ethernet>
+        <Ethernet Name="ETH_INTF2" SysMap="ETH2" SysMapCode="E2" SysMapObject="Ethernets.IntfID[1]" Icon="eth_interface" excluded="false">
+          <Channel Options="UNI" Ports="-1" Name="SOCK0" SysMap="UNI0" SysMapCode="07" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK1" SysMap="UNI1" SysMapCode="17" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK2" SysMap="UNI2" SysMapCode="27" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK3" SysMap="UNI3" SysMapCode="37" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK4" SysMap="UNI4" SysMapCode="47" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK5" SysMap="UNI5" SysMapCode="57" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK6" SysMap="UNI6" SysMapCode="67" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK7" SysMap="UNI7" SysMapCode="77" excluded="false"/>
+          <Channel Options="PLC" Ports="-1" Name="SOCK8" SysMap="PLC0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLD" Ports="-1" Name="SOCK9" SysMap="PLD0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLCx" Ports="-1" Name="SOCK10" SysMap="PLCx0" SysMapCode="06" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK11" SysMap="HMI0" SysMapCode="00" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK12" SysMap="HMI1" SysMapCode="10" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK13" SysMap="HMI2" SysMapCode="20" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK14" SysMap="HMI3" SysMapCode="30" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK15" SysMap="HMI4" SysMapCode="40" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK16" SysMap="HMI5" SysMapCode="50" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK17" SysMap="HMI6" SysMapCode="60" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK18" SysMap="HMI7" SysMapCode="70" excluded="false"/>
+        </Ethernet>
+        <Ethernet Name="ETH_INTF3" SysMap="WLAN1" SysMapCode="E8" SysMapObject="Wifi.IntfID[0]" Mount="??W???" Icon="wifi_interface" excluded="false">
+          <Channel Options="UNI" Ports="-1" Name="SOCK0" SysMap="UNI0" SysMapCode="07" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK1" SysMap="UNI1" SysMapCode="17" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK2" SysMap="UNI2" SysMapCode="27" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK3" SysMap="UNI3" SysMapCode="37" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK4" SysMap="UNI4" SysMapCode="47" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK5" SysMap="UNI5" SysMapCode="57" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK6" SysMap="UNI6" SysMapCode="67" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK7" SysMap="UNI7" SysMapCode="77" excluded="false"/>
+          <Channel Options="PLC" Ports="-1" Name="SOCK8" SysMap="PLC0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLD" Ports="-1" Name="SOCK9" SysMap="PLD0" SysMapCode="06" excluded="false"/>
+          <Channel Options="PLCx" Ports="-1" Name="SOCK10" SysMap="PLCx0" SysMapCode="06" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK11" SysMap="HMI0" SysMapCode="00" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK12" SysMap="HMI1" SysMapCode="10" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK13" SysMap="HMI2" SysMapCode="20" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK14" SysMap="HMI3" SysMapCode="30" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK15" SysMap="HMI4" SysMapCode="40" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK16" SysMap="HMI5" SysMapCode="50" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK17" SysMap="HMI6" SysMapCode="60" excluded="false"/>
+          <Channel Options="HMI" Ports="-1" Name="SOCK18" SysMap="HMI7" SysMapCode="70" excluded="false"/>
+        </Ethernet>
+        <Ethernet Name="ETH_INTF4" SysMap="LTE1" SysMapCode="EA" SysMapObject="LTE.IntfID[0]" Mount="????L?" Icon="lte_interface" excluded="false">
+          <Channel Options="UNI" Ports="-1" Name="SOCK0" SysMap="UNI0" SysMapCode="07" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK1" SysMap="UNI1" SysMapCode="17" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK2" SysMap="UNI2" SysMapCode="27" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK3" SysMap="UNI3" SysMapCode="37" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK4" SysMap="UNI4" SysMapCode="47" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK5" SysMap="UNI5" SysMapCode="57" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK6" SysMap="UNI6" SysMapCode="67" excluded="false"/>
+          <Channel Options="UNI" Ports="-1" Name="SOCK7" SysMap="UNI7" SysMapCode="77" excluded="false"/>
+        </Ethernet>
+      </Ethernets>
+      <Piggybacks/>
+      <Interfaces>
+        <Interface Class="ITCL" SubClass="UNDEF" alias="Submoduly" rackOffset="0" busID="10" Icon="ibus_interface" expanded="true">
+          <Peripheries>
+            <Device xmlns="http://www.tecomat.com" alias="Modul sériového kanálu" enabled="true" rack="16" position="2" default="true" statLoc="r0_p0_ITCL_DIAG.STAT[2,0]" validStat="A2" errLoc="r0_p0_ITCL_DIAG.ERR[2,0]" expanded="true">
+              <Info>
+                <ProductCode>2191</ProductCode>
+                <ProductName>SX-2191</ProductName>
+                <VendorID>00000000</VendorID>
+                <DeviceGroup>PGB</DeviceGroup>
+                <Descriptor>2191_SX-2191.tdd</Descriptor>
+              </Info>
+              <Objects xmlns="http://www.tecomat.com">
+                <Data/>
+                <Aliases/>
+                <Notes/>
+                <Tags xmlns="http://www.tecomat.com"/>
+              </Objects>
+              <SerialChannels>
+                <Channel Options="PC UNI MAS" Ports="0x89 0x89 0x89" Name="COM1" SysMap="CH5" SysMapCode="0105" LAddr="0105" SysMapObject="SerialChannels.IntfID[0]" excluded="false"/>
+              </SerialChannels>
+              <Ethernets/>
+              <Piggybacks/>
+              <Interfaces/>
+              <Editor xmlns="http://www.tecomat.com"/>
+            </Device>
+          </Peripheries>
+        </Interface>
+        <Interface Class="TCL2" SubClass="UNDEF" alias="TCL2 sbernice" rackOffset="0" busID="1020" Icon="tcl2_interface">
+          <Peripheries/>
+        </Interface>
+        <Interface Class="CIB" SubClass="1" alias="CIB sbernice" rackOffset="0" busID="1030" Icon="cib_interface">
+          <Peripheries/>
+        </Interface>
+        <Interface Class="CIB" SubClass="2" alias="CIB sbernice" rackOffset="0" busID="1032" Icon="cib_interface">
+          <Peripheries/>
+        </Interface>
+        <Interface Class="RF2" SubClass="UNDEF" alias="RFox2 sbernice" rackOffset="0" busID="40" Icon="rf2_interface" ChannelRefOnly="true" DevGroupRefOnly="RFM2">
+          <Peripheries/>
+        </Interface>
+        <Interface Class="ETCL" SubClass="ETH1" alias="ETH1 sbernice" rackOffset="0" busID="51" Icon="ebus_interface" excluded="true" includingObject="Ethernets.ETCL.ActiveIntf &amp; 1">
+          <Peripheries/>
+        </Interface>
+        <Interface Class="ETCL" SubClass="ETH2" alias="ETH2 sbernice" rackOffset="0" busID="52" Icon="ebus_interface" excluded="true" includingObject="Ethernets.ETCL.ActiveIntf &amp; 2">
+          <Peripheries/>
+        </Interface>
+      </Interfaces>
+      <Editor xmlns="http://www.tecomat.com"/>
+    </Device>
+  </Configuration>
+</TecoConfiguration>

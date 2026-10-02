@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="sk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ROOM API binary WS</title><style>body{font:16px system-ui;max-width:760px;margin:40px auto;padding:0 20px}table{border-collapse:collapse;width:100%}td,th{padding:7px;border-bottom:1px solid #ccc;text-align:left}th{width:45%}.ok{color:#087b36}.error{color:#c22}code,pre{font-family:ui-monospace,monospace}</style></head>
+<body><h1>ROOM API – binárny WebSocket</h1><p id="status">Pripájam <code>/ws</code>…</p>
+<table><tr><th>WebSocket event</th><td id="eventType">–</td></tr><tr><th>WS payload</th><td id="bytes">–</td></tr><tr><th>Magic</th><td id="magic">–</td></tr><tr><th>MessageType</th><td id="messageType">–</td></tr><tr><th>TX revision</th><td id="revision">–</td></tr><tr><th>TotalSize</th><td id="totalSize">–</td></tr><tr><th>CRC32</th><td id="crc">–</td></tr></table>
+<script>
+const $=id=>document.getElementById(id); function crc32(bytes){let c=0xffffffff;for(let i=0;i<bytes.length;i++){c^=(i>=60&&i<64)?0:bytes[i];for(let b=0;b<8;b++)c=(c>>>1)^((c&1)?0xedb88320:0)}return(c^0xffffffff)>>>0}
+const ws=new WebSocket(`ws://${location.host}/ws`); ws.binaryType="arraybuffer";
+ws.onopen=()=>{$("status").textContent="Pripojené; čakám na nový READY rámec.";$ ("status").className="ok"};
+ws.onmessage=e=>{const binary=e.data instanceof ArrayBuffer;$("eventType").textContent=binary?"ArrayBuffer (binary)":typeof e.data;if(!binary)return;const b=new Uint8Array(e.data),v=new DataView(e.data),magic=new TextDecoder().decode(b.subarray(0,4)),stored=v.getUint32(60,true),actual=crc32(b);$("bytes").textContent=b.length+" B";$("magic").textContent=magic;$("messageType").textContent=v.getUint16(8,true);$("revision").textContent=v.getUint32(24,true);$("totalSize").textContent=v.getUint32(56,true)+" B";$("crc").textContent=stored===actual?`OK (0x${stored.toString(16).padStart(8,"0")})`:`CHYBA`;$("crc").className=stored===actual?"ok":"error"};
+ws.onerror=()=>{$("status").textContent="WebSocket chyba.";$ ("status").className="error"}; ws.onclose=()=>{$("status").textContent="Odpojené."};
+</script></body></html>

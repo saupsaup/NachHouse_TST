@@ -1,0 +1,11 @@
+{
+  "name": "room-api-binary-ws-bridge",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Read-only GETMEM to binary WebSocket bridge for NachHouse ROOM API",
+  "scripts": {
+    "start": "node server.js",
+    "probe:native": "node native-raw-probe.js"
+  },
+  "engines": { "node": ">=18" }
+}

@@ -1,0 +1,85 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Map N:",
+			"type": "shell",
+			"command": "prlctl",
+			"args": [
+				"exec",
+				"${config:mosaic.vmName}",
+				"cmd",
+				"/c",
+				//				"net use N: /DELETE /y >nul 2>&1 & net use N: \\\\Mac\\NachHouse  /persistent:yes "
+				"net use N: /DELETE /y >nul 2>&1 & net use N: ${config:mosaic.shareRoot}  /persistent:yes "
+			],
+		},
+		{
+			"label": "Mosaic Compile pilot_API_PLC_V10",
+			"type": "shell",
+			"dependsOn": "Map N:",
+			"command": "prlctl",
+			"args": [
+				"exec",
+				"${config:mosaic.vmName}",
+				"cmd",
+				"/v:on",
+				"/c",
+				"cd /d \"${config:mosaic.mosaicBin}\" && MosaicL.exe -ttr -lnk -sg+ -sr- -log- -pub -olc- -psw- -plcpsw- -sc- -sl- -exml- -epub- -eexp+ \"${config:mosaic.makPathWin}\""
+			],
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			// ========================================================
+			// 🧩 PARSOVANIE CHÝB DO OKNA "PROBLEMS"
+			// ========================================================
+			"problemMatcher": [
+				{
+					"owner": "st",
+					"fileLocation": [
+						"relative",
+						"${workspaceFolder}"
+					],
+					"pattern": {
+						"regexp": "^\\[ST:(Error|Warning)\\]\\s+([_A-Za-z0-9\\.-]+)\\s+\\((\\d+),\\s*(\\d+)\\):\\s*(.*)$",
+						"severity": 1,
+						"file": 2,
+						"line": 3,
+						"column": 4,
+						"message": 5
+					}
+				},
+				{
+					"owner": "st",
+					"fileLocation": [
+						"relative",
+						"${workspaceFolder}"
+					],
+					"pattern": {
+						"regexp": "^\\[Xpro:(Fatal|Error)\\]\\:\\s*(.*)$",
+						"severity": 1,
+						"message": 2
+					}
+				}
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"presentation": {
+				"reveal": "always",
+				"panel": "dedicated",
+				"clear": true
+			}
+		},
+		{
+			"label": "Generate favorites from APP.mak",
+			"type": "shell",
+			"command": "${workspaceFolder}/../../../SCRIPTS/make_favorites_from_mak.sh",
+			"options": {
+				"cwd": "${workspaceFolder}"
+			},
+			"problemMatcher": []
+		}
+	]
+}

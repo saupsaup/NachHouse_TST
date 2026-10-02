@@ -7,8 +7,8 @@
   //	"mosaic.shareRoot": "\\\\Mac\\NachHouse",
 	// "mosaic.mosaicBin": "C:\\Program Files (x86)\\Teco\\Mosaic 2025.1\\Application\\",
 
-	"mosaic.makPathWin": "N:\\TST\\ROOM_API_PILOT\\room_api_pilot\\room_api_pilot.mak",
-	"mosaic.projectDir": "N:\\TST\\ROOM_API_PILOT\\room_api_pilot", 
+//	"mosaic.makPathWin": "N:\\TST\\ROOM_API_PILOT\\room_api_pilot\\room_api_pilot.mak",
+//	"mosaic.projectDir": "N:\\TST\\ROOM_API_PILOT\\room_api_pilot", 
 
 	"files.eol": "\r\n",
 	"files.encoding": "utf8",

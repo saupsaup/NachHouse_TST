@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<web version="8.1" propfont="true" foot="© 2026" dwMode="1" flat="true" autosel="true" MaxUid="15507" height="560" width="980" menu="true" title="true" border="true" flatcolor="16771043" top="8" left="8" iniScale="100" maxScale="100" useIniScale="false" useMaxScale="false" userScale="true" webApp="false" bgdupl="false" bgcolor="16777215" icon="" id18="0" author="Teco a.s." encoding="windows-1250">
+	<panels></panels>
+	<Grid Enable="1" X="5" Y="5" />
+	<globalset newdim="1" noxslt="1" maxvar="0" />
+	<group caption="" Uid="15500">
+		<page caption="Index" name="PAGE1.XML" ajax="true" pause="1000" default="true" Uid="15501" ucid="1789914722" width="680" height="188">
+			<object caption="" X="12" Y="16" xoff="7" yoff="5" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="15502">
+				<edit variable="Main.Go" type="USINT" intf="0" timf="" align="left" zero="false" prec="-1" size="3" global="true" border="true" width="34" height="22" tabindex="1" />
+			</object>
+			<object caption="Go:" X="7" Y="17" xoff="7" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="15503">
+				<label />
+			</object>
+			<object caption="Submit" X="26" Y="21" xoff="0" yoff="0" level="0" readonly="false" front="0" back="15790320" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="15504">
+				<submit width="136" height="28" border="true" tabindex="2" />
+			</object>
+			<object caption="" X="7" Y="4" xoff="2" yoff="1" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="15505" hint="yTx4">
+				<postfile variable="yTx4" type="STRING[255]" border="true" />
+			</object>
+			<object caption="" X="4" Y="9" xoff="6" yoff="1" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="15506">
+				<edit variable="yTx4" type="STRING[255]" intf="0" timf="" align="left" zero="false" prec="-1" size="80" global="true" border="true" width="650" height="22" tabindex="3" />
+			</object>
+		</page>
+	</group>
+	<images></images>
+	<Languages>
+		<Language Code="5" Editor="1" />
+	</Languages>
+	<Layers active="0" pasteMode="0">
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+	</Layers>
+	<security crypt="1" count="10">
+		<user level="9" name="" pass="" />
+		<user level="-1" name="1" pass="CE" />
+		<user level="-1" name="2" pass="CD" />
+		<user level="-1" name="3" pass="CC" />
+		<user level="-1" name="4" pass="CB" />
+		<user level="-1" name="5" pass="CA" />
+		<user level="-1" name="6" pass="C9" />
+		<user level="-1" name="7" pass="C8" />
+		<user level="-1" name="8" pass="C7" />
+		<user level="-1" name="9" pass="C6" />
+	</security>
+	<autologin count="10">
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+		<mac level="0" mac="00:00:00:00:00:00" note="" />
+	</autologin>
+	<tecoapi count="10">
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+		<api level="-1" name="" pass="" />
+	</tecoapi>
+</web>

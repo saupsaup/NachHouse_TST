@@ -1,164 +1,219 @@
 (*
-   ROOM_API_PILOT - dátové typy logického API a prenosového protokolu.
-   Komentáre opisujú vıznam pre PLC aj klienta; nejde o reálnu domovú automatizáciu.
+   ROOM_API_PILOT - dï¿½tovï¿½ typy logickï¿½ho API a prenosovï¿½ho protokolu.
+   Komentï¿½re opisujï¿½ vï¿½znam pre PLC aj klienta; nejde o reï¿½lnu domovï¿½ automatizï¿½ciu.
 *)
 
-(* Vısledok vykonania jedného klientského príkazu. *)
-TYPE T_API_COMMAND_RESULT :
-STRUCT
-    ClientId       : STRING[36]; (* Identifikátor klienta, ktorému patrí vısledok. ENG *)
-    RequestId      : UDINT;      (* Identifikátor poiadavky pridelenı klientom. ENG *)
-    Result         : USINT;      (* Èíselnı návratovı kód API_RESULT_*. ENG *)
-    Message        : STRING[80]; (* Krátky slovenskı text vısledku urèenı pre log a testovanie. *)
-    ConfigRevision : UDINT;      (* Revízia konfigurácie platná po spracovaní príkazu. ENG *)
-    StateRevision  : UDINT;      (* Revízia stavovıch údajov platná po spracovaní príkazu. ENG *)
+
+TYPE
+   NH_API_INFO : STRUCT
+    	ApiVersion		: UINT;          (* Verzia verejnï¿½ho API kontraktu. ENG *)
+		ApiVarNext		: UINT;          (* Adresa v pamï¿½ti PLC, kde sa nachï¿½dza zaï¿½iatok ï¿½alï¿½ï¿½ch premennï¿½ch API. ENG *)
+		ApiVarSize		: UDINT;          (* Veï¿½kosï¿½ v bajtoch, ktorï¿½ zaberï¿½ v pamï¿½ti PLC. ENG *)		
+		ApiBussy			: BOOL;          (* TRUE znamenï¿½, ï¿½e PLC je zaneprï¿½znene spracovanï¿½m prï¿½kazu. ENG *)
+   END_STRUCT
+
+   NH_LOG_INFO : STRUCT
+		BufferBegin		: UDINT;          (* Adresa v pamï¿½ti PLC, kde sa nachï¿½dza zaï¿½iatok logovacieho bufferu. ENG *)	
+		BufferEnd		: UDINT;          (* Adresa v pamti PLC, kde sa nachdza zaiatok logovacieho bufferu. ENG *)	
+		BufferNext		: UDINT;          (* Adresa v pamti PLC, kde sa nachdza zaiatokalch premennch API. ENG *)
+		BufferSize		: UDINT;          (* Vekos v bajtoch, ktor zaber v pamti PLC. ENG *)		
+   END_STRUCT
+
+END_TYPE
+
+TYPE
+    NH_API_DIFF_HEAD : STRUCT                    (* Header pre diff udajov, Sizeof = 40B *)
+        StructID        : UINT := 1;          		(* Cislo struktury zaslatych udajov - parser  *)	
+        Name            : STRING[21] := 'T_ROOM_STATE';   (* What scheme used for parser. StructID = 1 = T_ROOM_STATE*)	
+        Records         : INT := 2;          		(* Pocet zaslatych zaznamov T_ROOM_STATE *)
+        RecSize         : UDINT := 21;      			(* Size of 1. T_ROOM_STATE*)		
+        MessageSize     : UDINT := 42;      			(* Len Doplnujuce info Records * RecSize := 2*21=42B *)
+        HeadIndex       : UINT := 0;						(* index tohto headera ApiVarsPublic[0], koniec ApiVarsPublic[0] + 40B = ApiVarsPublic[3] *)
+        BeginIndex      : UINT := 4;          		(* kde zacinaju data struktury = 1.veta ApiVarsPublic[4] *)
+        EndIndex        : UINT := 8;          		(* kde koncia data ApiVarsPublic[8] .. len informacne, lebo nemusi byt zaplnenychcelych 4B DWORD *)
+	END_STRUCT
+
+	T_ROOM_STATE : STRUCT
+      RoomId          : UDINT; (* V?zba stavov?ho z?znamu na stabiln? ID v konfigur?cii. ENG *)
+    	Temperature     : REAL;  (* Zobrazovan? testovacia teplota v stup?och Celzia. ENG *)
+    	Humidity        : REAL;  (* Zobrazovan? testovacia relat?vna vlhkos? v percent?ch. ENG *)
+    	Presence        : BOOL;  (* Testovac? pr?znak pr?tomnosti ovplyv?uj?ci pozadie karty. ENG *)
+    	DayPhase        : UINT;  (* K?d dennej f?zy API_DAY_PHASE_* pre existuj?cu ikonu. ENG *)
+    	CategoryMask    : DWORD; (* Bitov? maska kateg?ri?, ktor?ch ikony sa maj? zobrazi?. ENG *)
+    	AlarmLevel      : USINT; (* Vizu?lna ?rove? API_ALARM_*; nesp???a re?lny alarm. ENG *)
+    	Online          : BOOL;  (* Dostupnos? d?t miestnosti pre klienta. ENG *)
+	END_STRUCT
+END_TYPE
+TYPE
+   NH_API_DIFF_HEAD : STRUCT                    (* Header pre diff udajov, Sizeof = 40B *)  
+		StructID		: UINT := 1;          		(* Cislo struktury zaslatych udajov - parser  *)	
+		Name			: STRING[21] := 'T_ROOM_STATE';   (* What scheme used for parser. StructID = 1 = T_ROOM_STATE*)	
+		Records			: INT := 2;          		(* Pocet zaslatych zaznamov T_ROOM_STATE *)
+		RecSize			: UDINT := 21;      			(* Size of 1. T_ROOM_STATE*)		
+		MessageSize		: UDINT := 42;      			(* Len Doplnujuce info Records * RecSize := 2*21=42B *)
+         HeadIndex      : UINT := 0;						(* index tohto headera ApiVarsPublic[0], koniec ApiVarsPublic[0] + 40B = ApiVarsPublic[3] *)
+		BeginIndex		: UINT := 4;          		(* kde zacinaju data struktury = 1.veta ApiVarsPublic[4] *)
+		EndIndex		: UINT := 8;          		(* kde koncia data ApiVarsPublic[8] .. len informacne, lebo nemusi byt zaplnenychcelych 4B DWORD *)
+	END_STRUCT
+
+	T_ROOM_STATE : STRUCT
+   	    RoomId          : UDINT; (* Vï¿½zba stavovï¿½ho zï¿½znamu na stabilnï¿½ ID v konfigurï¿½cii. ENG *)
+    	Temperature     : REAL;  (* Zobrazovanï¿½ testovacia teplota v stupï¿½och Celzia. ENG *)
+    	Humidity        : REAL;  (* Zobrazovanï¿½ testovacia relatï¿½vna vlhkosï¿½ v percentï¿½ch. ENG *)
+    	Presence        : BOOL;  (* Testovacï¿½ prï¿½znak prï¿½tomnosti ovplyvï¿½ujï¿½ci pozadie karty. ENG *)
+    	DayPhase        : UINT;  (* Kï¿½d dennej fï¿½zy API_DAY_PHASE_* pre existujï¿½cu ikonu. ENG *)
+    	CategoryMask    : DWORD; (* Bitovï¿½ maska kategï¿½riï¿½, ktorï¿½ch ikony sa majï¿½ zobraziï¿½. ENG *)
+    	AlarmLevel      : USINT; (* Vizuï¿½lna ï¿½roveï¿½ API_ALARM_*; nespï¿½ï¿½ï¿½a reï¿½lny alarm. ENG *)
+    	Online          : BOOL;  (* Dostupnosï¿½ dï¿½t miestnosti pre klienta. ENG *)
+	END_STRUCT
+END_TYPE
+
+
+
+(* Vï¿½sledok vykonania jednï¿½ho klientskï¿½ho prï¿½kazu. *)
+TYPE
+T_API_COMMAND_RESULT : STRUCT
+    ClientId       : STRING[36]; (* Identifikï¿½tor klienta, ktorï¿½mu patrï¿½ vï¿½sledok. ENG *)
+    RequestId      : UDINT;      (* Identifikï¿½tor poï¿½iadavky pridelenï¿½ klientom. ENG *)
+    Result         : USINT;      (* ï¿½ï¿½selnï¿½ nï¿½vratovï¿½ kï¿½d API_RESULT_*. ENG *)
+    Message        : STRING[80]; (* Krï¿½tky slovenskï¿½ text vï¿½sledku urï¿½enï¿½ pre log a testovanie. *)
+    ConfigRevision : UDINT;      (* Revï¿½zia konfigurï¿½cie platnï¿½ po spracovanï¿½ prï¿½kazu. ENG *)
+    StateRevision  : UDINT;      (* Revï¿½zia stavovï¿½ch ï¿½dajov platnï¿½ po spracovanï¿½ prï¿½kazu. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Základné informácie o API a jeho aktuálnych revíziách. *)
+(* Zï¿½kladnï¿½ informï¿½cie o API a jeho aktuï¿½lnych revï¿½ziï¿½ch. *)
 TYPE T_API_INFO :
 STRUCT
-    ApiVersion        : STRING[32];          (* Verzia verejného API kontraktu. ENG *)
-    ConfigRevision    : UDINT;               (* Aktuálna revízia konfigurácie miestností. ENG *)
-    StateRevision     : UDINT;               (* Aktuálna revízia dynamickıch stavov miestností. ENG *)
-    MaxRooms          : USINT;               (* Najvyšší poèet miestností podporovanı PLC. ENG *)
-    LastCommandResult : T_API_COMMAND_RESULT; (* Poslednı vısledok príkazu, dostupnı aj po obnovení klienta. ENG *)
+    ApiVersion        : STRING[32];          (* Verzia verejnï¿½ho API kontraktu. ENG *)
+    ConfigRevision    : UDINT;               (* Aktuï¿½lna revï¿½zia konfigurï¿½cie miestnostï¿½. ENG *)
+    StateRevision     : UDINT;               (* Aktuï¿½lna revï¿½zia dynamickï¿½ch stavov miestnostï¿½. ENG *)
+    MaxRooms          : USINT;               (* Najvyï¿½ï¿½ï¿½ poï¿½et miestnostï¿½ podporovanï¿½ PLC. ENG *)
+    LastCommandResult : T_API_COMMAND_RESULT; (* Poslednï¿½ vï¿½sledok prï¿½kazu, dostupnï¿½ aj po obnovenï¿½ klienta. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Konfiguraèné údaje jednej miestnosti. *)
+(* Konfiguraï¿½nï¿½ ï¿½daje jednej miestnosti. *)
 TYPE T_ROOM_CONFIG :
 STRUCT
-    Used        : BOOL;       (* TRUE znamená, e je táto pozícia po¾a obsadená miestnosou. ENG *)
-    RoomId      : UDINT;      (* Stabilnı a jedineènı identifikátor miestnosti; hodnota 0 je neplatná. ENG *)
-    Name        : STRING[64]; (* Hlavnı názov miestnosti zobrazenı na karte. ENG *)
-    ProjectName : STRING[64]; (* Doplnkovı názov zobrazenı pod hlavnım názvom. ENG *)
-    IconId      : UINT;       (* Identifikátor ikony pouívanej frozen browserom. ENG *)
-    SortDefault : UINT;       (* Predvolené poradie iba pri prvom naèítaní klienta. ENG *)
+    Used        : BOOL;       (* TRUE znamenï¿½, ï¿½e je tï¿½to pozï¿½cia poï¿½a obsadenï¿½ miestnosï¿½ou. ENG *)
+    RoomId      : UDINT;      (* Stabilnï¿½ a jedineï¿½nï¿½ identifikï¿½tor miestnosti; hodnota 0 je neplatnï¿½. ENG *)
+    Name        : STRING[64]; (* Hlavnï¿½ nï¿½zov miestnosti zobrazenï¿½ na karte. ENG *)
+    ProjectName : STRING[64]; (* Doplnkovï¿½ nï¿½zov zobrazenï¿½ pod hlavnï¿½m nï¿½zvom. ENG *)
+    IconId      : UINT;       (* Identifikï¿½tor ikony pouï¿½ï¿½vanej frozen browserom. ENG *)
+    SortDefault : UINT;       (* Predvolenï¿½ poradie iba pri prvom naï¿½ï¿½tanï¿½ klienta. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Úplnı konfiguraènı snapshot všetkıch pozícií miestností. *)
+(* ï¿½plnï¿½ konfiguraï¿½nï¿½ snapshot vï¿½etkï¿½ch pozï¿½ciï¿½ miestnostï¿½. *)
 TYPE T_API_CONFIG :
 STRUCT
-    Rooms : ARRAY[1..40] OF T_ROOM_CONFIG; (* Pevné pole najviac 40 konfiguraènıch záznamov. ENG *)
+    Rooms : ARRAY[1..40] OF T_ROOM_CONFIG; (* Pevnï¿½ pole najviac 40 konfiguraï¿½nï¿½ch zï¿½znamov. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Ruène nastavovanı pilotnı stav jednej miestnosti. *)
-TYPE T_ROOM_STATE :
-STRUCT
-    RoomId       : UDINT; (* Väzba stavového záznamu na stabilné ID v konfigurácii. ENG *)
-    Temperature  : REAL;  (* Zobrazovaná testovacia teplota v stupòoch Celzia. ENG *)
-    Humidity     : REAL;  (* Zobrazovaná testovacia relatívna vlhkos v percentách. ENG *)
-    Presence     : BOOL;  (* Testovací príznak prítomnosti ovplyvòujúci pozadie karty. ENG *)
-    DayPhase     : UINT;  (* Kód dennej fázy API_DAY_PHASE_* pre existujúcu ikonu. ENG *)
-    CategoryMask : DWORD; (* Bitová maska kategórií, ktorıch ikony sa majú zobrazi. ENG *)
-    AlarmLevel   : USINT; (* Vizuálna úroveò API_ALARM_*; nespúša reálny alarm. ENG *)
-    Online       : BOOL;  (* Dostupnos dát miestnosti pre klienta. ENG *)
-END_STRUCT
-END_TYPE
+(* Ruï¿½ne nastavovanï¿½ pilotnï¿½ stav jednej miestnosti. *)
 
-(* Úplnı stavovı snapshot všetkıch pozícií miestností. *)
+(* ï¿½plnï¿½ stavovï¿½ snapshot vï¿½etkï¿½ch pozï¿½ciï¿½ miestnostï¿½. *)
 TYPE T_API_STATE :
 STRUCT
-    Rooms : ARRAY[1..40] OF T_ROOM_STATE; (* Pevné pole najviac 40 stavovıch záznamov. ENG *)
+    Rooms : ARRAY[1..40] OF T_ROOM_STATE; (* Pevnï¿½ pole najviac 40 stavovï¿½ch zï¿½znamov. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Poiadavka klienta na pridanie, zmazanie, kopírovanie alebo úpravu miestnosti. *)
+(* Poï¿½iadavka klienta na pridanie, zmazanie, kopï¿½rovanie alebo ï¿½pravu miestnosti. *)
 TYPE T_API_COMMAND_ROOM :
 STRUCT
-    ClientId     : STRING[36]; (* Identifikátor klienta odosielajúceho príkaz. ENG *)
-    RequestId    : UDINT;      (* Nenulovı identifikátor poiadavky pre párovanie a opakovanie. ENG *)
-    Action       : USINT;      (* Poadovaná akcia urèená konštantou API_ACTION_*. ENG *)
-    RoomId       : UDINT;      (* Cie¾ové stabilné ID miestnosti. ENG *)
-    SourceRoomId : UDINT;      (* Zdrojové ID pouité iba pri kopírovaní miestnosti. ENG *)
-    Name         : STRING[64]; (* Novı alebo upravenı hlavnı názov miestnosti. ENG *)
-    ProjectName  : STRING[64]; (* Novı alebo upravenı doplnkovı názov miestnosti. ENG *)
+    ClientId     : STRING[36]; (* Identifikï¿½tor klienta odosielajï¿½ceho prï¿½kaz. ENG *)
+    RequestId    : UDINT;      (* Nenulovï¿½ identifikï¿½tor poï¿½iadavky pre pï¿½rovanie a opakovanie. ENG *)
+    Action       : USINT;      (* Poï¿½adovanï¿½ akcia urï¿½enï¿½ konï¿½tantou API_ACTION_*. ENG *)
+    RoomId       : UDINT;      (* Cieï¿½ovï¿½ stabilnï¿½ ID miestnosti. ENG *)
+    SourceRoomId : UDINT;      (* Zdrojovï¿½ ID pouï¿½itï¿½ iba pri kopï¿½rovanï¿½ miestnosti. ENG *)
+    Name         : STRING[64]; (* Novï¿½ alebo upravenï¿½ hlavnï¿½ nï¿½zov miestnosti. ENG *)
+    ProjectName  : STRING[64]; (* Novï¿½ alebo upravenï¿½ doplnkovï¿½ nï¿½zov miestnosti. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Jedna poloka konfiguraèného diffu. *)
+(* Jedna poloï¿½ka konfiguraï¿½nï¿½ho diffu. *)
 TYPE T_API_CONFIG_CHANGE :
 STRUCT
-    Valid     : BOOL;          (* TRUE znamená, e poloka obsahuje platnú zmenu. ENG *)
+    Valid     : BOOL;          (* TRUE znamenï¿½, ï¿½e poloï¿½ka obsahuje platnï¿½ zmenu. ENG *)
     Operation : USINT;         (* Druh zmeny API_DIFF_UPSERT alebo API_DIFF_DELETE. ENG *)
-    RoomId    : UDINT;         (* Stabilné ID zmenenej alebo odstránenej miestnosti. ENG *)
-    Room      : T_ROOM_CONFIG; (* Úplnı novı záznam pri UPSERT; pri DELETE je vyèistenı. ENG *)
+    RoomId    : UDINT;         (* Stabilnï¿½ ID zmenenej alebo odstrï¿½nenej miestnosti. ENG *)
+    Room      : T_ROOM_CONFIG; (* ï¿½plnï¿½ novï¿½ zï¿½znam pri UPSERT; pri DELETE je vyï¿½istenï¿½. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Jedna poloka stavového diffu. *)
+(* Jedna poloï¿½ka stavovï¿½ho diffu. *)
 TYPE T_API_STATE_CHANGE :
 STRUCT
-    Valid     : BOOL;         (* TRUE znamená, e poloka obsahuje platnú zmenu. ENG *)
+    Valid     : BOOL;         (* TRUE znamenï¿½, ï¿½e poloï¿½ka obsahuje platnï¿½ zmenu. ENG *)
     Operation : USINT;        (* Druh zmeny API_DIFF_UPSERT alebo API_DIFF_DELETE. ENG *)
-    RoomId    : UDINT;        (* Stabilné ID zmeneného alebo odstráneného stavu. ENG *)
-    Room      : T_ROOM_STATE; (* Úplnı novı stav pri UPSERT; pri DELETE je vyèistenı. ENG *)
+    RoomId    : UDINT;        (* Stabilnï¿½ ID zmenenï¿½ho alebo odstrï¿½nenï¿½ho stavu. ENG *)
+    Room      : T_ROOM_STATE; (* ï¿½plnï¿½ novï¿½ stav pri UPSERT; pri DELETE je vyï¿½istenï¿½. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Jeden revízny rámec zmien konfigurácie. *)
+(* Jeden revï¿½zny rï¿½mec zmien konfigurï¿½cie. *)
 TYPE T_API_CONFIG_DIFF :
 STRUCT
-    Valid        : BOOL;  (* TRUE znamená, e hlavièka a obsah rámca sú pripravené. ENG *)
-    FromRevision : UDINT; (* Revízia, na ktorú tento rámec priamo nadväzuje. ENG *)
-    ToRevision   : UDINT; (* Revízia po aplikovaní všetkıch zmien z rámca. ENG *)
-    FullRequired : BOOL;  (* TRUE prikazuje klientovi naèíta celı snapshot. ENG *)
-    ChangeCount  : USINT; (* Poèet platnıch poloiek na zaèiatku po¾a Changes. ENG *)
-    Changes      : ARRAY[1..40] OF T_API_CONFIG_CHANGE; (* Zmeny konfigurácie patriace do jednej revízie. ENG *)
+    Valid        : BOOL;  (* TRUE znamenï¿½, ï¿½e hlaviï¿½ka a obsah rï¿½mca sï¿½ pripravenï¿½. ENG *)
+    FromRevision : UDINT; (* Revï¿½zia, na ktorï¿½ tento rï¿½mec priamo nadvï¿½zuje. ENG *)
+    ToRevision   : UDINT; (* Revï¿½zia po aplikovanï¿½ vï¿½etkï¿½ch zmien z rï¿½mca. ENG *)
+    FullRequired : BOOL;  (* TRUE prikazuje klientovi naï¿½ï¿½taï¿½ celï¿½ snapshot. ENG *)
+    ChangeCount  : USINT; (* Poï¿½et platnï¿½ch poloï¿½iek na zaï¿½iatku poï¿½a Changes. ENG *)
+    Changes      : ARRAY[1..40] OF T_API_CONFIG_CHANGE; (* Zmeny konfigurï¿½cie patriace do jednej revï¿½zie. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Jeden revízny rámec zmien dynamického stavu. *)
+(* Jeden revï¿½zny rï¿½mec zmien dynamickï¿½ho stavu. *)
 TYPE T_API_STATE_DIFF :
 STRUCT
-    Valid        : BOOL;  (* TRUE znamená, e hlavièka a obsah rámca sú pripravené. ENG *)
-    FromRevision : UDINT; (* Revízia, na ktorú tento rámec priamo nadväzuje. ENG *)
-    ToRevision   : UDINT; (* Revízia po aplikovaní všetkıch zmien z rámca. ENG *)
-    FullRequired : BOOL;  (* TRUE prikazuje klientovi naèíta celı snapshot. ENG *)
-    ChangeCount  : USINT; (* Poèet platnıch poloiek na zaèiatku po¾a Changes. ENG *)
-    Changes      : ARRAY[1..40] OF T_API_STATE_CHANGE; (* Stavové zmeny patriace do jednej revízie. ENG *)
+    Valid        : BOOL;  (* TRUE znamenï¿½, ï¿½e hlaviï¿½ka a obsah rï¿½mca sï¿½ pripravenï¿½. ENG *)
+    FromRevision : UDINT; (* Revï¿½zia, na ktorï¿½ tento rï¿½mec priamo nadvï¿½zuje. ENG *)
+    ToRevision   : UDINT; (* Revï¿½zia po aplikovanï¿½ vï¿½etkï¿½ch zmien z rï¿½mca. ENG *)
+    FullRequired : BOOL;  (* TRUE prikazuje klientovi naï¿½ï¿½taï¿½ celï¿½ snapshot. ENG *)
+    ChangeCount  : USINT; (* Poï¿½et platnï¿½ch poloï¿½iek na zaï¿½iatku poï¿½a Changes. ENG *)
+    Changes      : ARRAY[1..40] OF T_API_STATE_CHANGE; (* Stavovï¿½ zmeny patriace do jednej revï¿½zie. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Poiadavka transportného handshake na získanie ïalšieho uchovaného diffu. ENG *)
+(* Poï¿½iadavka transportnï¿½ho handshake na zï¿½skanie ï¿½alï¿½ieho uchovanï¿½ho diffu. ENG *)
 TYPE T_API_SYNC_REQUEST :
 STRUCT
-    ClientId           : STRING[36]; (* Identifikátor klienta iadajúceho synchronizáciu. ENG *)
-    RequestId          : UDINT;      (* Nenulovı identifikátor synchronizaènej poiadavky. ENG *)
-    ConfigFromRevision : UDINT;      (* Posledná konfiguraèná revízia úspešne uloená klientom. ENG *)
-    StateFromRevision  : UDINT;      (* Posledná stavová revízia úspešne uloená klientom. ENG *)
+    ClientId           : STRING[36]; (* Identifikï¿½tor klienta ï¿½iadajï¿½ceho synchronizï¿½ciu. ENG *)
+    RequestId          : UDINT;      (* Nenulovï¿½ identifikï¿½tor synchronizaï¿½nej poï¿½iadavky. ENG *)
+    ConfigFromRevision : UDINT;      (* Poslednï¿½ konfiguraï¿½nï¿½ revï¿½zia ï¿½speï¿½ne uloï¿½enï¿½ klientom. ENG *)
+    StateFromRevision  : UDINT;      (* Poslednï¿½ stavovï¿½ revï¿½zia ï¿½speï¿½ne uloï¿½enï¿½ klientom. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Odpoveï PLC na jednu synchronizaènú poiadavku. *)
+(* Odpoveï¿½ PLC na jednu synchronizaï¿½nï¿½ poï¿½iadavku. *)
 TYPE T_API_SYNC_RESPONSE :
 STRUCT
-    ClientId   : STRING[36];       (* Identifikátor klienta prevzatı z poiadavky. ENG *)
-    RequestId  : UDINT;            (* Identifikátor poiadavky prevzatı z poiadavky. ENG *)
-    Result     : USINT;            (* Celkovı návratovı kód synchronizácie API_RESULT_*. ENG *)
-    Message    : STRING[80];       (* Krátky slovenskı opis vısledku pre log a testovanie. *)
-    ConfigMode : USINT;            (* Reim konfiguraènej odpovede API_SYNC_*. ENG *)
-    StateMode  : USINT;            (* Reim stavovej odpovede API_SYNC_*. ENG *)
-    ConfigDiff : T_API_CONFIG_DIFF; (* Ïalší konfiguraènı rámec alebo poiadavka na celı snapshot. ENG *)
-    StateDiff  : T_API_STATE_DIFF; (* Ïalší stavovı rámec alebo poiadavka na celı snapshot. ENG *)
+    ClientId   : STRING[36];       (* Identifikï¿½tor klienta prevzatï¿½ z poï¿½iadavky. ENG *)
+    RequestId  : UDINT;            (* Identifikï¿½tor poï¿½iadavky prevzatï¿½ z poï¿½iadavky. ENG *)
+    Result     : USINT;            (* Celkovï¿½ nï¿½vratovï¿½ kï¿½d synchronizï¿½cie API_RESULT_*. ENG *)
+    Message    : STRING[80];       (* Krï¿½tky slovenskï¿½ opis vï¿½sledku pre log a testovanie. *)
+    ConfigMode : USINT;            (* Reï¿½im konfiguraï¿½nej odpovede API_SYNC_*. ENG *)
+    StateMode  : USINT;            (* Reï¿½im stavovej odpovede API_SYNC_*. ENG *)
+    ConfigDiff : T_API_CONFIG_DIFF; (* ï¿½alï¿½ï¿½ konfiguraï¿½nï¿½ rï¿½mec alebo poï¿½iadavka na celï¿½ snapshot. ENG *)
+    StateDiff  : T_API_STATE_DIFF; (* ï¿½alï¿½ï¿½ stavovï¿½ rï¿½mec alebo poï¿½iadavka na celï¿½ snapshot. ENG *)
 END_STRUCT
 END_TYPE
 
-(* Ruènı testovací vstup oddelenı od produkèného príkazu ApiCommandRoom. *)
+(* Ruï¿½nï¿½ testovacï¿½ vstup oddelenï¿½ od produkï¿½nï¿½ho prï¿½kazu ApiCommandRoom. *)
 TYPE T_API_TEST_STATE_REQUEST :
 STRUCT
-    ClientId     : STRING[36]; (* Identifikátor testovacieho klienta. ENG *)
-    RequestId    : UDINT;      (* Nenulovı identifikátor testovacej poiadavky. ENG *)
-    RoomId       : UDINT;      (* Stabilné ID miestnosti, ktorej stav sa má zmeni. ENG *)
-    Temperature  : REAL;       (* Poadovaná testovacia teplota od -50 do 100 °C. ENG *)
-    Humidity     : REAL;       (* Poadovaná testovacia vlhkos od 0 do 100 %. ENG *)
-    Presence     : BOOL;       (* Poadovanı testovací príznak prítomnosti. ENG *)
-    DayPhase     : UINT;       (* Poadovaná platná denná fáza API_DAY_PHASE_*. ENG *)
-    CategoryMask : DWORD;      (* Poadovaná bitová maska kategórií. ENG *)
-    AlarmLevel   : USINT;      (* Poadovaná vizuálna úroveò API_ALARM_*. ENG *)
-    Online       : BOOL;       (* Poadovaná testovacia dostupnos dát. ENG *)
+    ClientId     : STRING[36]; (* Identifikï¿½tor testovacieho klienta. ENG *)
+    RequestId    : UDINT;      (* Nenulovï¿½ identifikï¿½tor testovacej poï¿½iadavky. ENG *)
+    RoomId       : UDINT;      (* Stabilnï¿½ ID miestnosti, ktorej stav sa mï¿½ zmeniï¿½. ENG *)
+    Temperature  : REAL;       (* Poï¿½adovanï¿½ testovacia teplota od -50 do 100 ï¿½C. ENG *)
+    Humidity     : REAL;       (* Poï¿½adovanï¿½ testovacia vlhkosï¿½ od 0 do 100 %. ENG *)
+    Presence     : BOOL;       (* Poï¿½adovanï¿½ testovacï¿½ prï¿½znak prï¿½tomnosti. ENG *)
+    DayPhase     : UINT;       (* Poï¿½adovanï¿½ platnï¿½ dennï¿½ fï¿½za API_DAY_PHASE_*. ENG *)
+    CategoryMask : DWORD;      (* Poï¿½adovanï¿½ bitovï¿½ maska kategï¿½riï¿½. ENG *)
+    AlarmLevel   : USINT;      (* Poï¿½adovanï¿½ vizuï¿½lna ï¿½roveï¿½ API_ALARM_*. ENG *)
+    Online       : BOOL;       (* Poï¿½adovanï¿½ testovacia dostupnosï¿½ dï¿½t. ENG *)
 END_STRUCT
 END_TYPE

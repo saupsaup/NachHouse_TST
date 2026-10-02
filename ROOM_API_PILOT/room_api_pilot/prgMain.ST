@@ -1,22 +1,27 @@
-(* Hlavnı cyklickı program ROOM_API_PILOT vykonávanı PLC. *)
+(* Hlavnï¿½ cyklickï¿½ program ROOM_API_PILOT vykonï¿½vanï¿½ PLC. *)
 PROGRAM prgMain
 VAR
-    (* Program zámerne nepotrebuje iadne lokálne premenné. *)
+    (* Program zï¿½merne nepotrebuje ï¿½iadne lokï¿½lne premennï¿½. *)
 END_VAR
 
-(* Jednorazová inicializácia; po prvom úspešnom cykle u dáta nemení. *)
+(* Jednorazovï¿½ inicializï¿½cia; po prvom ï¿½speï¿½nom cykle uï¿½ dï¿½ta nemenï¿½. *)
 ApiPilotInit();
 
 IF ApiInitialized THEN
-    (* Najprv sa spracujú poiadavky, ktoré môu zmeni konfiguráciu alebo stav. *)
+	SizeApiHeder 	:= SIZEOF(NH_API_DIFF_HEAD);	
+	SizeStructRoom := SIZEOF(T_ROOM_STATE);
+	SizeApiVars		:= SIZEOF(ApiVarsPublic);
+	Ptr_T_ROOM_STATE_Dest^ := Ptr_T_ROOM_STATE_Src^;
+
+    (* Najprv sa spracuj poiadavky, ktor mu zmeni konfigurciu alebo stav. *)
     ApiProcessRoomCommand();
     ApiProcessTestState();
 
-    (* Zachytí aj ruèné zmeny vykonané cez okno Watch v Mosaic. ENG *)
+    (* Zachyt aj run zmeny vykonan cez okno Watch v Mosaic. ENG *)
     ApiCaptureConfigChanges();
     ApiCaptureStateChanges();
 
-    (* Synchronizácia sa spracuje a po zachytení všetkıch zmien daného cyklu. *)
+    (* Synchronizï¿½cia sa spracuje aï¿½ po zachytenï¿½ vï¿½etkï¿½ch zmien danï¿½ho cyklu. *)
     ApiProcessSyncRequest();
 END_IF;
 END_PROGRAM

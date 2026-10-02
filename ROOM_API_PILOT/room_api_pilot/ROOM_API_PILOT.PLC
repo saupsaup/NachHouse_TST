@@ -14,7 +14,7 @@ dirs=""
 
 [plcselection]
 connection=2
-openchannel=1
+openchannel=0
 chanel=0
 speed=9
 tout=500
@@ -82,7 +82,7 @@ mustcompile=0
 [/plcwusb]
 
 [txtextsyneditor]
-GModif=1
+GModif=0
 GMakeBackup=1
 GAutoIndent=1
 GUseTab=1

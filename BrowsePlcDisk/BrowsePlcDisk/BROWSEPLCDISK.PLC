@@ -225,16 +225,6 @@ SortByNameChecked=0
 SplitterPosition=446
 [/IOConfigurator]
 
-[KnxImport]
-ImportFile1=1,"",0,1
-ImportFile2=0,"",2,3
-ImportFile3=0,"",4,5
-TargetFile="prgKnx.st",1
-VarName="datapoint"
-ProgName="Knx"
-Generation=0
-[/KnxImport]
-
 [PlcAccessPasswords]
 Enabled=0
 User0=255,"",""

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="windows-1250" ?>
+<web version="8.1" propfont="true" foot="© 2026" dwMode="1" flat="true" autosel="true" MaxUid="28435">
+	<panels></panels>
+	<Grid Enable="1" X="5" Y="5" />
+	<globalset newdim="1" noxslt="1" />
+	<group caption="" Uid="28394">
+		<page caption="Index" name="PAGE1.XML" ajax="true" pause="1000" default="true" Uid="28395" ucid="1787844131" width="731" height="257">
+			<object caption="" X="17" Y="17" xoff="2" yoff="7" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28396" hint=" GetMemLength">
+				<edit variable=" GetMemLength" type="UINT" intf="0" timf="" align="left" zero="false" prec="-1" size="5" global="true" border="true" width="50" height="22" tabindex="1" />
+			</object>
+			<object caption="GetMemLength" X="2" Y="17" xoff="7" yoff="7" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28397">
+				<label />
+			</object>
+			<object caption="GetMemBuffer" X="3" Y="9" xoff="4" yoff="1" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28398">
+				<label />
+			</object>
+			<object caption="" X="17" Y="8" xoff="2" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28399" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[0]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="2" />
+			</object>
+			<object caption="" X="20" Y="8" xoff="3" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28400" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[1]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="8" />
+			</object>
+			<object caption="" X="23" Y="8" xoff="4" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28401" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[2]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="9" />
+			</object>
+			<object caption="" X="26" Y="8" xoff="5" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28402" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[3]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="10" />
+			</object>
+			<object caption="" X="29" Y="8" xoff="6" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28403" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[4]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="11" />
+			</object>
+			<object caption="" X="32" Y="8" xoff="7" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28404" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[5]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="12" />
+			</object>
+			<object caption="" X="36" Y="8" xoff="0" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28405" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[6]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="13" />
+			</object>
+			<object caption="" X="39" Y="8" xoff="1" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28406" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[7]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="14" />
+			</object>
+			<object caption="" X="42" Y="8" xoff="2" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28407" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[8]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="15" />
+			</object>
+			<object caption="" X="45" Y="8" xoff="3" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28408" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[9]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="16" />
+			</object>
+			<object caption="" X="48" Y="8" xoff="4" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28409" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[10]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="17" />
+			</object>
+			<object caption="" X="51" Y="8" xoff="5" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28410" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[11]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="18" />
+			</object>
+			<object caption="" X="54" Y="8" xoff="6" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28411" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[12]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="19" />
+			</object>
+			<object caption="" X="57" Y="8" xoff="7" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28412" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[13]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="20" />
+			</object>
+			<object caption="" X="61" Y="8" xoff="0" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28413" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[14]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="21" />
+			</object>
+			<object caption="" X="64" Y="8" xoff="1" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28414" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[15]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="22" />
+			</object>
+			<object caption="" X="67" Y="8" xoff="2" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28415" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[16]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="23" />
+			</object>
+			<object caption="" X="70" Y="8" xoff="3" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28416" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[17]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="24" />
+			</object>
+			<object caption="" X="73" Y="8" xoff="4" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28417" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[18]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="25" />
+			</object>
+			<object caption="" X="76" Y="8" xoff="5" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28418" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[19]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="26" />
+			</object>
+			<object caption="" X="79" Y="8" xoff="6" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28419" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[20]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="27" />
+			</object>
+			<object caption="" X="82" Y="8" xoff="7" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28420" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[21]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="28" />
+			</object>
+			<object caption="" X="86" Y="8" xoff="0" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28421" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[22]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="29" />
+			</object>
+			<object caption="" X="89" Y="8" xoff="1" yoff="4" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28422" hint=" GetMemLength">
+				<edit variable="GetMemBuffer[23]" type="BYTE" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="30" />
+			</object>
+			<object caption="GetMemAddress " X="2" Y="14" xoff="2" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28423">
+				<label />
+			</object>
+			<object caption="" X="17" Y="14" xoff="2" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28424" hint=" GetMemLength">
+				<edit variable="GetMemAddress " type="STRING[16]" intf="0" timf="" align="left" zero="false" prec="-1" size="16" global="true" border="true" width="138" height="22" tabindex="31" />
+			</object>
+			<object caption="GetMemAddress " X="1" Y="11" xoff="5" yoff="5" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28425">
+				<label />
+			</object>
+			<object caption="" X="17" Y="11" xoff="2" yoff="5" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28426" hint=" GetMemLength">
+				<edit variable="GetMemReadCommand" type="STRING[64]" intf="0" timf="" align="left" zero="false" prec="-1" size="64" global="true" border="true" width="522" height="22" tabindex="3" />
+			</object>
+			<object caption="GetMemRevision" X="2" Y="21" xoff="2" yoff="5" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28427">
+				<label />
+			</object>
+			<object caption="" X="17" Y="21" xoff="2" yoff="0" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28428" hint=" GetMemLength">
+				<edit variable="GetMemRevision" type="UDINT" intf="0" timf="" align="left" zero="false" prec="-1" size="11" global="true" border="true" width="98" height="22" tabindex="5" />
+			</object>
+			<object caption="GetMemReady" X="4" Y="24" xoff="1" yoff="6" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28429">
+				<label />
+			</object>
+			<object caption="" X="17" Y="24" xoff="2" yoff="1" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28430" hint=" GetMemLength">
+				<edit variable="GetMemReady" type="BOOL" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="4" />
+			</object>
+			<object caption="GetMemExecute" X="2" Y="27" xoff="7" yoff="7" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28431">
+				<label />
+			</object>
+			<object caption="" X="17" Y="27" xoff="2" yoff="2" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28432" hint=" GetMemLength">
+				<edit variable="GetMemExecute" type="BOOL" intf="0" timf="" align="left" zero="false" prec="-1" size="2" global="true" border="true" width="26" height="22" tabindex="7" />
+			</object>
+			<object caption="GetMemSeed" X="4" Y="31" xoff="6" yoff="0" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="true" visneg="false" Uid="28433">
+				<label />
+			</object>
+			<object caption="" X="17" Y="30" xoff="2" yoff="3" level="0" readonly="false" front="0" back="16777215" strong="false" italic="false" size="13" transparent="false" visneg="false" Uid="28434" hint=" GetMemLength">
+				<edit variable="GetMemSeed" type="USINT" intf="0" timf="" align="left" zero="false" prec="-1" size="4" global="true" border="true" width="42" height="22" tabindex="6" />
+			</object>
+		</page>
+	</group>
+	<images></images>
+	<Languages>
+		<Language Code="5" Editor="1" />
+	</Languages>
+	<Layers active="0" pasteMode="0">
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+		<layer visible="1" frozen="0" name="" />
+	</Layers>
+</web>

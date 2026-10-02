@@ -1,0 +1,7 @@
+<!doctype html><html lang="sk"><head><meta charset="utf-8"><title>teco raw probe</title></head>
+<body><h1>teco-smarthome raw probe</h1><p id="status">Pripájam…</p><pre id="result">–</pre><script>
+const socket=new WebSocket("wss://192.168.43.201:5030/","raw"); socket.binaryType="arraybuffer";
+socket.onopen=()=>{document.querySelector("#status").textContent=`Pripojené, subprotokol: ${socket.protocol}`;socket.send(JSON.stringify({cmd:"get",data:["NHAPITXBUFFER[0]"]}))};
+socket.onmessage=e=>{document.querySelector("#result").textContent=JSON.stringify({eventDataType:e.data instanceof ArrayBuffer?"ArrayBuffer":typeof e.data,isBinary:e.data instanceof ArrayBuffer,preview:typeof e.data==="string"?e.data.slice(0,240):null},null,2);socket.close()};
+socket.onerror=()=>document.querySelector("#status").textContent="WSS chyba/certifikát";
+</script></body></html>

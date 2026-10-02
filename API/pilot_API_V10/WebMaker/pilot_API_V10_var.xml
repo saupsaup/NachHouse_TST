@@ -1,0 +1,11 @@
+<Variables>
+	<Item Name="NhApiTest.Action" Pos="03000D92" Tdi="B2457524" Type="8" />
+	<Item Name="NhApiTest.Execute" Pos="03000D91" Tdi="5DF8AF66" Type="0" />
+	<Item Name="NhApiClients[0].AssignedClientId" Pos="03000105" Tdi="3AE3A100" Type="12" />
+	<Item Name="NhApiClients[0].State" Pos="03000117" Tdi="0292ACF3" Type="8" />
+	<Item Name="NhApiInfo.ActiveClientMask" Pos="030000FF" Tdi="9DF4E75C" Type="40" />
+	<Item Name="NhApiClients[0].RequestedClientId" Pos="03000101" Tdi="323496CC" Type="12" />
+	<Item Name="NhApiClients[0].HeartbeatCounter" Pos="03000109" Tdi="EE3E3957" Type="12" />
+	<Item Name="NH_API_CLIENT_TIMEOUT_MS" Pos="030000E2" Tdi="8963E270" Type="12" />
+	<Item Name="NhApiClients[0].AckTxRevision" Pos="0300010D" Tdi="0B2AB997" Type="12" />
+</Variables>

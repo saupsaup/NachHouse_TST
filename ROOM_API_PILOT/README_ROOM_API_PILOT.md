@@ -42,4 +42,5 @@ Write request payload fields first. Set the corresponding `Execute` BOOL in a
 separate final write. The PLC clears Execute and sets `Finished` after the
 operation.
 
-See `API_SYMBOLS_AND_TESTS.md` for numeric enums and example PLCComS JSON.
+See `api_symbols_and_tests.md` for numeric enums, example PLCComS JSON, live
+transport rules, and acceptance-test results.

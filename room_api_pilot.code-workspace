@@ -2,16 +2,13 @@
 	"folders": [
 		{
 			"path": "ROOM_API_PILOT/room_api_pilot"
-		}
+}
 	],
 "settings": {
 		// ============================================================
 		// ⭐ FAVORITES
 		// ============================================================
 		"mosaic.plcHost": "192.168.33.200:61682",
-		"mosaic.vmName": "ae0a527c-1a74-4e39-9845-1622f6a3c782",
-		"mosaic.shareRoot": "\\\\Mac\\NachHouse",
-		"mosaic.mosaicBin": "C:\\Program Files (x86)\\Teco\\Mosaic 2025.1\\Application\\",
 		// ============================================================
 		// 🔖 NUMBERED BOOKMARKS
 		// ============================================================
@@ -147,120 +144,7 @@
 		],
 		"favorites.currentGroup": "Default",
 
-		"favorites.resources": [
-			{
-				"filePath": "APP.ST",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_01_SYS.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_02_TYP.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_03_CFG.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_04_GLB.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_05_SYS_WEB.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_06_LOG.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_07_FRM.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_08_NOTIFY.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_09_Het.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_10_DALI.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_11_WRK.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_12_IMP_CFG.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_13_Web_LIB.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_14_Web_SHW.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_15_Frm_LIB.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_16_Frm_BRW.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_17_Frm_SCR.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_18_Frm_HOM.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_19_Web_HOM.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_20_Web_BRW.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_21_MNU.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_22_DEV.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_23_WEB.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_24_Ini.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "_Nh_25_UTIL.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "cust.st",
-				"group": "APP order"
-			},
-			{
-				"filePath": "90_prgMain.ST",
-				"group": "APP order"
-			}
-		],
+		"favorites.resources": [],
 		"favorites.sortOrder": "ASC"
 	}
 }

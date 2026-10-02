@@ -1,0 +1,225 @@
+;*******************************************************************************
+;Upozornení
+;Soubor je automaticky regenerován a všechny rucní modifikace budou ztracené.
+
+#ifndef _DeklarPT_
+  #error F'Soubor DeklarPT.mos není v souborech projektu prítomen nebo není predrazen souboru r0_p0_CP_2000.mos!'
+#endif
+
+
+#table byte r0_p0_CP_2000_beginText_Table = 0
+#def   r0_p0_CP_2000_beginText  __indx(r0_p0_CP_2000_beginText_Table)
+#def   r0_p0_CP_2000_Disp1_Table_Indx 	r0_p0_CP_2000_beginText + 1	;Disp1
+
+
+#def   r0_p0_CP_2000_START_Flow_Indx 	 r0_p0_CP_2000_beginText + 2	;START
+#def   r0_p0_CP_2000__S8_Table_Indx_MinMax 	r0_p0_CP_2000_beginText + 3
+#def   r0_p0_CP_2000__S7_Table_Indx_MinMax 	r0_p0_CP_2000_beginText + 4
+#def   r0_p0_CP_2000__S6_Table_Indx_MinMax 	r0_p0_CP_2000_beginText + 5
+#def   r0_p0_CP_2000__S12_Table_Indx_MinMax 	r0_p0_CP_2000_beginText + 6
+#def   r0_p0_CP_2000__S11_Table_Indx_MinMax 	r0_p0_CP_2000_beginText + 7
+#def   r0_p0_CP_2000__S10_Table_Indx_MinMax 	r0_p0_CP_2000_beginText + 8
+#def   r0_p0_CP_2000_LastTable_Index     r0_p0_CP_2000_beginText + 9
+
+
+#reg word r0_p0_CP_2000_NumTextPT
+#reg word r0_p0_CP_2000_NumTextOldPT
+#reg bit  r0_p0_CP_2000_NewText
+
+#ifndef CALL_TER14
+  #struct TIDStruct_PM
+          word _NumText,
+          word _MinText,
+          word _MaxText,
+          byte _EnableBits,
+          byte _SizeDisp,
+          byte _KeybTer,
+          byte _InterTer[128]
+
+  #def CALL_TER14     ter 14
+  #def CALL_TEROI1073 ter  7
+#endif
+
+#reg TIDStruct_PM r0_p0_CP_2000
+#reg byte         r0_p0_CP_2000_SIMKey
+#reg byte         r0_p0_CP_2000_KeybPT
+#reg byte         r16_p7_DISP_OUT_Tmp[80]
+#reg byte r0_p0_CP_2000_InterPT
+
+
+#if _PLCTYPE_ < CP7001
+  #error F'Def. tabulky panelu obsahují funkce pro vyšší radu PLC.'
+#endif
+
+#table _TTS_PM_D80_V6 r0_p0_CP_2000_Disp1_Table_Indx, r0_p0_CP_2000_Disp1_Table = 
+          1,14,80,6,
+            'Tecomat             ',
+            'VV:VV:VV            ',
+            '20VV-VV-VV          ',
+            '                    ',
+	__offset(%S8), __IECtypeID(%S8),__sizeof(%S8), __typeID(%S8),20,readOnly + dispSignDec + LeadZero, 2 des 0, 0,
+	__offset(%S7), __IECtypeID(%S7),__sizeof(%S7), __typeID(%S7),23,readOnly + dispSignDec + LeadZero, 2 des 0, 0,
+	__offset(%S6), __IECtypeID(%S6),__sizeof(%S6), __typeID(%S6),26,readOnly + dispSignDec + LeadZero, 2 des 0, 0,
+	__offset(%S12), __IECtypeID(%S12),__sizeof(%S12), __typeID(%S12),42,readOnly + dispSignDec + LeadZero, 2 des 0, 0,
+	__offset(%S11), __IECtypeID(%S11),__sizeof(%S11), __typeID(%S11),45,readOnly + dispSignDec + LeadZero, 2 des 0, 0,
+	__offset(%S10), __IECtypeID(%S10),__sizeof(%S10), __typeID(%S10),48,readOnly + dispSignDec + LeadZero, 2 des 0, 0
+
+#table byte r0_p0_CP_2000_START_Flow_Indx, r0_p0_CP_2000_START_Flow = 
+            r0_p0_CP_2000_Disp1_Table_Indx, (r0_p0_CP_2000_Disp1_Table_Indx)/256,
+            r0_p0_CP_2000_Disp1_Table_Indx, (r0_p0_CP_2000_Disp1_Table_Indx)/256,
+            r0_p0_CP_2000_Disp1_Table_Indx, (r0_p0_CP_2000_Disp1_Table_Indx)/256,
+            enableList + enableEdit
+
+
+
+
+
+#table byte r0_p0_CP_2000_LastTable_Index, r0_p0_CP_2000_LastTable = 0
+
+#table  word r0_p0_CP_2000_CKey = 
+        0
+
+#table word r0_p0_CP_2000_UpKey = 
+        0
+
+#table word r0_p0_CP_2000_DownKey = 
+        0
+
+P 60
+r0_p0_CP_2000_init:
+  LD  80
+  WR  r0_p0_CP_2000._SizeDisp
+  LD  r0_p0_CP_2000_START_Flow_Indx
+  WR  r0_p0_CP_2000._NumText
+
+  RET
+E 60
+
+P 63
+  CAL r0_p0_CP_2000_init
+E 63
+
+P 62
+  CAL r0_p0_CP_2000_init
+E 62
+
+#ifndef r0_p0_CP_2000_UserKeyb
+  #reg byte r0_p0_CP_2000_UserKeyb
+#endif
+P 0
+  LD  80
+  LD  r0_p0_CP_2000._SizeDisp
+  EQ 
+  CAC r0_p0_CP_2000_init
+  LD  r16_p7_DISP_IN
+  EQ  0
+  JMD Receive_r0_p0_CP_2000_SIMKey
+  LD  r16_p7_DISP_IN
+  WR  r0_p0_CP_2000_UserKeyb
+  WR  r0_p0_CP_2000._KeybTer
+  WR  r0_p0_CP_2000_KeybPT
+  JMP TerHandle_r0_p0_CP_2000
+Receive_r0_p0_CP_2000_SIMKey:
+  LD  r0_p0_CP_2000_SIMKey
+  EQ  0
+  JMD EndReceive_r0_p0_CP_2000_SIMKey
+  LD  r0_p0_CP_2000_SIMKey
+  WR  r0_p0_CP_2000._KeybTer
+  WR  r0_p0_CP_2000_UserKeyb
+  WR  r0_p0_CP_2000_KeybPT
+  RES r0_p0_CP_2000_SIMKey
+EndReceive_r0_p0_CP_2000_SIMKey:
+
+TerHandle_r0_p0_CP_2000:
+  LD  __indx(r0_p0_CP_2000._NumText)
+  LD  __indx(r16_p7_DISP_OUT_Tmp)
+  CALL_TEROI1073
+  LD  0
+  SRC r16_p7_DISP_OUT_Tmp
+  LD  0
+  LD  80
+  MOV r16_p7_DISP_OUT
+  LD  r0_p0_CP_2000_NumTextPT
+  LD  r0_p0_CP_2000_NumTextOldPT
+  EQ
+  WRC r0_p0_CP_2000_NewText
+  LD  r0_p0_CP_2000_NumTextPT
+  WR  r0_p0_CP_2000_NumTextOldPT
+
+  ;if variable edit, block move witk keyb UP, Down and C
+  LD  r0_p0_CP_2000._InterTer
+  GT  2
+  LD  r0_p0_CP_2000._InterTer
+  EQ  7
+  NEG
+  AND
+  JMD r0_p0_CP_2000_KeybBlock
+  #ifdef r0_p0_CP_2000_DownKey
+    LD  r0_p0_CP_2000_KeybPT
+    EQ  $19
+    JMC r0_p0_CP_2000_EndDown
+    LD  r0_p0_CP_2000._NumText
+    EQ  r0_p0_CP_2000_NumTextPT
+    JMC r0_p0_CP_2000_EndDown
+    LD  r0_p0_CP_2000._NumText
+    LD  r0_p0_CP_2000_beginText+1
+    SUB
+    LTB r0_p0_CP_2000_DownKey
+    JMC r0_p0_CP_2000_EndDown
+    WR  r0_p0_CP_2000._NumText
+  #endif
+r0_p0_CP_2000_EndDown:
+
+  #ifdef r0_p0_CP_2000_UpKey
+    LD  r0_p0_CP_2000_KeybPT
+    EQ  $18
+    JMC r0_p0_CP_2000_EndUp
+    LD  r0_p0_CP_2000._NumText
+    EQ  r0_p0_CP_2000_NumTextPT
+    JMC r0_p0_CP_2000_EndUp
+    LD  r0_p0_CP_2000._NumText
+    LD  r0_p0_CP_2000_beginText+1
+    SUB
+    LTB r0_p0_CP_2000_UpKey
+    JMC r0_p0_CP_2000_EndUp
+    WR  r0_p0_CP_2000._NumText
+  #endif
+r0_p0_CP_2000_EndUp:
+
+  #ifdef r0_p0_CP_2000_CKey
+    LD  r0_p0_CP_2000_KeybPT
+    EQ  $7F
+    LD  r0_p0_CP_2000_InterPT
+    EQ  0
+    LD  r0_p0_CP_2000_InterPT
+    EQ  7
+    OR
+    AND
+    JMC r0_p0_CP_2000_KonecC
+    LD  r0_p0_CP_2000._NumText
+    LD  r0_p0_CP_2000_beginText+1
+    SUB
+    LTB r0_p0_CP_2000_CKey
+    JMC r0_p0_CP_2000_KonecC
+    WR  r0_p0_CP_2000._NumText
+  #endif
+r0_p0_CP_2000_KonecC:
+r0_p0_CP_2000_KeybBlock:
+
+
+
+
+  LD  0
+  WR  r0_p0_CP_2000_KeybPT
+  LD  r0_p0_CP_2000._InterTer
+  WR  r0_p0_CP_2000_InterPT
+  LD  r0_p0_CP_2000._NumText
+  WR  r0_p0_CP_2000_NumTextPT
+E 0
+
+
+;*******************************************************************************
+;Poslední zmeny : 9/20/2026 4:55:56 PM
+;Generováno programem MOSAIC
+;© 2001-2019 Teco a.s.
+;Verze : 1.4

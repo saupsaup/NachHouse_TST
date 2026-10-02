@@ -1,0 +1,12 @@
+{
+  "name": "getmem-browser-test",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Read-only browser test for PLCComS GETMEM",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

@@ -38,6 +38,7 @@ program.structure
 #*/GPMaker/
 #//**/SendBackup/
 #**/IOConfigurator/Backup/
+**/IOConfigurator/*.t*
 **/SendRoot/WWW/**
 **/Sysgen/**
 **/WebMaker/images/**

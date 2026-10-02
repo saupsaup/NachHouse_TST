@@ -11,13 +11,13 @@ Top=284
 Left=790
 [TimeStamps]
 SaveTD=1787754864
-CompileTD=1787754864
+CompileTD=1787823814
 [FormDesign1]
 DockPos=1
 StayOnTop=0
 CanDock=0
-Height=594
-Width=839
+Height=520
+Width=1056
 Top=0
 Left=0
 LeftPanel=145

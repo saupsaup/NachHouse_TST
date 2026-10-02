@@ -1,0 +1,160 @@
+{
+	"folders": [
+		{
+			"path": "API/pilot_API_V10"
+		}
+	],
+"settings": {
+		// ============================================================
+		// ⭐ FAVORITES
+		// ============================================================
+		"mosaic.plcHost": "192.168.33.200:61682",
+		"mosaic.makPathWin": "N:\\TST\\API\\pilot_API_V10\\pilot_API_V10.mak",
+		"mosaic.projectDir": "N:\\TST\\API\\pilot_API_V10\\pilot_API_V10", 
+
+		// ============================================================
+		// 🔖 NUMBERED BOOKMARKS
+		// ============================================================
+		"numberedBookmarks.experimental.enableNewStickyEngine": true,
+		"numberedBookmarks.keepBookmarksOnLineDelete": true,
+		"numberedBookmarks.showLineNumbers": true,
+		"numberedBookmarks.showInExplorer": true,
+		"numberedBookmarks.navigateThroughAllFiles": "replace",
+		"numberedBookmarks.saveBookmarksInProject": true,
+		"editor.stickyScroll.enabled": true,
+		"editor.stickyScroll.showOutline": true,
+		"editor.stickyScroll.maxLineCount": 4,
+		// ============================================================
+		// 🧱 EDITOR – odsadenie, formátovanie, asociácie
+		// ============================================================
+		"files.associations": {},
+		"files.encoding": "utf8",
+		"[plaintext]": {
+			"files.encoding": "windows1250",
+			"files.eol": "\r\n"
+		},
+		"search.seedWithSelection": "always",
+		"editor.find.seedSearchStringFromSelection": "selection",
+		"search.globalFindClipboard": true,
+		"editor.quickSuggestions": {
+			"other": true,
+			"comments": true,
+			"strings": true
+		},
+		"editor.fontSize": 14,
+		"editor.suggestOnTriggerCharacters": true,
+		"editor.snippetSuggestions": "top",
+		"editor.tabCompletion": "on",
+		"editor.suggest.showWords": true,
+		"editor.suggest.snippetsPreventQuickSuggestions": false,
+		"editor.wordBasedSuggestions": "off",
+		"editor.insertSpaces": false,
+		"editor.tabSize": 3,
+		"editor.detectIndentation": false,
+		"editor.formatOnSave": false,
+		"[json]": {
+			"editor.insertSpaces": false,
+			"editor.tabSize": 2
+		},
+		"[jsonc]": {
+			"editor.insertSpaces": false,
+			"editor.tabSize": 2
+		},
+		// ============================================================
+		// 👁️ EXPLORER & SEARCH
+		// ============================================================
+		"explorer.excludeGitIgnore": true,
+		"search.include": [
+			"**/*.st",
+			"**/*.ST"
+		],
+		"search.exclude": {
+			"**/NachHouse.code-workspace": true,
+			"**/.git/**": true,
+			"**/node_modules/**": true,
+			"**/.DS_Store": true,
+			"**/.Trash/**": true,
+			"**/Thumbs.db": true
+		},
+		"search.useIgnoreFiles": true,
+		"search.useGlobalIgnoreFiles": true,
+		"search.followSymlinks": false,
+		"files.exclude": {
+			// nič špeciálne neskrývame z .git / .vscode / .gitignore
+			// nech sú normálne viditeľné:
+			"**/.git/**": false, // <- ak by si ich chcel úplne schovať
+			"**/.vscode/**": false, // <- úplne skryť všetky .vscode
+			"**/*.exp": true,
+			"**/*.DSK": true,
+			"**/*.PLC": true,
+			"**/*.prg": true,
+			"**/*.pch": true,
+			"**/*.pckg": true,
+			"**/*.TTR": true,
+			"**/*.cfg": true,
+			"**/*.mpr_": true,
+			"**/*.mpr": true,
+			"**/*.mcf": true,
+			"**/*.mos": true,
+			"**/*.nex": true,
+			"**/*.plc": true,
+			"**/*.sym": true,
+			"**/*.OEM": true,
+			"**/*.dsk": true,
+			"**/*.bak": true,
+			"**/*.st.bak": true,
+			"**/Backup/**": true,
+			"**/Sysgen/**": true,
+			"**/DATA_SIM/**": true,
+			"**/Datalogger/**": true,
+			"**/FOXTROT/**": true,
+			"**/GPMaker/**": true,
+			"**/GraphMaker/**": true,
+			"**/IOConfigurator/**": true,
+			"**/KEYB2Maker/**": true,
+			"**/LocalLib/**": true,
+			"**/PanelMaker/**": true,
+			"**/PIDMaker/**": true,
+			"**/PLCnet/**": true,
+			"**/Root/**": true,
+			"**/SendBackup/**": true,
+			"**/SendRoot/**": true,
+			"**/WebMaker/**": true,
+			"**/200_Lib/**": true,
+			"**/201_Lib/**": true,
+			"**/.DS_Store": true,
+			"**/Thumbs.db": true,
+			"**/.Trash/**": true
+		},
+		"explorer.compactFolders": false,
+		"files.watcherExclude": {
+			"**/.git/**": true,
+			"**/node_modules/**": true,
+			"**/.Trash/**": true
+		},
+		// ============================================================
+		// ⭐ MATERIAL ICON THEME (ikony + mierne sivé)
+		// ============================================================
+		"material-icon-theme.opacity": 0.45,
+		"material-icon-theme.activeIconPack": "none",
+		"material-icon-theme.saturation": 0.3,
+		"material-icon-theme.folders.color": "#888888",
+		"material-icon-theme.files.associations": {
+			".vscode": "folder",
+			"*.gitignore": "config",
+			"*.gitattributes": "config",
+			".git": "folder"
+		},
+		// ============================================================
+		// ⭐ FAVORITES – zdroje
+		// ============================================================
+		"favorites.groups": [
+			"Default",
+			"APP order",
+		],
+		"favorites.currentGroup": "Default",
+
+		"favorites.resources": [],
+		"favorites.sortOrder": "ASC"
+	}
+}
