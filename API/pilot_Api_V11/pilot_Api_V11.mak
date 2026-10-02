@@ -1,7 +1,7 @@
 ;# Varování: Tento soubor je spravován vývojovým prostredím Mosaic.
 ;# Nedoporucuje se upravovat ho rucne!
 
-#program pilot_Api_V11 , V2.1.0.0
+#program pilot_Api_V11 , V2.2.0.0
 ;**************************************
 ;<ActionName>NachHouse API V11 pilot</ActionName>
 ;<Programmer/>
@@ -9,6 +9,7 @@
 ;<Copyright/>
 ;**************************************
 ;<History>
+; V2.2.0.0 - LOAD_800 test branch
 ; V2.0.0.0 - shared RX/TX, test single owner, State handshake, CRC, no data revisions
 ;- connect PLC
 ;</History>
