@@ -1,4 +1,4 @@
- Default: všetky textové súbory checkoutuj ako CRLF
+# Default: všetky textové súbory checkoutuj ako CRLF
 * text eol=crlf
 
 # Mosaic / PLC zdrojáky (explicitne, aby bolo jasné)

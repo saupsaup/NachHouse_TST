@@ -6,13 +6,13 @@ Width=746
 Tab=0
 [TimeStamps]
 SaveTD=1790923693
-CompileTD=1790928404
+CompileTD=1790932725
 [FormDesign1]
 DockPos=1
 StayOnTop=0
 CanDock=0
-Height=512
-Width=1031
+Height=596
+Width=1511
 Top=0
 Left=0
 LeftPanel=145
