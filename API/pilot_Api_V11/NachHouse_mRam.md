@@ -1,0 +1,15 @@
+- dnes pisem progrma v IEC, skompilujem ho a nahram do PLC, 
+- Program priamo riadi hardware, ktore teco publikuje ako premenne na ich kanaloch CIB.
+-  Cize ked zabudneme vyjadrovanie sa teco jazykom, moj program priamo meni/cita nejake hodnoty v pamati RAM. 
+- v casti RAM pamate mam definovanu moju pamat mRam ARRAY[0..150000] 
+- a tu si mapujem dynamicky cez pointre, ktore maju svoju strukturu svetlo,zaluzie,kurenie, teploty, ovladace ... 
+- napr Ptrlight AT mRam[1000] of STRUCT_LIGHT to je jedna veta Light
+- ked je svetiel 200, tak od mRam[1000] sa pripocita 200 x SIZEOF(STRUCT_LIGHT) ktore konci na mRam[2345]
+- a za nim zacina dalsii blok prvkov napr rolety 
+- napr : PtrBlind AT mRam[2346] Of STRUCT_BLIND. 
+- Pointry si potom pridavan odoberam, a viem okamzite skocit na ziadany record. 
+- Ak sa prida svetlo, odlozim si cely mRam do datababoxu (vo verzii CP-2000 je to uz rychly rambox) a spatne v mRam premapujem . 
+- Napr ak sa pridala veta LIGHT tak uz konci povedzme na mRam[2399] 
+- a prvy record ptrBind zacina na mRam[2400]. 
+- Vsetky poitry maju svoju strukturue STRUCT ... END_STRUCT. 
+- preto nie je mozne na zaciatku definovat premenne TECO_API, lebo sa menia vyhradne v mRam[]

@@ -154,5 +154,8 @@
       </Interfaces>
       <Editor xmlns="http://www.tecomat.com"/>
     </Device>
+    <Global>
+      <Selector left="403" top="8" width="1003" height="713" maximized="false" params="0"/>
+    </Global>
   </Configuration>
 </TecoConfiguration>

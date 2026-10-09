@@ -7,7 +7,7 @@ iocfg=1
 [/ioconfig]
 
 [compiler]
-options=6197
+options=6205
 remzs=1
 dirs=""
 [/compiler]
@@ -26,7 +26,7 @@ ipaddr="192.168.33.200"
 isdyn=0
 dynip=""
 iptout=1000
-iptcp=0
+iptcp=1
 altport=0
 udpport=61682
 altsecureport=0
@@ -90,7 +90,7 @@ GLibRemoveExtensions=1
 GInsertCaret=1
 GSmartTabsST=0
 GEnhancedHomeST=0
-GTabSizeST=3
+GTabSizeST=2
 GShowLineNumbersST=1
 GFontSizeST=11
 GFontNameST="Consolas"
@@ -173,9 +173,9 @@ vartemp=1
 
 [filesystem]
 autofiletransfer=1
-sendpux=0
+sendpux=1
 sendexp=1
-sendpub=0
+sendpub=1
 backupsrcfilesq=0
 backupsrcfiles=0
 backupass=""
@@ -186,11 +186,11 @@ ttrpckgpasswarn=1
 ttrpckgpswtxt=1
 ttrpckgolcmapr=0
 ttrpckgolcname=1
-genpuxver=0
-puxutf8=0
+genpuxver=3
+puxutf8=1
 geniecexp=1
-genpub=0
-shortedsend="pilot_Ap"
+genpub=1
+shortedsend="iNh"
 sndfilesoffwarn=1
 resrcname=""
 resrcip=""

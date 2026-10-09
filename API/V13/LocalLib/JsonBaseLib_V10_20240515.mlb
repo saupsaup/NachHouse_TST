@@ -1,0 +1,1208 @@
+(*` {CSY}Knihovna vývojového systému Mosaic{ENU}Mosaic IDE library *)
+(*` {CSY}Jméno souboru{ENU}File name{} : D:\TecoLibSrc\JsonBaseLib\JsonBaseLib_V10_20240515.mlb *)
+(*` {CSY}Knihovna : JsonBaseLib{ENU}Library : JsonBaseLib{} 1.0 *)
+(*` {CSY}Autor{ENU}Author{} : Teco a.s. *)
+(*` {CSY}Autorská práva{ENU}Copyright{} : (c) 2012 - 2024 Teco a.s. *)
+(*` {CSY}Verze IEC pøekladaèe{ENU}IEC compiler version{} : 4.2.20.0 *)
+(*` {CSY}Verze assembleru{ENU}Assembler version{} : 4.3.00 *)
+
+//{Knihovna : JsonBaseLib 1.0  }
+(*` {CSY}Historie{ENU}History{}: *)
+(*`
+{CSY}
+v1.0 15.05.2024 Nem Úvodni verze knihovny s bloky fbJsonParser(), fbJsonParserEx() a fbJsonFileParser(), které jsou presunuty z knihovny JsonLibEx_v30
+
+{ENU}
+v1.0 2024-05-15 Nem Initial versions of the library with the fbJsonParser(), fbJsonParserEx() and fbJsonFileParser() blocks that are moved from the JsonLibEx_v30 library
+*)
+
+(*----------------------------------------------------------------------------*)
+// {LIBRARY="LOCALLIB\STDLIB_V22_20180619.MLB"}
+{LIBRARY="LOCALLIB\SYSLIB_V50_20230202.MLB"}
+{LIBRARY="LOCALLIB\FILELIB_V31_20231122.MLB"}
+
+VAR_GLOBAL CONSTANT
+ JSON_MAX_STACK_LEVEL {HIDDEN} : sint := 9;  (*`{ENU} max level of JSON stack {CSY} maximální úroveò JSON stacku*)
+
+END_VAR
+
+TYPE TJsonItem :
+  STRUCT
+    name             : string [255];  (*`{ENU} full name of item  {CSY} celý název položky*)
+    value            : string [255];  (*`{ENU} value of item {CSY} hodnota položky*)
+  END_STRUCT;
+END_TYPE
+
+TYPE TJsonParserStat {HIDDEN} : 
+  (json_none2,
+   json_object_name2,
+   json_object_value2 
+  );
+END_TYPE
+
+TYPE TJsonStackItem :
+  STRUCT
+    stat             : TJsonParserStat;  (*`{ENU} state of parsing {CSY} stav parseru*)
+    isArray          : bool;  (*`{ENU} array flag       {CSY} pøíznak pole*)
+    arrayIndex       : uint;  (*`{ENU} index of array   {CSY} index pole*)
+    name             : string [31];  (*`{ENU} name of item     {CSY} název položky*)
+  END_STRUCT;
+END_TYPE
+
+TYPE TJsonStack :
+  STRUCT
+    done {ALIGNED}   : bool;  (*`{ENU} next item is avalable {CSY} byla vyparsovaná položka*)
+    eod {ALIGNED}    : bool;  (*`{ENU} end of document       {CSY} konec dokumentu*)
+    error            : usint;  (*`{ENU} error code            {CSY} kód chyby*)
+    errTxt           : string [32];  (*`{ENU} error description     {CSY} popis chyby*)
+    maxLevel {HIDDEN} : sint;  (*`{ENU} max stack level       {CSY} max úroveò stacku*)
+    level            : sint;  (*`{ENU} stack level           {CSY} úroveò stacku*)
+    item             : ARRAY [0..9] OF TJsonStackItem;
+  END_STRUCT;
+END_TYPE
+
+TYPE TJsonInfo :
+  STRUCT
+    item             : TJsonItem;  (*`{ENU} JSON parser output  {CSY} výstup JSON parseru*)
+    stack            : TJsonStack;  (*`{ENU} stack for parsing   {CSY} zásobník pro analýzu dokumentu*)
+  END_STRUCT;
+END_TYPE
+
+__DECL FUNCTION_BLOCK fbJsonParser
+(*`{ENU} Converts one item from JSON document into a TJsonItem structure
+   {CSY} Pøevádí jednu položku JSON dokumentu do struktury TJsonItem*)
+  VAR_INPUT
+    start            : bool;  (*`{ENU} TRUE means start of parsing at the begin of JSON document, FALSE means continue {CSY} TRUE zaène parsovat od zaèátku JSON dat, FALSE pokraèuje tam, kde se minule skonèilo*)
+    shrink           : bool;  (*`{ENU} {CSY} TRUE odstraní z bufferu již zpracovanou èást a nezpracovaný zbytek pøesune na zaèátek bufferu*)
+    size             : udint;  (*`{ENU} {CSY} velikost bufferu s JSON dokumentem*)
+  END_VAR
+  VAR_IN_OUT
+    sourceJSON       : usint;  (*`{ENU} begin of JSON document {CSY} zaèátek JSON dat*)
+    jsonItem         : TJsonItem;  (*`{ENU} JSON parser output     {CSY} výstup JSON parseru*)
+  END_VAR
+  VAR_OUTPUT
+    done             : bool;  (*`{ENU} new item is ready    {CSY} byla vyparsována další položka*)
+    eod              : bool;  (*`{ENU} end of JSON document {CSY} konec JSON dokumentu*)
+    error            : usint;  (*`{ENU} error code           {CSY} error <> 0 ... došlo k chybì*)
+    restLen          : uint;  (*`{ENU} number of bytes remaining to be processed {CSY} poèet bytù, který zbývá zpracovat*)
+    jsonStack        : TJsonStack;  (*`{ENU} stack for parsing    {CSY} zásobník pro analýzu dokumentu*)
+  END_VAR
+  VAR
+    i                : sint;
+    index            : udint;
+    src              : PTR_TO usint;
+    end              : PTR_TO usint;
+    char             : usint;
+    break            : bool;
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbJsonParserEx
+(*`{ENU} Converts one item from JSON document into a TJsonInfo structure
+   {CSY} Pøevádí jednu položku JSON dokumentu do struktury TJsonInfo*)
+  VAR_INPUT
+    start            : bool;  (*`{ENU} TRUE means start of parsing at the begin of JSON document, FALSE means continue  {CSY} TRUE zaène parsovat od zaèátku JSON dat, FALSE pokraèuje tam, kde se minule skonèilo*)
+    shrink           : bool;  (*`{ENU} value = TRUE, removed from the buffer processed portion of the file. Unprocessed remnants of the buffer moves to the beginning the buffer {CSY} TRUE odstraní z bufferu již zpracovanou èást a nezpracovaný zbytek pøesune na zaèátek bufferu*)
+    size             : udint;  (*`{ENU} buffer size with the JSON document                                               {CSY} velikost bufferu s JSON dokumentem*)
+  END_VAR
+  VAR_IN_OUT
+    sourceJSON       : usint;  (*`{ENU} begin of JSON document                                                           {CSY} zaèátek JSON dat*)
+    JsonInfo         : TJsonInfo;  (*`{ENU} JSON parser output                                                               {CSY} výstup JSON parseru*)
+  END_VAR
+  VAR_OUTPUT
+    done             : bool;  (*`{ENU} new item is ready                                                                {CSY} byla vyparsována další položka*)
+    eod              : bool;  (*`{ENU} end of JSON document                                                             {CSY} konec JSON dokumentu*)
+    error            : usint;  (*`{ENU} error code                                                                       {CSY} error <> 0 ... došlo k chybì*)
+    restLen          : uint;  (*`{ENU} number of bytes remaining to be processed                                        {CSY} poèet bytù, který zbývá zpracovat*)
+  END_VAR
+  VAR
+    i                : sint;
+    index            : udint;
+    src              : PTR_TO usint;
+    end              : PTR_TO usint;
+    char             : usint;
+    break            : bool;
+    tmp              : udint;
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbJsonFileParser
+(*`{ENU} Parsing of JSON document from file. Information about JSON element is saved into TJsonInfo structure.
+  {CSY} Parsování JSON dokumentu ze souboru. Informace o vyparsované položce je uložena do struktury TJsonInfo.*)
+  VAR CONSTANT
+    JSON_BUMPER      : uint :=  256;  (*`{ENU} bumper of JSON buffer                  {CSY} nárazník v JSON bufferu*)
+    JSON_BUFFER_SIZE : uint :=  768;  (*`{ENU} size of JSON buffer                    {CSY} velikost bufferu*)
+  END_VAR
+  VAR_INPUT
+    exec             : bool;  (*`{ENU} request for parsing                    {CSY} parsovat JSON soubor*)
+  END_VAR
+  VAR_IN_OUT
+    fileName         : string [80];  (*`{ENU} mame of JSON file                      {CSY} jméno souboru s JSON dokumentem*)
+    JsonInfo         : TJsonInfo;  (*`{ENU} result of parsing                      {CSY} výsledek parsování*)
+  END_VAR
+  VAR_OUTPUT
+    start            : bool;  (*`{ENU} initialization flag                    {CSY} príznak inicializace bloku*)
+    done             : bool;  (*`{ENU} new item is ready in JSONItem          {CSY} výsledek parsování je pripraven v JsonInfo*)
+    busy             : bool;  (*`{ENU} block is busy                          {CSY} blok je zaneprázdnen*)
+    eof              : bool;  (*`{ENU} end of file                            {CSY} konec souboru*)
+    break            : bool;  (*`{ENU} buffer processed, continue next cycle  {CSY} buffer zpracován, pokracovat príští cyklus*)
+    err              : bool;  (*`{ENU} error flag                             {CSY} príznak chyby*)
+    errTxt           : string [80];  (*`{ENU} error description                      {CSY} popis chyby*)
+    fileSize         : udint;  (*`{ENU} size of file                           {CSY} velikost souboru*)
+    processed        : udint;  (*`{ENU} processed                              {CSY} zpracováno (pocet znaku)*)
+  END_VAR
+  VAR
+    rqInit           : bool;
+    rqFile           : bool;
+    rqParse          : bool;
+    rqStart          : bool;
+    trgExecOn        : R_TRIG;
+    ReadFile         : ReadFromFile;
+    JsonParser       : fbJsonParserEx;
+    JsonBuffer       : ARRAY [0..768] OF usint;
+    sumaLen          : udint;  (*`kolik nacteno ze souboru*)
+    actLen           : udint;  (*`aktualni velikost JSON bufferu*)
+    restLen          : uint;
+  END_VAR
+END_FUNCTION_BLOCK
+
+
+
+{USES=fbJsonParser:Memset,MemcpyPtr}
+{USES=fbJsonParserEx:Memset,MemcpyPtr}
+{USES=fbJsonFileParser:Memset,FileInfo,GetLastErr,GetLastErrTxt}
+#srcfile 'D:\TECOLIBSRC\JSONBASELIB\JSONBASELIB\JSONBASELIB.ST'
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOLIBSRC\JSONBASELIB\JSONBASELIB\FBJSONPARSER.ST'
+#pou fbJsonParser
+#srcline 1 ;FUNCTION_BLOCK fbJsonParser
+
+#struct fbJsonParser__temp__
+  string[34] PS0__st__
+#data byte _str_fbJsonParser_0 = 
+  'S','i','z','e',' ','o','f',' ','J','S','O','N',' ','d','o','c','u','m','e','n',
+  't',' ','i','s',' ','z','e','r','o',0
+P     61
+fbJsonParser_L0:
+ LINK __SizeOf(fbJsonParser__temp__)
+#srcline 30 ;  IF size = 0 THEN done := 0; error := 1; jsonStack.errTxt := 'Size of JSON document is zero'; RETURN; END_IF; // neni co parsovat
+ LDX  size
+#debug udint size
+ LD   udint 0
+ EQ
+ JMC  fbJsonParser_L1
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   usint 1
+ WRX  error
+#debug_left usint error
+ LD   0   ; null string
+ LEAX jsonStack
+ ADD  3  ; + offset 
+ WRI  
+ LEAX jsonStack
+ ADD  3  ; + offset 
+ LD   32
+ DST    ; Level 1
+ LEA  _str_fbJsonParser_0
+ SCON 
+#debug_left string jsonStack.errTxt
+ PDST   ; Level 1
+ JMP  fbJsonParser_RET
+fbJsonParser_L1:
+#srcline 31 ;  end := ADR(sourceJSON) + size;   // nastavit aktualni konec dat
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ LDX  size
+#debug udint size
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+#srcline 32 ;  IF start THEN
+ LDX  start
+#debug bool start
+ JMC  fbJsonParser_L3
+#srcline 33 ;    index := 0;
+ LD   udint 0
+ WRX  index
+#debug_left udint index
+#srcline 34 ;    memset( 0, sizeof(TJsonStack), void(jsonStack));
+ NXT
+ LD   udint 0
+ WR   __Instance__Memset~val
+#debug_left udint __Instance__Memset~val
+ LD   398  ; SizeOf()
+ WR   __Instance__Memset~length
+#debug_left uint __Instance__Memset~length
+ LEAX jsonStack
+ WR   __Instance__Memset~dest
+#debug_left pointer __Instance__Memset.dest
+ PRV
+ LEA  __Instance__Memset
+ CAL  Memset_L0
+#srcline 35 ;    jsonStack.maxLevel := JSON_MAX_STACK_LEVEL;   // nastavit max. povolenou uroven stacku
+ LD   sint 9
+ WRX  jsonStack~maxLevel
+#debug_left sint jsonStack.maxLevel
+#srcline 36 ;  ELSE
+ JMP  fbJsonParser_L4
+fbJsonParser_L3:
+#srcline 37 ;    IF shrink THEN
+ LDX  shrink
+#debug bool shrink
+ JMC  fbJsonParser_L5
+#srcline 38 ;      src := ADR(sourceJSON) + index;
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ LDX  index
+#debug udint index
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 39 ;      IF PTR_TO_UDINT(end) > PTR_TO_UDINT(src) THEN
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ GT
+ JMC  fbJsonParser_L7
+#srcline 40 ;        restLen := UDINT_TO_UINT( PTR_TO_UDINT(end) - PTR_TO_UDINT(src)); // pocet bytu do konce bufferu
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ SUB
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+#srcline 41 ;        IF PTR_TO_UDINT(src) <> PTR_TO_UDINT( ADR(sourceJSON)) THEN
+ LEAX src
+ LDIL 
+#debug pointer src
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ EQ
+ NEG
+ JMC  fbJsonParser_L9
+#srcline 42 ;          MemcpyPtr( source := src, dest := ADR(sourceJSON), length := UINT_TO_UDINT(restLen));
+ NXT
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ LDX  restLen
+#debug uint restLen
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ PRV
+ LEA  __Instance__MemcpyPtr
+ CAL  MemcpyPtr_L0
+#srcline 43 ;          index := 0;
+ LD   udint 0
+ WRX  index
+#debug_left udint index
+#srcline 44 ;        END_IF;
+fbJsonParser_L9:
+#srcline 45 ;      END_IF;
+fbJsonParser_L7:
+#srcline 46 ;      RETURN;                                                      // nic dalsiho krome shrink nedelat
+ JMP  fbJsonParser_RET
+#srcline 47 ;    END_IF;
+fbJsonParser_L5:
+#srcline 48 ;  END_IF;
+fbJsonParser_L4:
+#srcline 50 ;  src := ADR(sourceJSON) + index;
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ LDX  index
+#debug udint index
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 51 ;  {asm}
+#srcline 52
+    LDX    src
+#srcline 53
+    LDX    end
+#srcline 54
+    LEAX   jsonStack
+#srcline 55
+    LDX    jsonItem
+#srcline 56
+    LD     10          ; fcJsonParser
+#srcline 57
+    SYS    82
+#srcline 58
+    WRX    src
+#srcline 59 ;  {end_asm}
+#srcline 60 ;  index := PTR_TO_UDINT( src) - PTR_TO_UDINT( ADR( sourceJSON));
+ LEAX src
+ LDIL 
+#debug pointer src
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ SUB
+ WRX  index
+#debug_left udint index
+#srcline 62 ;  eod     := jsonStack.eod <> 0;
+ LDX  jsonStack~eod
+#debug bool jsonStack.eod
+ LD   bool 0       ; false
+ XOR 
+ WRX  eod
+#debug_left bool eod
+#srcline 63 ;  done    := jsonStack.done <> 0;
+ LDX  jsonStack~done
+#debug bool jsonStack.done
+ LD   bool 0       ; false
+ XOR 
+ WRX  done
+#debug_left bool done
+#srcline 64 ;  error   := jsonStack.error;
+ LDX  jsonStack~error
+#debug usint jsonStack.error
+ WRX  error
+#debug_left usint error
+#srcline 65 ;  IF eod THEN
+ LDX  eod
+#debug bool eod
+ JMC  fbJsonParser_L11
+#srcline 66 ;    restLen := 0;
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+#srcline 67 ;  ELSE
+ JMP  fbJsonParser_L12
+fbJsonParser_L11:
+#srcline 68 ;    restLen := UDINT_TO_UINT( PTR_TO_UDINT(end) - PTR_TO_UDINT(src));  // pocet bytu do konce bufferu
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ SUB
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+#srcline 69 ;  END_IF;
+fbJsonParser_L12:
+#srcline 70 ;END_FUNCTION_BLOCK
+fbJsonParser_RET:
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbJsonParser__InstanceInit__:
+ LINK 0
+ LD   udint $FFFFFFFF    ; nil
+ WRX  src
+ LD   udint $FFFFFFFF    ; nil
+ WRX  end
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOLIBSRC\JSONBASELIB\JSONBASELIB\FBJSONPARSEREX.ST'
+#pou fbJsonParserEx
+#srcline 1 ;FUNCTION_BLOCK fbJsonParserEx
+
+#struct fbJsonParserEx__temp__
+  string[34] PS0__st__
+#data byte _str_fbJsonParserEx_0 = 
+  'S','i','z','e',' ','o','f',' ','J','S','O','N',' ','d','o','c','u','m','e','n',
+  't',' ','i','s',' ','z','e','r','o',0
+P     61
+fbJsonParserEx_L0:
+ LINK __SizeOf(fbJsonParserEx__temp__)
+#srcline 30 ;  IF size = 0 THEN done := 0; error := 1; JsonInfo.stack.errTxt := 'Size of JSON document is zero'; RETURN; END_IF; // neni co parsovat
+ LDX  size
+#debug udint size
+ LD   udint 0
+ EQ
+ JMC  fbJsonParserEx_L1
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   usint 1
+ WRX  error
+#debug_left usint error
+ LD   0   ; null string
+ LDX  JsonInfo
+ ADD  515  ; + offset 
+ WRI  
+ LDX  JsonInfo
+ ADD  515  ; + offset 
+ LD   32
+ DST    ; Level 1
+ LEA  _str_fbJsonParserEx_0
+ SCON 
+#debug_left string JsonInfo.stack.errTxt
+ PDST   ; Level 1
+ JMP  fbJsonParserEx_RET
+fbJsonParserEx_L1:
+#srcline 31 ;  end := ADR(sourceJSON) + size;   // nastavit aktualni konec dat
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ LDX  size
+#debug udint size
+ ADD
+ LEAX end
+ WRIL 
+#debug_left pointer end
+#srcline 32 ;  IF start THEN
+ LDX  start
+#debug bool start
+ JMC  fbJsonParserEx_L3
+#srcline 33 ;    index := 0;
+ LD   udint 0
+ WRX  index
+#debug_left udint index
+#srcline 34 ;    memset( 0, sizeof( JsonInfo.stack), void(JsonInfo.stack));
+ NXT
+ LD   udint 0
+ WR   __Instance__Memset~val
+#debug_left udint __Instance__Memset~val
+ LD   398  ; SizeOf()
+ WR   __Instance__Memset~length
+#debug_left uint __Instance__Memset~length
+ LDX  JsonInfo
+ ADD  512  ; + offset 
+ WR   __Instance__Memset~dest
+#debug_left pointer __Instance__Memset.dest
+ PRV
+ LEA  __Instance__Memset
+ CAL  Memset_L0
+#srcline 35 ;    JsonInfo.stack.maxLevel := JSON_MAX_STACK_LEVEL;   // nastavit max. povolenou uroven stacku
+ LD   sint 9
+ LDX  JsonInfo
+ ADD  548  ; + offset 
+ WRI 
+#debug_left sint JsonInfo.stack.maxLevel
+#srcline 36 ;  ELSE
+ JMP  fbJsonParserEx_L4
+fbJsonParserEx_L3:
+#srcline 37 ;    IF shrink THEN
+ LDX  shrink
+#debug bool shrink
+ JMC  fbJsonParserEx_L5
+#srcline 38 ;      src := ADR(sourceJSON) + index;
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ LDX  index
+#debug udint index
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 39 ;      IF PTR_TO_UDINT(end) > PTR_TO_UDINT(src) THEN
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ GT
+ JMC  fbJsonParserEx_L7
+#srcline 40 ;        restLen := UDINT_TO_UINT( PTR_TO_UDINT(end) - PTR_TO_UDINT(src)); // pocet bytu do konce bufferu
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ SUB
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+#srcline 41 ;        IF PTR_TO_UDINT(src) <> PTR_TO_UDINT( ADR(sourceJSON)) THEN
+ LEAX src
+ LDIL 
+#debug pointer src
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ EQ
+ NEG
+ JMC  fbJsonParserEx_L9
+#srcline 42 ;          MemcpyPtr( source := src, dest := ADR(sourceJSON), length := UINT_TO_UDINT(restLen));
+ NXT
+ LEAX src
+ LDIL 
+#debug pointer src
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ LDX  restLen
+#debug uint restLen
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ PRV
+ LEA  __Instance__MemcpyPtr
+ CAL  MemcpyPtr_L0
+#srcline 43 ;          index := 0;
+ LD   udint 0
+ WRX  index
+#debug_left udint index
+#srcline 44 ;        END_IF;
+fbJsonParserEx_L9:
+#srcline 45 ;      END_IF;
+fbJsonParserEx_L7:
+#srcline 46 ;      RETURN;                                                      // nic dalsiho krome shrink nedelat
+ JMP  fbJsonParserEx_RET
+#srcline 47 ;    END_IF;
+fbJsonParserEx_L5:
+#srcline 48 ;  END_IF;
+fbJsonParserEx_L4:
+#srcline 50 ;  src := ADR(sourceJSON) + index;
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ LDX  index
+#debug udint index
+ ADD
+ LEAX src
+ WRIL 
+#debug_left pointer src
+#srcline 51 ;  tmp := sizeof( TJsonInfo.item);
+ LD   512  ; SizeOf()
+ WRX  tmp
+#debug_left udint tmp
+#srcline 52 ;  {asm}
+#srcline 53
+    LDX    src
+#srcline 54
+    LDX    end
+#srcline 55
+    LDX    JsonInfo
+#srcline 56
+    LDX    tmp
+#srcline 57
+    ADD                ;adresa JsonInfo.stack
+#srcline 58
+    LDX    JsonInfo    ;adresa JsonInfo.item
+#srcline 59
+    LD     10
+#srcline 60
+    SYS    82
+#srcline 61
+    WRX    src
+#srcline 62 ;  {end_asm}
+#srcline 63 ;  index := PTR_TO_UDINT( src) - PTR_TO_UDINT( ADR( sourceJSON));
+ LEAX src
+ LDIL 
+#debug pointer src
+ LDX  sourceJSON
+#debug pointer sourceJSON
+ SUB
+ WRX  index
+#debug_left udint index
+#srcline 64 ;  eod     := JsonInfo.stack.eod <> 0;
+ LDX  JsonInfo
+ ADD  513  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool JsonInfo.stack.eod
+ LD   bool 0       ; false
+ XOR 
+ WRX  eod
+#debug_left bool eod
+#srcline 65 ;  done    := JsonInfo.stack.done <> 0;
+ LDX  JsonInfo
+ ADD  512  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool JsonInfo.stack.done
+ LD   bool 0       ; false
+ XOR 
+ WRX  done
+#debug_left bool done
+#srcline 66 ;  error   := JsonInfo.stack.error;
+ LDX  JsonInfo
+ ADD  514  ; + offset 
+ LDI  
+#debug usint JsonInfo.stack.error
+ WRX  error
+#debug_left usint error
+#srcline 67 ;  IF eod THEN
+ LDX  eod
+#debug bool eod
+ JMC  fbJsonParserEx_L11
+#srcline 68 ;    restLen := 0;
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+#srcline 69 ;  ELSE
+ JMP  fbJsonParserEx_L12
+fbJsonParserEx_L11:
+#srcline 70 ;    restLen := UDINT_TO_UINT( PTR_TO_UDINT(end) - PTR_TO_UDINT(src));  // pocet bytu do konce bufferu
+ LEAX end
+ LDIL 
+#debug pointer end
+ LEAX src
+ LDIL 
+#debug pointer src
+ SUB
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+#srcline 71 ;  END_IF;
+fbJsonParserEx_L12:
+#srcline 72 ;END_FUNCTION_BLOCK
+fbJsonParserEx_RET:
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbJsonParserEx__InstanceInit__:
+ LINK 0
+ LD   udint $FFFFFFFF    ; nil
+ WRX  src
+ LD   udint $FFFFFFFF    ; nil
+ WRX  end
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOLIBSRC\JSONBASELIB\JSONBASELIB\FBJSONFILEPARSER.ST'
+#pou fbJsonFileParser
+#srcline 1 ;FUNCTION_BLOCK fbJsonFileParser
+
+#struct fbJsonFileParser__temp__
+  TFileInfo fInfo,  ; kvuli zjisteni velikosti souboru
+  string[82] PS0__st__
+#data byte _str_fbJsonFileParser_0 = 
+  '',0
+P     61
+fbJsonFileParser_L0:
+ LINK __SizeOf(fbJsonFileParser__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 45 ;  done := 0; start := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  start
+#debug_left bool start
+#srcline 46 ;  trgExecOn(CLK := exec);
+ LDX  exec
+#debug bool exec
+ WRX  trgExecOn~CLK
+#debug_left bool trgExecOn~CLK
+ LEAX trgExecOn
+ CAL  R_TRIG_L0
+#srcline 47 ;  IF exec THEN
+ LDX  exec
+#debug bool exec
+ JMC  fbJsonFileParser_L1
+#srcline 48 ;    IF trgExecOn.Q THEN
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ JMC  fbJsonFileParser_L3
+#srcline 49 ;      // odstartovat cteni JSON dokumentu
+#srcline 50 ;      rqInit := 0; busy := 1; err := 0; start := 1; errTxt := '';
+ LD   bool 0       ; false
+ WRX  rqInit
+#debug_left bool rqInit
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  err
+#debug_left bool err
+ LD   bool -1      ; true
+ WRX  start
+#debug_left bool start
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbJsonFileParser_0
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 51 ;      rqFile := 0; rqParse := 0; fileSize := 0; restLen := 0; sumaLen := 0;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   udint 0
+ WRX  fileSize
+#debug_left udint fileSize
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+ LD   udint 0
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 52 ;      Memset(val := 0, length := sizeof(JsonInfo), dest := void(JsonInfo));
+ NXT
+ LD   udint 0
+ WR   __Instance__Memset~val
+#debug_left udint __Instance__Memset~val
+ LD   910  ; SizeOf()
+ WR   __Instance__Memset~length
+#debug_left uint __Instance__Memset~length
+ LDX  JsonInfo
+ WR   __Instance__Memset~dest
+#debug_left pointer __Instance__Memset.dest
+ PRV
+ LEA  __Instance__Memset
+ CAL  Memset_L0
+#srcline 53 ;      ReadFile( exec := 0, fileName := fileName, dstVar := void(JsonBuffer), size := 0);
+ LD   bool 0       ; false
+ WRX  ReadFile~exec
+#debug_left bool ReadFile~exec
+ LDX  fileName
+ WRX  ReadFile~fileName
+#debug_left pointer ReadFile.fileName
+ LEAX JsonBuffer
+ WRX  ReadFile~dstVar
+#debug_left pointer ReadFile.dstVar
+ LD   udint 0
+ WRX  ReadFile~size
+#debug_left udint ReadFile~size
+ LEAX ReadFile
+ CAL  ReadFromFile_L0
+#srcline 54 ;    END_IF;
+fbJsonFileParser_L3:
+#srcline 55 ;    IF NOT rqInit THEN
+ LDX  rqInit
+#debug bool rqInit
+ NEG
+ JMC  fbJsonFileParser_L5
+#srcline 56 ;      rqInit := FileInfo( fileName := fileName, fileDesc := fInfo);    // kolik budu cist
+ NXT
+ LDX  fileName
+ WR   __Instance__FileInfo~fileName
+#debug_left pointer __Instance__FileInfo.fileName
+ LEAY fInfo
+ WR   __Instance__FileInfo~fileDesc
+#debug_left pointer __Instance__FileInfo.fileDesc
+ PRV
+ LEA  __Instance__FileInfo
+ CAL  FileInfo_L0
+ WRX  rqInit
+#debug_left bool rqInit
+#srcline 57 ;      IF rqInit THEN
+ LDX  rqInit
+#debug bool rqInit
+ JMC  fbJsonFileParser_L7
+#srcline 58 ;        rqFile := 1; rqStart := 1; fileSize := fInfo.fileSize;
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool -1      ; true
+ WRX  rqStart
+#debug_left bool rqStart
+ LDY  fInfo~fileSize
+#debug udint fInfo.fileSize
+ WRX  fileSize
+#debug_left udint fileSize
+#srcline 59 ;      ELSE
+ JMP  fbJsonFileParser_L8
+fbJsonFileParser_L7:
+#srcline 60 ;        err := 1; busy := 0;                     // chyba pri cteni souboru
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 61 ;        GetLastErrTxt( errCode := GetLastErr(), errMessage := errTxt);  // popis chyby
+ NXT
+ LEA  __Instance__GetLastErr
+ CAL  GetLastErr_L0
+ WR   __Instance__GetLastErrTxt~errCode
+#debug_left udint __Instance__GetLastErrTxt~errCode
+ LEAX errTxt
+ WR   __Instance__GetLastErrTxt~errMessage
+#debug_left pointer __Instance__GetLastErrTxt.errMessage
+ PRV
+ LEA  __Instance__GetLastErrTxt
+ CAL  GetLastErrTxt_L0
+#srcline 62 ;      END_IF;
+fbJsonFileParser_L8:
+#srcline 63 ;    END_IF;
+fbJsonFileParser_L5:
+#srcline 64 ;    // nacitat v kazdem cyklu pokud mozno max. 512 bytu
+#srcline 65 ;    ReadFile( exec := rqFile, fileName := fileName, dstVar := void(JsonBuffer[restLen]), seek := sumaLen, size := UINT_TO_UDINT(JSON_BUFFER_SIZE - restLen));
+ LDX  rqFile
+#debug bool rqFile
+ WRX  ReadFile~exec
+#debug_left bool ReadFile~exec
+ LDX  fileName
+ WRX  ReadFile~fileName
+#debug_left pointer ReadFile.fileName
+ LEAX JsonBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  ReadFile~dstVar
+#debug_left pointer ReadFile.dstVar
+ LDX  sumaLen
+#debug udint sumaLen
+ WRX  ReadFile~seek
+#debug_left udint ReadFile~seek
+ LD   uint 768
+ LDX  restLen
+#debug uint restLen
+ SUB
+ AND  $FFFF
+ WRX  ReadFile~size
+#debug_left udint ReadFile~size
+ LEAX ReadFile
+ CAL  ReadFromFile_L0
+#srcline 66 ;    IF rqFile THEN
+ LDX  rqFile
+#debug bool rqFile
+ JMC  fbJsonFileParser_L9
+#srcline 67 ;      busy := 1;
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 68 ;      IF ReadFile.done THEN
+ LDX  ReadFile~done
+#debug bool ReadFile.done
+ JMC  fbJsonFileParser_L11
+#srcline 69 ;        actLen  := UINT_TO_UDINT(restLen) + ReadFile.actSize;      // aktualni velikost JSON bufferu
+ LDX  restLen
+#debug uint restLen
+ LDX  ReadFile~actSize
+#debug udint ReadFile.actSize
+ ADD
+ WRX  actLen
+#debug_left udint actLen
+#srcline 70 ;        sumaLen := sumaLen + ReadFile.actSize;                     // celkove jiz nacteno ze souboru
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  ReadFile~actSize
+#debug udint ReadFile.actSize
+ ADD
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 71 ;        rqFile := 0; rqParse := 1;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 72 ;        // shodit nabeznou hranu ReadFile.exec
+#srcline 73 ;        ReadFile( exec := 0, fileName := fileName, dstVar := void(JsonBuffer), size := 0);
+ LD   bool 0       ; false
+ WRX  ReadFile~exec
+#debug_left bool ReadFile~exec
+ LDX  fileName
+ WRX  ReadFile~fileName
+#debug_left pointer ReadFile.fileName
+ LEAX JsonBuffer
+ WRX  ReadFile~dstVar
+#debug_left pointer ReadFile.dstVar
+ LD   udint 0
+ WRX  ReadFile~size
+#debug_left udint ReadFile~size
+ LEAX ReadFile
+ CAL  ReadFromFile_L0
+#srcline 74 ;        RETURN;                                                      // 1 cyklus po nacteni pockat (aby po nacteni bylo na vystupu busy)
+ JMP  fbJsonFileParser_RET
+#srcline 75 ;      ELSIF ReadFile.err THEN
+ JMP  fbJsonFileParser_L12
+fbJsonFileParser_L11:
+ LDX  ReadFile~err
+#debug bool ReadFile.err
+ JMC  fbJsonFileParser_L13
+#srcline 76 ;        err := 1; busy := 0; rqFile := 0;                               // chyba pri cteni souboru
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 77 ;        GetLastErrTxt(errCode :=  GetLastErr(), errMessage := errTxt);  // popis chyby
+ NXT
+ LEA  __Instance__GetLastErr
+ CAL  GetLastErr_L0
+ WR   __Instance__GetLastErrTxt~errCode
+#debug_left udint __Instance__GetLastErrTxt~errCode
+ LEAX errTxt
+ WR   __Instance__GetLastErrTxt~errMessage
+#debug_left pointer __Instance__GetLastErrTxt.errMessage
+ PRV
+ LEA  __Instance__GetLastErrTxt
+ CAL  GetLastErrTxt_L0
+#srcline 78 ;      END_IF;
+ JMP  fbJsonFileParser_L12
+fbJsonFileParser_L13:
+fbJsonFileParser_L12:
+#srcline 79 ;    END_IF;
+fbJsonFileParser_L9:
+#srcline 80 ;    // parsovat dokument
+#srcline 81 ;    IF rqParse THEN
+ LDX  rqParse
+#debug bool rqParse
+ JMC  fbJsonFileParser_L14
+#srcline 82 ;      // parsovani dat v JSON souboru
+#srcline 83 ;      JsonParser( start := rqStart, shrink := 0, size := actLen, sourceJSON := void( JsonBuffer),JsonInfo := JsonInfo);
+ LDX  rqStart
+#debug bool rqStart
+ WRX  JsonParser~start
+#debug_left bool JsonParser~start
+ LD   bool 0       ; false
+ WRX  JsonParser~shrink
+#debug_left bool JsonParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  JsonParser~size
+#debug_left udint JsonParser~size
+ LEAX JsonBuffer
+ WRX  JsonParser~sourceJSON
+#debug_left pointer JsonParser.sourceJSON
+ LDX  JsonInfo
+ WRX  JsonParser~JsonInfo
+#debug_left pointer JsonParser.JsonInfo
+ LEAX JsonParser
+ CAL  fbJsonParserEx_L0
+#srcline 84 ;      rqStart := 0; restLen := JsonParser.restLen;          // nastavit, kolik jeste zbyva zpracovat
+ LD   bool 0       ; false
+ WRX  rqStart
+#debug_left bool rqStart
+ LDX  JsonParser~restLen
+#debug uint JsonParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 85 ;      IF JsonParser.done THEN
+ LDX  JsonParser~done
+#debug bool JsonParser.done
+ JMC  fbJsonFileParser_L16
+#srcline 86 ;        done := 1; busy := 0;
+ LD   bool -1      ; true
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 87 ;      ELSIF JsonParser.error <> 0 THEN
+ JMP  fbJsonFileParser_L17
+fbJsonFileParser_L16:
+ LDX  JsonParser~error
+#debug usint JsonParser.error
+ LD   usint 0
+ EQ
+ NEG
+ JMC  fbJsonFileParser_L18
+#srcline 88 ;        err := 1; busy := 0; rqParse := 0;
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 89 ;        errTxt := JsonInfo.Stack.errTxt;
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LDX  JsonInfo
+ ADD  515  ; + offset 
+#debug string JsonInfo.Stack.errTxt
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 90 ;      END_IF;
+ JMP  fbJsonFileParser_L17
+fbJsonFileParser_L18:
+fbJsonFileParser_L17:
+#srcline 91 ;      IF sumaLen < fileSize THEN
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  fileSize
+#debug udint fileSize
+ LT
+ JMC  fbJsonFileParser_L19
+#srcline 92 ;        IF JsonParser.restLen <= JSON_BUMPER THEN
+ LDX  JsonParser~restLen
+#debug uint JsonParser.restLen
+ LD   uint 256
+ GT
+ NEG
+ JMC  fbJsonFileParser_L21
+#srcline 93 ;          // shrink buffer s JSON dokumentem
+#srcline 94 ;          JsonParser( start := 0, shrink := 1, size := actLen, sourceJSON := void( JsonBuffer),JsonInfo := JsonInfo,);
+ LD   bool 0       ; false
+ WRX  JsonParser~start
+#debug_left bool JsonParser~start
+ LD   bool -1      ; true
+ WRX  JsonParser~shrink
+#debug_left bool JsonParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  JsonParser~size
+#debug_left udint JsonParser~size
+ LEAX JsonBuffer
+ WRX  JsonParser~sourceJSON
+#debug_left pointer JsonParser.sourceJSON
+ LDX  JsonInfo
+ WRX  JsonParser~JsonInfo
+#debug_left pointer JsonParser.JsonInfo
+ LEAX JsonParser
+ CAL  fbJsonParserEx_L0
+#srcline 95 ;          restLen := JsonParser.restLen;      // nastavit, kolik jeste zbyva zpracovat
+ LDX  JsonParser~restLen
+#debug uint JsonParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 96 ;          rqFile := 1; rqParse := 0;          // nacist dalsi cast dokumentu
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 97 ;          busy := 1;                          // signalizovat ukonceni parsovani
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 98 ;        END_IF;
+fbJsonFileParser_L21:
+#srcline 99 ;      END_IF;
+fbJsonFileParser_L19:
+#srcline 100 ;      IF JsonParser.eod THEN
+ LDX  JsonParser~eod
+#debug bool JsonParser.eod
+ JMC  fbJsonFileParser_L23
+#srcline 101 ;        rqParse := 0; busy := 0; done := 0;   // konec dokumentu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+#srcline 102 ;      END_IF;
+fbJsonFileParser_L23:
+#srcline 103 ;    END_IF;
+fbJsonFileParser_L14:
+#srcline 104 ;    eof := JsonInfo.stack.eod;                 // nastavit priznak konec souboru
+ LDX  JsonInfo
+ ADD  513  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool JsonInfo.stack.eod
+ WRX  eof
+#debug_left bool eof
+#srcline 105 ;    processed := sumaLen - UINT_TO_UDINT(restLen);
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  restLen
+#debug uint restLen
+ SUB
+ WRX  processed
+#debug_left udint processed
+#srcline 106 ;  ELSE
+ JMP  fbJsonFileParser_L2
+fbJsonFileParser_L1:
+#srcline 107 ;    busy := 0; eof := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  eof
+#debug_left bool eof
+#srcline 108 ;  END_IF;
+fbJsonFileParser_L2:
+#srcline 109 ;  break := eof OR err OR busy OR NOT exec;    // prerusit zpracovani
+ LDX  eof
+#debug bool eof
+ LDX  err
+#debug bool err
+ OR  
+ LDX  busy
+#debug bool busy
+ OR  
+ LDX  exec
+#debug bool exec
+ NEG
+ OR  
+ WRX  break
+#debug_left bool break
+#srcline 110 ;END_FUNCTION_BLOCK
+fbJsonFileParser_RET:
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbJsonFileParser__InstanceInit__:
+ LINK 0
+ LEAX JsonParser
+ CAL  fbJsonParserEx__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+$$  Îÿ ž

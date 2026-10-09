@@ -1,0 +1,5481 @@
+(*` {CSY}Knihovna vývojového systému Mosaic{ENU}Mosaic IDE library *)
+(*` {CSY}Jméno souboru{ENU}File name{} : D:\TecoLibSrc\JsonLibEx\JsonLibEx_V34_20260924.mlb *)
+(*` {CSY}Knihovna : JsonLibEx{ENU}Library : JsonLibEx{} 3.4 *)
+(*` {CSY}Autor{ENU}Author{} : Teco a.s. *)
+(*` {CSY}Autorská práva{ENU}Copyright{} : (c) 2012 - 2026 Teco a.s. *)
+(*` {CSY}Verze IEC pøekladaèe{ENU}IEC compiler version{} : 4.2.34.0 *)
+(*` {CSY}Verze assembleru{ENU}Assembler version{} : 4.3.00 *)
+
+//{Knihovna : JsonLibEx 3.4  }
+(*` {CSY}Historie{ENU}History{}: *)
+(*`
+{CSY}
+v1.0 16.11.2012 Nem Úvodni verze knihovny
+v1.1 28.11.2014 Ciz Doplnìny bloky fbJsonParserEx(),
+                    fbJsonFileParser() a fbJsonPageParser()
+v1.2 08.07.2015 Nem Pøi chybì pársovaní a po dokonèení pársování 
+                    korektnì uzavøeno spojení se serverem
+v1.3 26.10.2015 Nem ve fbJsonPageParser() použit blok
+                    fbSplitUrlAddress() z InternetLib_v34
+v1.4 26.10.2017 Nem ve fbJsonPageParser() zvìtšena lokální
+                    promìnná Action na STRING[255] kvuli
+                    fbSplitUrlAddress() z InternetLib_v42
+v1.4 27.11.2018 Nem Otestovano s Foxtrot CP-2xxx v1.1.011
+v1.5 07.01.2019 Nem Oprava zahajeni parsovani ve fbJsonPageParser
+v1.6 25.04.2019 Nem doplnìny funkce GetLastJsonError(),
+                    VarApiToJsonBuf(), JsonBufToVarApi(),
+                    VarApiToJsonFile() a JsonFileToVarApi()
+                    (pouze pro CP-2xxx)
+                    do fbJsonPageParser() doplnìna ochrana
+                    proti zacyklení pøi pøíjmu prázdného json
+v1.7 25.06.2019 Nem doplnìn fbGetJsonAndSetVar()
+v1.8 20.03.2020 Nem úprava fbGetJsonAndSetVar() pro prázdné varName
+                    (když JSON obsahuje i jméno promìnné)
+v1.9 27.07.2020 Nem do bloku fbGetJsonAndSetVar() doplnìna
+                    možnost nastavit timeout
+v2.0 10.02.2023 Byd pøidán blok fbJsonPageParser2 umožòující 
+                    zvolit HTTP metodu a definovat tìlo požadavku
+
+v3.0 15.05.2024 Nem bloky fbJsonParser(), fbJsonParserEx() a
+                    fbJsonFileParser() presunuty do knihovny JsonBaseLib
+v3.1 22.01.2026 Nem Doplnìn blok fbPostDataAndSetVar()
+v3.2 27.05.2026 Nem Opraveno jméno log souboru ve fbPostDataAndSetVar()
+                    a fbGetJsonAndSetVar()
+v3.3 17.08.2026 Nem Blok fbJsonPageParser2 akceptuje odpovìïi 200,...,205 stejnì jako 200 OK
+v3.4 24.09.2026 Nem Použita funkce REPLACE_2CHARS z knihovny ConvertLib_v28
+
+{ENU}
+v1.0 2012-11-16 Nem First edition
+v1.1 2014-11-28 Ciz Added blocks fbJsonParserEx(),
+                    fbJsonFileParser() and fbJsonPageParser()
+v1.2 2015-07-08 Nem Connection with server is closed 
+                    when parsing error occurred
+v1.3 2015-10-26 Nem fbJsonPageParser() uses block
+                    fbSplitUrlAddress() from InternetLib_v34 
+v1.4 2017-10-26 Nem in fbJsonPageParser() was changed size 
+                    of internal variable Action to STRING[255] 
+                    - because of fbSplitUrlAddress() from InternetLib_v42
+v1.4 2018-11-27 Nem Tested with Foxtrot CP-2xxx v1.1.011
+v1.5 2019-01-07 Nem Better start of parsing in fbJsonPageParser
+v1.6 2019-04-25 Nem new functions GetLastJsonError(),
+                    VarApiToJsonBuf(), JsonBufToVarApi(),
+                    VarApiToJsonFile() ans JsonFileToVarApi()
+                    (for CP-2xxx only)
+v1.7 2019-06-25 Nem new function block fbGetJsonAndSetVar()
+v1.8 2020-03-20 Nem modification of fbGetJsonAndSetVar() if varName is empty
+                    (when JSON contains name of variable)
+v1.9 2020-07-27 Nem new input timeout added to block fbGetJsonAndSetVar() 
+v2.0 2023-02-10 Byd added function block fbJsonPageParser2 
+                    where HTTP metod can be selected and specify request body
+
+v3.0 2024-05-15 Nem bloky fbJsonParser(), fbJsonParserEx() and
+                    fbJsonFileParser() removed into JsonBaseLib library
+v3.1 2026-01-22 Nem Added block fbPostDataAndSetVar()
+v3.2 2026-05-27 Nem Corrected log file name in fbPostDataAndSetVar()
+                    and fbGetJsonAndSetVar()
+v3.3 2026-08-17 Nem The fbJsonPageParser2 block accepts responses 200,...,205 as well as 200 OK
+v3.4 2026-09-24 Nem Used REPLACE_2CHARS function from ConvertLib_v28 library
+*)
+
+(*----------------------------------------------------------------------------*)
+{LIBRARY="LOCALLIB\STDLIB_V22_20180619.MLB"}
+{LIBRARY="LOCALLIB\SYSLIB_V53_20260227.MLB"}
+{LIBRARY="LOCALLIB\FILELIB_V36_20251203.MLB"}
+{LIBRARY="LOCALLIB\COMLIB_V43_20260604.MLB"}
+// {LIBRARY="LOCALLIB\ENCRYPTLIB_V15_20260115.MLB"}
+// {LIBRARY="LOCALLIB\CONVERTLIB_V28_20260924.MLB"}
+{LIBRARY="LOCALLIB\INTERNETLIB_V72_20260126.MLB"}
+{LIBRARY="LOCALLIB\JSONBASELIB_V10_20240515.MLB"}
+
+__DECL FUNCTION GetLastJsonError : string
+END_FUNCTION
+
+__DECL FUNCTION VarApiToJsonBuf : udint
+(*`{ENU} Writes JSON with variables description into buffer in PLC memory. Returns number of written characters.
+  {CSY} Zapíše JSON popisem promìnných do bufferu v pamìti PLC. Vrátí poèet zapsaných znakù.*)
+  VAR_IN_OUT
+    varNames         : string [80];  (*`{CSY} jména promìnných oddìlená znakem &  {ENU} names of variables seoarated by &*)
+    buffer           : usint;  (*`{CSY} jméno bufferu, kam bude uložen JSON {ENU} name of buffer for json*)
+  END_VAR
+  VAR_INPUT
+    maxBufLen        : udint;  (*`{CSY} velikost bufferu {ENU} buffer size*)
+  END_VAR
+  VAR_TEMP
+    bufLen           : udint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION JsonBufToVarApi : udint
+(*`{ENU} Sets values of variables according JSON buffer. Returns number of processed characters.
+  {CSY} Nastaví hodnoty promìnných podle JSON bufferu. Vrátí poèet zpracovaných znakù.*)
+  VAR_IN_OUT
+    buffer           : usint;  (*`{CSY} jméno bufferu, kde je uložen JSON {ENU} name of json buffer*)
+  END_VAR
+  VAR_INPUT
+    strict           : bool;  (*`{CSY} TRUE promìnné v JSON musí pøesnì souhlasit s promìnnými v PLC, FALSE hodnoty promìnných, které v PLC neexistují, jsou ignorovány {ENU} TRUE means strictly mode*)
+  END_VAR
+  VAR_TEMP
+    bufLen           : udint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION VarApiToJsonFile : udint
+(*`{ENU} Writes JSON with variables description into file in PLC. Returns number of written characters.
+  {CSY} Zapíše JSON popisem promìnných do souboru. Vrátí poèet zapsaných znakù (velikost vytvoøeného souboru).*)
+  VAR_IN_OUT
+    varNames         : string [80];  (*`{CSY} jména promìnných oddìlená znakem & {ENU} names of variables seoarated by &*)
+    fileName         : string [80];  (*`{CSY} název souboru, kam bude uložen JSON (vèetnì cesty) {ENU} file name (including path)*)
+  END_VAR
+  VAR_INPUT
+    formatted        : bool;  (*`{CSY} TRUE formátovaný JSON, FALSE neformátovaný JSON {ENU} TRUE means formatted json, FALSE is unformatted json*)
+  END_VAR
+  VAR_TEMP
+    fileLen          : udint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION JsonFileToVarApi : udint
+(*`{ENU} Sets values of variables according JSON file. Returns number of processed characters.
+  {CSY} Nastaví hodnoty promìnných podle JSON souboru. Vrátí poèet zpracovaných znakù.*)
+  VAR_IN_OUT
+    fileName         : string [80];  (*`{CSY} název souboru, kde je uložen JSON (vèetnì cesty) {ENU} file name (including path)*)
+  END_VAR
+  VAR_INPUT
+    strict           : bool;  (*`{CSY} TRUE promìnné v JSON musí pøesnì souhlasit s promìnnými v PLC, FALSE hodnoty promìnných, které v PLC neexistují, jsou ignorovány {ENU} TRUE means strictly mode*)
+  END_VAR
+  VAR_TEMP
+    fileLen          : udint;
+  END_VAR
+END_FUNCTION
+
+__DECL FUNCTION_BLOCK fbJsonPageParser
+(*`{ENU} Parsing of JSON document file from web site. Information about json element is saved into TjsonInfo structure.
+  {CSY} Parsování JSON dokumentu z web stránky. Informace o vyparsované položce je uložena do struktury TjsonInfo.*)
+  VAR CONSTANT
+    JSON_BUMPER      : uint :=  256;  (*`{ENU} bumper of json buffer                    {CSY} nárazník v json bufferu*)
+    JSON_BUFFER_SIZE : uint :=  768;  (*`{ENU} size of json buffer                      {CSY} velikost bufferu*)
+  END_VAR
+  VAR_INPUT
+    exec             : bool;  (*`{ENU} request for parsing                      {CSY} parsovat json soubor*)
+    chanCode         : uint;  (*`{ENU} channel code (ETH1_uni0, ETH1_uni1,...)  {CSY} komunikaèní kanál (ETH1_uni0, ETH1_uni1,...)*)
+  END_VAR
+  VAR_IN_OUT
+    pageName         : string [255];  (*`{ENU} mame of web page with json file          {CSY} název web stránky s s json dokumentem*)
+    JsonInfo         : TJsonInfo;  (*`{ENU} result of parsing                        {CSY} výsledek parsování*)
+  END_VAR
+  VAR_OUTPUT
+    start            : bool;  (*`{ENU} initialization flag                      {CSY} pøíznak inicializace bloku*)
+    done             : bool;  (*`{ENU} new item is ready in jsonItem            {CSY} výsledek parsování je pøipraven v jsonInfo*)
+    busy             : bool;  (*`{ENU} block is busy                            {CSY} blok je zaneprázdnìn*)
+    eof              : bool;  (*`{ENU} end of file                              {CSY} konec souboru*)
+    break            : bool;  (*`{ENU} buffer processed, continue next cycle    {CSY} buffer zpracován, pokraèovat pøíští cyklus*)
+    err              : bool;  (*`{ENU} error flag                               {CSY} pøíznak chyby*)
+    errTxt           : string [80];  (*`{ENU} error description                        {CSY} popis chyby*)
+    fileSize         : udint;  (*`{ENU} size of file                             {CSY} velikost souboru*)
+    processed        : udint;  (*`{ENU} processed                                {CSY} zpracováno (poèet znakù)*)
+  END_VAR
+  VAR
+    rqShrink         : bool;
+    rqFile           : bool;
+    rqParse          : bool;
+    rqStart          : bool;
+    trgExecOn        : R_TRIG;
+    JsonParser       : fbJsonParserEx;
+    JsonBuffer       : ARRAY [0..768] OF usint;
+    sumaLen          : udint;  (*`kolik nacteno ze souboru*)
+    actLen           : udint;  (*`aktualni velikost json bufferu*)
+    restLen          : uint;
+    pos              : int;
+    HttpIP           : TIPadr;
+    HttpPort         : uint;
+    HttpName         : string [80];
+    Action           : string [255];
+    Empty            : string [1];
+    dnsRequest       : bool;
+    SplitUrlAddress  : fbSplitUrlAddress;
+    HttpRequest      : fbHttpRequest;
+  END_VAR
+  VAR_TEMP
+    tmpStr           : string [255];
+  END_VAR
+  VAR CONSTANT
+    HTTP_IP_NULL     : TIPadr :=  [0,0,0,0];
+  END_VAR
+END_FUNCTION_BLOCK
+
+TYPE JSONLIB_T_VAR_DESC {HIDDEN} :
+  STRUCT
+    addr             : udint;
+    size             : udint;
+    typ              : usint;
+    isArray          : bool;
+  END_STRUCT;
+END_TYPE
+
+__DECL FUNCTION_BLOCK fbGetJsonAndSetVar
+(*`{ENU} Reading of JSON file from web site and setting PLC variables according JSON.
+  {CSY} Naèíst JSON soubor z web serveru a nastavit podle nìho promìnné v PLC.*)
+  VAR_INPUT
+    exec             : bool R_EDGE;  (*`{ENU} reading of JSON starts on rising edge of exec      {CSY} nábìžná hrana spustí naèítání JSON*)
+    logSizeKB        : usint;  (*`{ENU} size of log file, 0 = no log                       {CSY} velikost log souboru, 0 = vypnutý log*)
+    pageUrl          : string [255];  (*`{ENU} url address of JSON                                {CSY} url adresa, odkud se naète JSON*)
+    varName          : string [80];  (*`{ENU} name of variable which value is set according JSON {CSY} jméno promìnné, jejíž položky budou nastaveny podle JSON*)
+    timeout          : time :=  T#2m;  (*`{ENU} timeout preset                                     {CSY} pøedvolba timeoutu*)
+  END_VAR
+  VAR_OUTPUT
+    done             : bool;  (*`{ENU} all is done ok          {CSY} dokonèeno bez chyby*)
+    busy             : bool;  (*`{ENU} block is busy           {CSY} blok je zaneprázdnìn*)
+    err              : bool;  (*`{ENU} error flag              {CSY} pøíznak chyby*)
+    errTxt           : string [80];  (*`{ENU} error description       {CSY} popis chyby*)
+    numVar           : uint;  (*`{ENU} number of set variables {CSY} poèet promìnných nastavených podle json*)
+  END_VAR
+  VAR
+    JsonParser       : fbJsonPageParser;  (*`FB pro parsovani odpovedi na API dotaz*)
+    json             : TJsonInfo;  (*`struktura pro vysledky parsovani*)
+    rqGet            : bool;  (*`vyslat GET*)
+    parseEnable      : bool;  (*`pomocna pro parsovani*)
+    chanHandle       : uint;  (*`handle kanalu*)
+    timTimeout       : TON;  (*`casovac pro hlidani timeoutu*)
+    varDesc          : JSONLIB_T_VAR_DESC;
+  END_VAR
+  VAR_TEMP
+    protocol         : usint;
+    port             : uint;
+    tmp              : string [255];
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbJsonPageParser2HttpRequest {HIDDEN}
+(*`{ENU}Sends POST, PUT and GET metods via HTTP with option to set content type (Content-Type)
+{CSY}Vysílá metody GET, POST a PUT pres HTTP protokol s možností definice typu obsahu (Content-Type)*)
+  VAR_INPUT
+    Post             : bool R_EDGE;  (*`{ENG}Send data via method POST {CSY}vyslat data metodou POST*)
+    Put              : bool R_EDGE;  (*`{ENG}Send data via method PUT {CSY}vyslat data metodou PUT*)
+    Get              : bool R_EDGE;  (*`{ENG}Get data via method GET {CSY}získat data metodu GET*)
+    Cancel           : bool R_EDGE;  (*`{ENG}Cancel pending operation {CSY}zrušit probíhající operaci*)
+    chanCode         : uint;  (*`{ENG}UNI channel {CSY}prenosový kanál {}TCP master in: 512, out: 512*)
+    IPadr            : TIPadr;  (*`{ENG}IP address of remote server {CSY}IP adresa vzdáleneho serveru*)
+    port             : uint :=  80;  (*`{ENG}Port of remote server {CSY}Císlo portu vzdáleného serveru*)
+    bodyLen          : uint;  (*`{ENG}Lenght of data{CSY}Délka dat*)
+    Close            : bool;  (*`{ENG}If set, block don't wait for server to close connection and close it actively after receiving all data{CSY}Pokud je nastaveno, blok neceká na server až zavre spojení a zavre jej aktivne jakmile získá všechny data*)
+  END_VAR
+  VAR_IN_OUT
+    Action           : string [255];  (*`{ENG}Path to the data on the server (always starts with character '/') {CSY}Cesta k datum na serveru (vždy zacíná znakem '/')*)
+    Host             : string [80];  (*`{ENG}Host name {CSY}Jméno hostitele*)
+    Data             : THttpPostData;  (*`{ENG}First byte of data to POST/PUT {CSY}První byte dat pro metodu POST/PUT*)
+    ContentType      : string [80];  (*`{ENG}Content-Type {CSY}Typ obsahu (Content-Type)*)
+    RecvData         : THttpBuffer;  (*`{ENG}Data buffer 512 bytes {CSY}Bufer dat 512 bytu*)
+  END_VAR
+  VAR_OUTPUT
+    Done             : bool;  (*`{ENG}Operation done {CSY}Operace ukoncena*)
+    Busy             : bool;  (*`{ENG}Operation pending {CSY}Operace probíhá*)
+    Err              : bool;  (*`{ENG}Communication error {CSY}Chyba komunikace*)
+    ErrId            : usint;  (*`{ENG}Error number {CSY}Císlo chyby*)
+    DataReady        : bool;  (*`{ENG}New data received {CSY}Prijata nová data*)
+    DataLen          : uint;  (*`{ENG}Data length {CSY}Délka dat*)
+    State            : THttpState;  (*`{ENG}State of communication {CSY}Stav komunikace*)
+    Result           : int;  (*`{ENG}HTTP Code {CSY}HTTP kod*)
+    Progress         : sint;  (*`{ENG}Progress of data downloading {CSY}Prubeh stahování dat*)
+  END_VAR
+  VAR
+    ResRecv          : bool;
+    LenRecv          : bool;
+    HeaderRecv       : bool;
+    WasEOL           : bool;
+    TimeOutTon       : TON;
+    helpstring       : string [255];
+    RecvFrom {HIDDEN} : fbRecvFrom;
+    SendTo {HIDDEN}  : fbSendTo;
+    ContLen          : dint;
+    WholeLen         : dint;
+    lPostLen         : uint;
+    lHost            : string [80];
+    lBodyLen         : uint;
+    sOff             : uint;
+    rLen             : uint;
+  END_VAR
+  VAR_TEMP
+    lNamePass        : string [80];
+    r                : usint;
+    i                : uint;
+    pHelpString      : PTR_TO string [255];
+    pUint            : PTR_TO uint;
+    pUsint           : PTR_TO usint;
+    UniDesc          : TUniDesc;
+    rea              : TRemoteEthAdr;
+    l                : udint;
+    authPos          : uint;
+    j                : uint;
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbJsonPageParser2
+(*`{ENU} Parsing of JSON document file from web site. Information about json element is saved into TjsonInfo structure.
+  {CSY} Parsování JSON dokumentu z web stránky. Informace o vyparsované položce je uložena do struktury TjsonInfo.*)
+  VAR CONSTANT
+    JSON_BUMPER      : uint :=  256;  (*`{ENU} bumper of json buffer                    {CSY} nárazník v json bufferu*)
+    JSON_BUFFER_SIZE : uint :=  768;  (*`{ENU} size of json buffer                      {CSY} velikost bufferu*)
+  END_VAR
+  VAR_INPUT
+    exec             : bool;  (*`{ENU} request for parsing                      {CSY} požadavek na parsování*)
+    get              : bool;  (*`{ENU} use GET method                           {CSY} použít metodu GET*)
+    post             : bool;  (*`{ENU} use POST method                          {CSY} použít metodu POST*)
+    put              : bool;  (*`{ENU} use method                               {CSY} použít metodu PUT*)
+    chanCode         : uint;  (*`{ENU} channel code (ETH1_uni0, ETH1_uni1,...)  {CSY} komunikaèní kanál (ETH1_uni0, ETH1_uni1,...)*)
+    contentType      : string [80];  (*`{ENG} content-Type                             {CSY} typ obsahu (Content-Type)*)
+    bodyLen          : uint;  (*`{ENG} lenght of body                           {CSY} délka tìla*)
+  END_VAR
+  VAR_IN_OUT
+    pageName         : string [255];  (*`{ENU} mame of web page with json file          {CSY} název web stránky s s json dokumentem*)
+    JsonInfo         : TJsonInfo;  (*`{ENU} result of parsing                        {CSY} výsledek parsování*)
+    body             : uint;  (*`{ENU} first byte of request body               {CSY} první bajt tìla požadavku*)
+  END_VAR
+  VAR_OUTPUT
+    start            : bool;  (*`{ENU} initialization flag                      {CSY} pøíznak inicializace bloku*)
+    done             : bool;  (*`{ENU} new item is ready in jsonItem            {CSY} výsledek parsování je pøipraven v jsonInfo*)
+    busy             : bool;  (*`{ENU} block is busy                            {CSY} blok je zaneprázdnìn*)
+    eof              : bool;  (*`{ENU} end of file                              {CSY} konec souboru*)
+    break            : bool;  (*`{ENU} buffer processed, continue next cycle    {CSY} buffer zpracován, pokraèovat pøíští cyklus*)
+    err              : bool;  (*`{ENU} error flag                               {CSY} pøíznak chyby*)
+    errTxt           : string [80];  (*`{ENU} error description                        {CSY} popis chyby*)
+    fileSize         : udint;  (*`{ENU} size of file                             {CSY} velikost souboru*)
+    processed        : udint;  (*`{ENU} processed                                {CSY} zpracováno (poèet znakù)*)
+  END_VAR
+  VAR
+    rqShrink         : bool;
+    rqFile           : bool;
+    rqParse          : bool;
+    rqStart          : bool;
+    dnsRequest       : bool;
+    trgExecOn        : R_TRIG;
+    JsonParser       : fbJsonParserEx;
+    JsonBuffer       : ARRAY [0..768] OF usint;
+    sumaLen          : udint;  (*`kolik nacteno ze souboru*)
+    actLen           : udint;  (*`aktualni velikost json bufferu*)
+    restLen          : uint;
+    pos              : int;
+    HttpIP           : TIPadr;
+    HttpPort         : uint;
+    HttpName         : string [80];
+    Action           : string [255];
+    SplitUrlAddress  : fbSplitUrlAddress;
+    HttpRequest      : fbJsonPageParser2HttpRequest;
+  END_VAR
+  VAR_TEMP
+    tmpStr           : string [255];
+  END_VAR
+  VAR CONSTANT
+    HTTP_IP_NULL     : TIPadr :=  [0,0,0,0];
+  END_VAR
+END_FUNCTION_BLOCK
+
+__DECL FUNCTION_BLOCK fbPostDataAndSetVar
+(*`{ENU} Send data using the POST method to the server and set variables in the PLC according to the JSON response.
+  {CSY} Odeslat data metodou POST na server a podle JSON odpovìdi serveru nastavit promìnné v PLC.*)
+  VAR_INPUT
+    exec             : bool R_EDGE;  (*`{ENU} a rising edge triggers a data POST                 {CSY} nábìžná hrana spustí POST dat*)
+    logSizeKB        : usint;  (*`{ENU} size of log file, 0 = no log                       {CSY} velikost log souboru, 0 = vypnutý log*)
+    pageUrl          : string [255];  (*`{ENU} url address to which the POST will be sent         {CSY} url adresa, na kterou se pošle POST*)
+    varName          : string [80];  (*`{ENU} name of the variable whose entries will be set according to the JSON from the POST response {CSY} jméno promìnné, jejíž položky budou nastaveny podle JSON z odpovìdi na POST*)
+    contentType      : string [80];  (*`{ENG} Content-Type                                       {CSY} typ obsahu (Content-Type)*)
+    bodyLen          : uint;  (*`{ENG} lenght of body                                     {CSY} délka tìla*)
+    timeout          : time :=  T#2m;  (*`{ENU} timeout preset                                     {CSY} pøedvolba timeoutu*)
+  END_VAR
+  VAR_IN_OUT
+    body             : uint;  (*`{ENU} first byte of request body {CSY} první byte tìla požadavku*)
+  END_VAR
+  VAR_OUTPUT
+    done             : bool;  (*`{ENU} all is done ok          {CSY} dokonèeno bez chyby*)
+    busy             : bool;  (*`{ENU} block is busy           {CSY} blok je zaneprázdnìn*)
+    err              : bool;  (*`{ENU} error flag              {CSY} pøíznak chyby*)
+    errTxt           : string [80];  (*`{ENU} error description       {CSY} popis chyby*)
+    numVar           : uint;  (*`{ENU} number of set variables {CSY} poèet promìnných nastavených podle json*)
+  END_VAR
+  VAR
+    JsonParser2      : fbJsonPageParser2;  (*`FB pro parsovani odpovedi na POST*)
+    json             : TJsonInfo;  (*`struktura pro vysledky parsovani*)
+    rqPost           : bool;  (*`vyslat POST*)
+    parseEnable      : bool;  (*`pomocna pro parsovani*)
+    chanHandle       : uint;  (*`handle kanalu*)
+    timTimeout       : TON;  (*`casovac pro hlidani timeoutu*)
+    varDesc          : JSONLIB_T_VAR_DESC;
+  END_VAR
+  VAR_TEMP
+    protocol         : usint;
+    port             : uint;
+    tmp              : string [255];
+  END_VAR
+END_FUNCTION_BLOCK
+
+
+
+{USES=VarApiToJsonFile:ForceDirs}
+{USES=fbJsonPageParser:Memset}
+{USES=fbGetJsonAndSetVar:OpenUniChannel,REPLACE_2CHARS,SetUniLog,SetVarValueByName,CloseUniChannel}
+{USES=fbJsonPageParser2HttpRequest:GetChanIndex,GetChanDesc,CloseTCPconnection,MemcpyPtr,Base64_encode_string,SetUniChanHostName,SetRemoteIPaddress,EstabTCPconnection,IsEstabTCPconnection,MemcpyEx,Memcpy}
+{USES=fbJsonPageParser2:Memset}
+{USES=fbPostDataAndSetVar:OpenUniChannel,REPLACE_2CHARS,SetUniLog,SetVarValueByName,CloseUniChannel}
+#srcfile 'D:\TECOLIBSRC\JSONLIBEX\JSONLIBEX\VARTOJSON.ST'
+#pou GetLastJsonError
+#srcline 2 ;FUNCTION GetLastJsonError : STRING
+P     61
+GetLastJsonError_L0:
+ LINK 0
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__GetLastJsonError
+; End initialize - variables
+#srcline 10 ;begin
+#srcline 11 ;    {asm}
+#srcline 12
+      LEAX  __fc__GetLastJsonError   ; chybove hlaseni
+#srcline 13
+      LD    11                       ; subkod 11
+#srcline 14
+      SYS   82                       ; vratit posledni json chybu
+#srcline 15 ;    {end_asm}
+#srcline 16 ;END_FUNCTION
+ PRV  
+ LEAX  __fc__GetLastJsonError
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou VarApiToJsonBuf
+#srcline 19 ;FUNCTION VarApiToJsonBuf : UDINT
+
+#struct VarApiToJsonBuf__temp__
+  udint bufLen
+P     61
+VarApiToJsonBuf_L0:
+ LINK __SizeOf(VarApiToJsonBuf__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__VarApiToJsonBuf
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 35 ;begin
+#srcline 36 ;    {asm}
+#srcline 37
+      LDX  maxBufLen    ;// max. delka bufferu
+#srcline 38
+      LDX  buffer       ;// adresa bufferu
+#srcline 39
+      LDX  varNames     ;// seznam jmen promennych
+#srcline 40
+      LD   12           ;// subkod 12
+#srcline 41
+      SYS  82           ;// prevod VAR {PUBLIC_API} => JSON buffer
+#srcline 42
+      WRY  bufLen
+#srcline 43 ;    {end_asm}
+#srcline 45 ;  VarApiToJsonBuf := bufLen;     // vratit velikost vyprodukovaneho json
+ LDY  bufLen
+#debug udint bufLen
+ WRX  __fc__VarApiToJsonBuf
+#debug_left udint VarApiToJsonBuf
+#srcline 46 ;END_FUNCTION
+ PRV  
+ LDX  __fc__VarApiToJsonBuf
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou JsonBufToVarApi
+#srcline 49 ;FUNCTION JsonBufToVarApi : UDINT
+
+#struct JsonBufToVarApi__temp__
+  udint bufLen
+P     61
+JsonBufToVarApi_L0:
+ LINK __SizeOf(JsonBufToVarApi__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__JsonBufToVarApi
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 64 ;begin
+#srcline 65 ;    {asm}
+#srcline 66
+      LDX  strict       ;// co je v json musi byt v promennych (striktni kontrola)
+#srcline 67
+      LDX  buffer       ;// adresa bufferu
+#srcline 68
+      LD   13           ;// subkod 13
+#srcline 69
+      SYS  82           ;// prevod JSON buffer => VAR {PUBLIC_API}
+#srcline 70
+      WRY  bufLen
+#srcline 71 ;    {end_asm}
+#srcline 73 ;  JsonBufToVarApi := bufLen;     // vratit velikost zpracovaneho json
+ LDY  bufLen
+#debug udint bufLen
+ WRX  __fc__JsonBufToVarApi
+#debug_left udint JsonBufToVarApi
+#srcline 74 ;END_FUNCTION
+ PRV  
+ LDX  __fc__JsonBufToVarApi
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou VarApiToJsonFile
+#srcline 77 ;FUNCTION VarApiToJsonFile : UDINT
+
+#struct VarApiToJsonFile__temp__
+  udint fileLen
+P     61
+VarApiToJsonFile_L0:
+ LINK __SizeOf(VarApiToJsonFile__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__VarApiToJsonFile
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 93 ;  IF ForceDirs( fileName) THEN  // zkontrolovat a pripadne nastavit cestu
+ NXT
+ LDX  fileName
+ WR   __Instance__ForceDirs~fileName
+#debug_left pointer __Instance__ForceDirs.fileName
+ PRV
+ LEA  __Instance__ForceDirs
+#debug pointer __Instance__ForceDirs ;<debug_call>
+ CAL  ForceDirs_L0
+ JMC  VarApiToJsonFile_L1
+#srcline 94 ;    {asm}
+#srcline 95
+      LDX  formatted    ;// formatovany vystup (vcetne CRLF a mezer)
+#srcline 96
+      LDX  fileName     ;// jmeno souboru
+#srcline 97
+      LDX  varNames     ;// seznam jmen promennych
+#srcline 98
+      LD   14           ;// subkod 14
+#srcline 99
+      SYS  82           ;// prevod VAR {PUBLIC_API} => JSON file
+#srcline 100
+      WRY  fileLen
+#srcline 101 ;    {end_asm}
+#srcline 102 ;  END_IF;
+VarApiToJsonFile_L1:
+#srcline 104 ;  VarApiToJsonFile := fileLen;
+ LDY  fileLen
+#debug udint fileLen
+ WRX  __fc__VarApiToJsonFile
+#debug_left udint VarApiToJsonFile
+#srcline 105 ;END_FUNCTION
+ PRV  
+ LDX  __fc__VarApiToJsonFile
+ ULNK
+RET
+E     61
+#endpou 
+
+#pou JsonFileToVarApi
+#srcline 108 ;FUNCTION JsonFileToVarApi : UDINT
+
+#struct JsonFileToVarApi__temp__
+  udint fileLen
+P     61
+JsonFileToVarApi_L0:
+ LINK __SizeOf(JsonFileToVarApi__temp__)
+ NXT
+; Initialize - variables
+ LD   0
+ WRX  __fc__JsonFileToVarApi
+; End initialize - variables
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 123 ;begin
+#srcline 124 ;  {asm}
+#srcline 125
+    LDX   strict       ;// striktni kontrola json vs promenne PLC
+#srcline 126
+    LDX  fileName      ;// jmeno souboru
+#srcline 127
+    LD    15           ;// subkod 15
+#srcline 128
+    SYS   82           ;// prevod JSON file => VAR {PUBLIC_API}
+#srcline 129
+    WRY   fileLen
+#srcline 130 ;  {end_asm}
+#srcline 132 ;  JsonFileToVarApi := fileLen;
+ LDY  fileLen
+#debug udint fileLen
+ WRX  __fc__JsonFileToVarApi
+#debug_left udint JsonFileToVarApi
+#srcline 133 ;END_FUNCTION
+ PRV  
+ LDX  __fc__JsonFileToVarApi
+ ULNK
+RET
+E     61
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOLIBSRC\JSONLIBEX\JSONLIBEX\FBJSONPAGEPARSER.ST'
+#pou fbJsonPageParser
+#srcline 1 ;FUNCTION_BLOCK fbJsonPageParser
+
+#struct fbJsonPageParser__temp__
+  string[256] tmpStr,
+  string[82] PS0__st__,
+  string[82] PSC__st__
+#data byte _str_fbJsonPageParser_0 = 
+  '',0
+#data byte _str_fbJsonPageParser_1 = 
+  'D','N','S',' ','r','e','q','u','e','s','t',' ','e','r','r','o','r',' ',':',' ',0
+#data byte _str_fbJsonPageParser_2 = 
+  'H','T','T','P',' ','r','e','q','u','e','s','t',' ','e','r','r','o','r',' ',':',
+  ' ',0
+#data byte _str_fbJsonPageParser_3 = 
+  'H','T','T','P',' ','s','e','r','v','e','r',' ','e','r','r','o','r',' ',':',' ',0
+P     61
+fbJsonPageParser_L0:
+ LINK __SizeOf(fbJsonPageParser__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 57 ;  done := 0; start := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  start
+#debug_left bool start
+#srcline 58 ;  trgExecOn(CLK := exec);
+ LDX  exec
+#debug bool exec
+ WRX  trgExecOn~CLK
+#debug_left bool trgExecOn~CLK
+ LEAX trgExecOn
+#debug pointer trgExecOn ;<debug_call>
+ CAL  R_TRIG_L0
+#srcline 59 ;  IF exec THEN
+ LDX  exec
+#debug bool exec
+ JMC  fbJsonPageParser_L1
+#srcline 60 ;    IF trgExecOn.Q THEN
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ JMC  fbJsonPageParser_L3
+#srcline 61 ;      // odstartovat cteni json dokumentu
+#srcline 62 ;      busy := 1; start := 1; err := 0; errTxt := '';
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  start
+#debug_left bool start
+ LD   bool 0       ; false
+ WRX  err
+#debug_left bool err
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser_0
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 63 ;      rqStart := 1; rqShrink := 1; rqFile := 0; rqParse := 0;
+ LD   bool -1      ; true
+ WRX  rqStart
+#debug_left bool rqStart
+ LD   bool -1      ; true
+ WRX  rqShrink
+#debug_left bool rqShrink
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 64 ;      fileSize := 0; restLen := 0; sumaLen := 0;
+ LD   udint 0
+ WRX  fileSize
+#debug_left udint fileSize
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+ LD   udint 0
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 65 ;      Memset( val := 0, length := sizeof( JsonInfo), dest := void(JsonInfo));
+ NXT
+ LD   udint 0
+ WR   __Instance__Memset~val
+#debug_left udint __Instance__Memset~val
+ LD   910  ; SizeOf()
+ WR   __Instance__Memset~length
+#debug_left uint __Instance__Memset~length
+ LDX  JsonInfo
+ WR   __Instance__Memset~dest
+#debug_left pointer __Instance__Memset.dest
+ PRV
+ LEA  __Instance__Memset
+#debug pointer __Instance__Memset ;<debug_call>
+ CAL  Memset_L0
+#srcline 66 ;      HttpRequest(Post := 0, Get := 0, Close := 1, Cancel := 1, Action := Action, Host := HttpName, Data := Empty, RecvData := void( JsonBuffer[0]));
+ LD   bool 0       ; false
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LD   bool 0       ; false
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   bool -1      ; true
+ WRX  HttpRequest~Close
+#debug_left bool HttpRequest~Close
+ LD   bool -1      ; true
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX JsonBuffer
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+#debug pointer HttpRequest ;<debug_call>
+ CAL  fbHttpRequest_L0
+#srcline 67 ;    END_IF;
+fbJsonPageParser_L3:
+#srcline 69 ;    // prevest domainove jmeno na IP adresu (je-li to potreba)
+#srcline 70 ;    SplitUrlAddress( split := trgExecOn.Q, urlAddress := pageName, host := HttpName, action := Action, IPadr := HttpIP, port := HttpPort);
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ WRX  SplitUrlAddress~split
+#debug_left bool SplitUrlAddress~split
+ LDX  pageName
+ WRX  SplitUrlAddress~urlAddress
+#debug_left pointer SplitUrlAddress.urlAddress
+ LEAX HttpName
+ WRX  SplitUrlAddress~host
+#debug_left pointer SplitUrlAddress.host
+ LEAX Action
+ WRX  SplitUrlAddress~action
+#debug_left pointer SplitUrlAddress.action
+ LEAX HttpIP
+ WRX  SplitUrlAddress~IPadr
+#debug_left pointer SplitUrlAddress.IPadr
+ LEAX HttpPort
+ WRX  SplitUrlAddress~port
+#debug_left pointer SplitUrlAddress.port
+ LEAX SplitUrlAddress
+#debug pointer SplitUrlAddress ;<debug_call>
+ CAL  fbSplitUrlAddress_L0
+#srcline 71 ;    IF SplitUrlAddress.Err THEN
+ LDX  SplitUrlAddress~Err
+#debug bool SplitUrlAddress.Err
+ JMC  fbJsonPageParser_L5
+#srcline 72 ;      err := 1; busy := 0; errTxt := 'DNS request error : ' + USINT_TO_STRING(SplitUrlAddress.ErrId);
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser_1
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  SplitUrlAddress~ErrId
+#debug usint SplitUrlAddress.ErrId
+ SCNV $0830;  IEC_USINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 73 ;    ELSIF SplitUrlAddress.Done THEN
+ JMP  fbJsonPageParser_L6
+fbJsonPageParser_L5:
+ LDX  SplitUrlAddress~Done
+#debug bool SplitUrlAddress.Done
+ JMC  fbJsonPageParser_L7
+#srcline 74 ;      rqFile := 1;                                                 // zahajit cteni souboru
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 75 ;    END_IF;
+ JMP  fbJsonPageParser_L6
+fbJsonPageParser_L7:
+fbJsonPageParser_L6:
+#srcline 76 ;    
+#srcline 77 ;    // cist soubor z web stranky
+#srcline 78 ;    IF rqFile THEN
+ LDX  rqFile
+#debug bool rqFile
+ JMC  fbJsonPageParser_L8
+#srcline 79 ;      HttpRequest(Get := 1, Cancel := 0, chanCode := chanCode, IPadr := HttpIP, port := HttpPort,
+ LD   bool -1      ; true
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   bool 0       ; false
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LDX  chanCode
+#debug uint chanCode
+ WRX  HttpRequest~chanCode
+#debug_left uint HttpRequest~chanCode
+ LEAX HttpIP
+#debug pointer HttpIP
+ SRC  %IB0
+ LEAX HttpRequest~IPadr
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDX  HttpPort
+#debug uint HttpPort
+ WRX  HttpRequest~port
+#debug_left uint HttpRequest~port
+#srcline 80 ;                  Action := Action, Host := HttpName, Data := Empty, RecvData := void(JsonBuffer[restLen]));
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX JsonBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+#debug pointer HttpRequest ;<debug_call>
+ CAL  fbHttpRequest_L0
+#srcline 82 ;      IF HttpRequest.Result = 200 AND HttpRequest.DataReady THEN                 // prijata dalsi cast xml
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ LD   int 200
+ EQ
+ LDX  HttpRequest~DataReady
+#debug bool HttpRequest.DataReady
+ AND
+ JMC  fbJsonPageParser_L10
+#srcline 83 ;        actLen  := UINT_TO_UDINT(restLen) + UINT_TO_UDINT(HttpRequest.DataLen);  // aktualni velikost xml bufferu
+ LDX  restLen
+#debug uint restLen
+ LDX  HttpRequest~DataLen
+#debug uint HttpRequest.DataLen
+ ADD
+ WRX  actLen
+#debug_left udint actLen
+#srcline 84 ;        sumaLen := sumaLen + UINT_TO_UDINT(HttpRequest.DataLen);                 // celkove jiz nacteno ze souboru
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  HttpRequest~DataLen
+#debug uint HttpRequest.DataLen
+ ADD
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 85 ;        rqFile := 0; rqParse := 1;                                               // prednastavit
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 86 ;        // kdyz actLen < JSON_BUMPER tak nejdriv nacist dalsi data a pak teprve zacit parsovat
+#srcline 87 ;        IF NOT HttpRequest.Done THEN
+ LDX  HttpRequest~Done
+#debug bool HttpRequest.Done
+ NEG
+ JMC  fbJsonPageParser_L12
+#srcline 88 ;          rqParse := UDINT_TO_UINT( actLen) >= JSON_BUMPER;
+ LDX  actLen
+#debug udint actLen
+ AND  $FFFF
+ LD   uint 256
+ LT
+ NEG
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 89 ;          IF NOT rqParse THEN
+ LDX  rqParse
+#debug bool rqParse
+ NEG
+ JMC  fbJsonPageParser_L14
+#srcline 90 ;            restLen := UDINT_TO_UINT( actLen); rqFile := 1;          // docist dalsi data do JsonBuffer[]
+ LDX  actLen
+#debug udint actLen
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 91 ;          END_IF;
+fbJsonPageParser_L14:
+#srcline 92 ;        END_IF;
+fbJsonPageParser_L12:
+#srcline 93 ;      END_IF;
+fbJsonPageParser_L10:
+#srcline 94 ;      IF HttpRequest.Err THEN                                        // blok HttpRequest hlasi chybu
+ LDX  HttpRequest~Err
+#debug bool HttpRequest.Err
+ JMC  fbJsonPageParser_L16
+#srcline 95 ;        busy := 0; err := 1; rqFile := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 96 ;        errTxt := 'HTTP request error : ' + USINT_TO_STRING(HttpRequest.ErrId);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser_2
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  HttpRequest~ErrId
+#debug usint HttpRequest.ErrId
+ SCNV $0830;  IEC_USINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 97 ;      END_IF;
+fbJsonPageParser_L16:
+#srcline 98 ;      IF HttpRequest.Done THEN
+ LDX  HttpRequest~Done
+#debug bool HttpRequest.Done
+ JMC  fbJsonPageParser_L18
+#srcline 99 ;        // zavolat jeste jednou HTTP request, aby presel do stavu Idle
+#srcline 100 ;        HttpRequest(Get := 1, Cancel := 0, chanCode := chanCode, IPadr := HttpIP, port := HttpPort,
+ LD   bool -1      ; true
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   bool 0       ; false
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LDX  chanCode
+#debug uint chanCode
+ WRX  HttpRequest~chanCode
+#debug_left uint HttpRequest~chanCode
+ LEAX HttpIP
+#debug pointer HttpIP
+ SRC  %IB0
+ LEAX HttpRequest~IPadr
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDX  HttpPort
+#debug uint HttpPort
+ WRX  HttpRequest~port
+#debug_left uint HttpRequest~port
+#srcline 101 ;                    Action := Action, Host := HttpName, Data := Empty, RecvData := void(JsonBuffer[restLen]));
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX JsonBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+#debug pointer HttpRequest ;<debug_call>
+ CAL  fbHttpRequest_L0
+#srcline 102 ;        rqFile := 0; busy := 0;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 103 ;        IF HttpRequest.Result = 200 THEN                             // cely json dokument prijaty OK
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ LD   int 200
+ EQ
+ JMC  fbJsonPageParser_L20
+#srcline 104 ;          rqShrink := 0;                                             // zpracovat buffer az do konce, uz nic dalsiho nebude
+ LD   bool 0       ; false
+ WRX  rqShrink
+#debug_left bool rqShrink
+#srcline 105 ;          fileSize := sumaLen;                                       // velikost prijateho dokumentu
+ LDX  sumaLen
+#debug udint sumaLen
+ WRX  fileSize
+#debug_left udint fileSize
+#srcline 106 ;          actLen := UINT_TO_UDINT(restLen);                          // aktualni velikost xml bufferu (co zbyva zpracovat)
+ LDX  restLen
+#debug uint restLen
+ WRX  actLen
+#debug_left udint actLen
+#srcline 107 ;          IF actLen > 0 THEN
+ LDX  actLen
+#debug udint actLen
+ LD   udint 0
+ GT
+ JMC  fbJsonPageParser_L22
+#srcline 108 ;            rqParse := 1;                                            // jeste neco zbyva, tak parsovat
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 109 ;          ELSE
+ JMP  fbJsonPageParser_L23
+fbJsonPageParser_L22:
+#srcline 110 ;            rqParse := NOT JsonInfo.stack.eod;                       // kdyz jeste neni konec json, tak nastavit pozadavek na parsovani
+ LDX  JsonInfo
+ ADD  513  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool JsonInfo.stack.eod
+ NEG
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 111 ;          END_IF;
+fbJsonPageParser_L23:
+#srcline 112 ;        ELSE                                                         // HTTP server hlasi chybu
+ JMP  fbJsonPageParser_L21
+fbJsonPageParser_L20:
+#srcline 113 ;          busy := 0; err := 1; rqFile := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 114 ;          errTxt := 'HTTP server error : ' + INT_TO_STRING(HttpRequest.Result); // for example 302 : redirected page
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser_3
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ SCNV $0B30;  IEC_INT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 115 ;        END_IF;
+fbJsonPageParser_L21:
+#srcline 116 ;      END_IF;
+fbJsonPageParser_L18:
+#srcline 117 ;    END_IF;
+fbJsonPageParser_L8:
+#srcline 119 ;    // parsovat dokument
+#srcline 120 ;    IF rqParse THEN
+ LDX  rqParse
+#debug bool rqParse
+ JMC  fbJsonPageParser_L24
+#srcline 121 ;      // parsovani dat v JSON souboru
+#srcline 122 ;      JsonParser(start := rqStart, shrink :=0 , size :=actLen , sourceJSON := void( jsonBuffer),JsonInfo := JsonInfo );
+ LDX  rqStart
+#debug bool rqStart
+ WRX  JsonParser~start
+#debug_left bool JsonParser~start
+ LD   bool 0       ; false
+ WRX  JsonParser~shrink
+#debug_left bool JsonParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  JsonParser~size
+#debug_left udint JsonParser~size
+ LEAX jsonBuffer
+ WRX  JsonParser~sourceJSON
+#debug_left pointer JsonParser.sourceJSON
+ LDX  JsonInfo
+ WRX  JsonParser~JsonInfo
+#debug_left pointer JsonParser.JsonInfo
+ LEAX JsonParser
+#debug pointer JsonParser ;<debug_call>
+ CAL  fbJsonParserEx_L0
+#srcline 123 ;      rqStart := 0; restLen := JsonParser.restLen;          // nastavit, kolik jeste zbyva zpracovat
+ LD   bool 0       ; false
+ WRX  rqStart
+#debug_left bool rqStart
+ LDX  JsonParser~restLen
+#debug uint JsonParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 124 ;      IF JsonParser.done THEN
+ LDX  JsonParser~done
+#debug bool JsonParser.done
+ JMC  fbJsonPageParser_L26
+#srcline 125 ;        done := 1; busy := 0;
+ LD   bool -1      ; true
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 126 ;      ELSIF JsonParser.error <> 0 THEN
+ JMP  fbJsonPageParser_L27
+fbJsonPageParser_L26:
+ LDX  JsonParser~error
+#debug usint JsonParser.error
+ LD   usint 0
+ EQ
+ NEG
+ JMC  fbJsonPageParser_L28
+#srcline 127 ;        HttpRequest(Post := 0, Get := 0, Cancel := 1, Action := Action, Host := HttpName, Data := Empty, RecvData := void( JsonBuffer[0]));  // ukoncit spolupraci se serverem (od v1.2)
+ LD   bool 0       ; false
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LD   bool 0       ; false
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   bool -1      ; true
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LEAX Empty
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX JsonBuffer
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+#debug pointer HttpRequest ;<debug_call>
+ CAL  fbHttpRequest_L0
+#srcline 128 ;        err := 1; busy := 0; rqParse := 0;
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 129 ;        errTxt := JsonInfo.stack.errTxt;
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LDX  JsonInfo
+ ADD  515  ; + offset 
+#debug string JsonInfo.stack.errTxt
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 130 ;      END_IF;
+ JMP  fbJsonPageParser_L27
+fbJsonPageParser_L28:
+fbJsonPageParser_L27:
+#srcline 132 ;      IF rqShrink THEN
+ LDX  rqShrink
+#debug bool rqShrink
+ JMC  fbJsonPageParser_L29
+#srcline 133 ;        IF JsonParser.restLen <= JSON_BUMPER THEN
+ LDX  JsonParser~restLen
+#debug uint JsonParser.restLen
+ LD   uint 256
+ GT
+ NEG
+ JMC  fbJsonPageParser_L31
+#srcline 134 ;          // shrink buffer s xml dokumentem
+#srcline 135 ;          JsonParser( start := rqStart, shrink := 1, size := actLen, sourceJSON := void( jsonBuffer), JsonInfo := JsonInfo);
+ LDX  rqStart
+#debug bool rqStart
+ WRX  JsonParser~start
+#debug_left bool JsonParser~start
+ LD   bool -1      ; true
+ WRX  JsonParser~shrink
+#debug_left bool JsonParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  JsonParser~size
+#debug_left udint JsonParser~size
+ LEAX jsonBuffer
+ WRX  JsonParser~sourceJSON
+#debug_left pointer JsonParser.sourceJSON
+ LDX  JsonInfo
+ WRX  JsonParser~JsonInfo
+#debug_left pointer JsonParser.JsonInfo
+ LEAX JsonParser
+#debug pointer JsonParser ;<debug_call>
+ CAL  fbJsonParserEx_L0
+#srcline 136 ;          restLen :=JsonParser.restLen;       // nastavit, kolik jeste zbyva zpracovat
+ LDX  JsonParser~restLen
+#debug uint JsonParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 137 ;          rqFile := 1; rqParse := 0;          // nacist dalsi cast dokumentu
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 138 ;          busy := 1;                          // signalizovat ukonceni parsovani
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 139 ;        END_IF;
+fbJsonPageParser_L31:
+#srcline 140 ;      END_IF;
+fbJsonPageParser_L29:
+#srcline 141 ;      IF JsonParser.eod THEN
+ LDX  JsonParser~eod
+#debug bool JsonParser.eod
+ JMC  fbJsonPageParser_L33
+#srcline 142 ;        rqParse := 0; busy := 0; done := 0;   // konec dokumentu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+#srcline 143 ;      END_IF;
+fbJsonPageParser_L33:
+#srcline 144 ;    END_IF;
+fbJsonPageParser_L24:
+#srcline 145 ;    eof := JsonInfo.stack.eod;        // nastavit priznak konec souboru
+ LDX  JsonInfo
+ ADD  513  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool JsonInfo.stack.eod
+ WRX  eof
+#debug_left bool eof
+#srcline 146 ;    processed := sumaLen - UINT_TO_UDINT(restLen);
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  restLen
+#debug uint restLen
+ SUB
+ WRX  processed
+#debug_left udint processed
+#srcline 147 ;  ELSE
+ JMP  fbJsonPageParser_L2
+fbJsonPageParser_L1:
+#srcline 148 ;    busy := 0; eof := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  eof
+#debug_left bool eof
+#srcline 149 ;  END_IF;
+fbJsonPageParser_L2:
+#srcline 151 ;  break := eof OR err OR busy OR NOT exec;    // prerusit zpracovani
+ LDX  eof
+#debug bool eof
+ LDX  err
+#debug bool err
+ OR  
+ LDX  busy
+#debug bool busy
+ OR  
+ LDX  exec
+#debug bool exec
+ NEG
+ OR  
+ WRX  break
+#debug_left bool break
+#srcline 153 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbJsonPageParser__InstanceInit__:
+ LINK 0
+ LEAX JsonParser
+ CAL  fbJsonParserEx__InstanceInit__
+ LEAX SplitUrlAddress
+ CAL  fbSplitUrlAddress__InstanceInit__
+ LEAX HttpRequest
+ CAL  fbHttpRequest__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOLIBSRC\JSONLIBEX\JSONLIBEX\FBGETJSONANDSETVAR.ST'
+#pou fbGetJsonAndSetVar
+#srcline 10 ;FUNCTION_BLOCK fbGetJsonAndSetVar
+
+#struct fbGetJsonAndSetVar__temp__
+  usint protocol,
+  uint port,
+  string[256] tmp,
+  string[257] PS0__st__,
+  string[257] PS1__st__
+#data byte _str_fbGetJsonAndSetVar_0 = 
+  'h','t','t','p','s',':',0
+#data byte _str_fbGetJsonAndSetVar_1 = 
+  'G','e','t','J','s','o','n','A','n','d','S','e','t','V','a','r','_',0
+#data byte _str_fbGetJsonAndSetVar_2 = 
+  '[',0
+#data byte _str_fbGetJsonAndSetVar_3 = 
+  ']',0
+#data byte _str_fbGetJsonAndSetVar_4 = 
+  '_',0
+#data byte _str_fbGetJsonAndSetVar_5 = 
+  '.','l','o','g',0
+#data byte _str_fbGetJsonAndSetVar_6 = 
+  '',0
+#data byte _str_fbGetJsonAndSetVar_7 = 
+  '.',0
+#data byte _str_fbGetJsonAndSetVar_8 = 
+  'T','i','m','e','o','u','t',' ','e','r','r','o','r',0
+P     61
+fbGetJsonAndSetVar_L0:
+ LINK __SizeOf(fbGetJsonAndSetVar__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+; R_EDGE, F_EDGE 
+ LDX  exec
+ LETX __EDGE_R__exec
+ WRX  exec
+#srcline 46 ;  done := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+#srcline 47 ;  IF NOT rqGet THEN
+ LDX  rqGet
+#debug bool rqGet
+ NEG
+ JMC  fbGetJsonAndSetVar_L1
+#srcline 48 ;    rqGet := exec;                           // zadost o GET json & parse & SET variables
+ LDX  exec
+#debug bool exec
+ WRX  rqGet
+#debug_left bool rqGet
+#srcline 49 ;  END_IF;
+fbGetJsonAndSetVar_L1:
+#srcline 51 ;  IF rqGet AND (chanHandle = 0) THEN         // otevrit socket pro komunikaci
+ LDX  rqGet
+#debug bool rqGet
+ LDX  chanHandle
+#debug uint chanHandle
+ LD   uint 0
+ EQ
+ AND
+ JMC  fbGetJsonAndSetVar_L3
+#srcline 52 ;    IF FIND(IN1 := pageUrl, IN2 := 'https:') = 1 THEN
+ LEAX pageUrl
+#debug string pageUrl
+ LEA  _str_fbGetJsonAndSetVar_0
+ SFND 
+ LD   int 1
+ EQ
+ JMC  fbGetJsonAndSetVar_L5
+#srcline 53 ;      protocol := UNI_SSL_CLIENT; port := 443;
+ LD   usint 35
+ WRY  protocol
+#debug_left usint protocol
+ LD   uint 443
+ WRY  port
+#debug_left uint port
+#srcline 54 ;    ELSE
+ JMP  fbGetJsonAndSetVar_L6
+fbGetJsonAndSetVar_L5:
+#srcline 55 ;      protocol := UNI_TCP_CLIENT; port := 80;
+ LD   usint 33
+ WRY  protocol
+#debug_left usint protocol
+ LD   uint 80
+ WRY  port
+#debug_left uint port
+#srcline 56 ;    END_IF;
+fbGetJsonAndSetVar_L6:
+#srcline 57 ;    chanHandle := OpenUniChannel( chanCode := ANY_uni, myPort := 0, hisIP := ANY_IP, hisPort := port, protocol := protocol);
+ NXT
+ LD   uint 224
+ WR   __Instance__OpenUniChannel~chanCode
+#debug_left uint __Instance__OpenUniChannel~chanCode
+ LD   uint 0
+ WR   __Instance__OpenUniChannel~myPort
+#debug_left uint __Instance__OpenUniChannel~myPort
+ LEA  ANY_IP
+#debug pointer ANY_IP
+ SRC  %IB0
+ LEA  __Instance__OpenUniChannel~hisIP
+#debug_left pointer __Instance__OpenUniChannel~hisIP
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDY  port
+#debug uint port
+ WR   __Instance__OpenUniChannel~hisPort
+#debug_left uint __Instance__OpenUniChannel~hisPort
+ LDY  protocol
+#debug usint protocol
+ WR   __Instance__OpenUniChannel~protocol
+#debug_left usint __Instance__OpenUniChannel~protocol
+ PRV
+ LEA  __Instance__OpenUniChannel
+#debug pointer __Instance__OpenUniChannel ;<debug_call>
+ CAL  OpenUniChannel_L0
+ WRX  chanHandle
+#debug_left uint chanHandle
+#srcline 59 ;    IF (logSizeKB <> 0) AND (chanHandle <> 0) THEN
+ LDX  logSizeKB
+#debug usint logSizeKB
+ LD   usint 0
+ EQ
+ NEG
+ LDX  chanHandle
+#debug uint chanHandle
+ LD   uint 0
+ EQ
+ NEG
+ AND
+ JMC  fbGetJsonAndSetVar_L7
+#srcline 60 ;      tmp := 'GetJsonAndSetVar_' + REPLACE_2CHARS( '[', ']', '_', varName) + '.log';  // nazev logu
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbGetJsonAndSetVar_1
+ SCON 
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__REPLACE_2CHARS~C1
+ WRI 
+ LEA  __Instance__REPLACE_2CHARS~C1
+ LD   1
+ DST    ; Level 2
+ LEA  _str_fbGetJsonAndSetVar_2
+ SCON 
+#debug_left string __Instance__REPLACE_2CHARS~C1
+ PDST   ; Level 2
+ LD   0   ; null string
+ LEA  __Instance__REPLACE_2CHARS~C2
+ WRI 
+ LEA  __Instance__REPLACE_2CHARS~C2
+ LD   1
+ DST    ; Level 2
+ LEA  _str_fbGetJsonAndSetVar_3
+ SCON 
+#debug_left string __Instance__REPLACE_2CHARS~C2
+ PDST   ; Level 2
+ LD   0   ; null string
+ LEA  __Instance__REPLACE_2CHARS~C3
+ WRI 
+ LEA  __Instance__REPLACE_2CHARS~C3
+ LD   1
+ DST    ; Level 2
+ LEA  _str_fbGetJsonAndSetVar_4
+ SCON 
+#debug_left string __Instance__REPLACE_2CHARS~C3
+ PDST   ; Level 2
+ LD   0   ; null string
+ LEA  __Instance__REPLACE_2CHARS~input
+ WRI 
+ LEA  __Instance__REPLACE_2CHARS~input
+ LD   255
+ DST    ; Level 2
+ LEAX varName
+#debug string varName
+ SCON 
+#debug_left string __Instance__REPLACE_2CHARS~input
+ PDST   ; Level 2
+ PRV
+ LEA  __Instance__REPLACE_2CHARS
+#debug pointer __Instance__REPLACE_2CHARS ;<debug_call>
+ CAL  REPLACE_2CHARS_L0
+
+ SCON 
+ LEA  _str_fbGetJsonAndSetVar_5
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAY tmp
+ WRI  
+ LEAY tmp
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string tmp
+ PDST   ; Level 1
+#srcline 61 ;      SetUniLog( chanHandle := chanHandle, logMode := ONE_TIME_LOG + TEXT_LOG_ONLY, logSizeKB := TO_UDINT(logSizeKB), logName := tmp);
+ NXT
+ LDX  chanHandle
+#debug uint chanHandle
+ WR   __Instance__SetUniLog~chanHandle
+#debug_left uint __Instance__SetUniLog~chanHandle
+ LD   uint 0
+ LD   uint 4096
+ ADD
+ AND  $FFFF
+ WR   __Instance__SetUniLog~logMode
+#debug_left uint __Instance__SetUniLog~logMode
+ LDX  logSizeKB
+#debug usint logSizeKB
+ WR   __Instance__SetUniLog~logSizeKB
+#debug_left udint __Instance__SetUniLog~logSizeKB
+ LD   0   ; null string
+ LEA  __Instance__SetUniLog~logName
+ WRI 
+ LEA  __Instance__SetUniLog~logName
+ LD   80
+ DST    ; Level 1
+ LEAY tmp
+#debug string tmp
+ SCON 
+#debug_left string __Instance__SetUniLog~logName
+ PDST   ; Level 1
+ PRV
+ LEA  __Instance__SetUniLog
+#debug pointer __Instance__SetUniLog ;<debug_call>
+ CAL  SetUniLog_L0
+#srcline 62 ;    END_IF;
+fbGetJsonAndSetVar_L7:
+#srcline 64 ;    busy := 1; err := 0; errTxt := ''; numVar := 0;
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  err
+#debug_left bool err
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbGetJsonAndSetVar_6
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+ LD   uint 0
+ WRX  numVar
+#debug_left uint numVar
+#srcline 66 ;    // ziskat popis promenne ... GetVarDescByName ( char *varName, char *varDesc)
+#srcline 67 ;    {asm}
+#srcline 68
+      LEAX  varDesc
+#srcline 69
+      LEAX  varName
+#srcline 70
+      LD    4
+#srcline 71
+      SYS   87
+#srcline 72 ;    {end_asm}
+#srcline 73 ;  END_IF;
+fbGetJsonAndSetVar_L3:
+#srcline 75 ;  REPEAT
+fbGetJsonAndSetVar_L9:
+ DBG
+#srcline 76 ;    JsonParser( exec := rqGet, chanCode := chanHandle, pageName := pageUrl, jsonInfo := json);
+ LDX  rqGet
+#debug bool rqGet
+ WRX  JsonParser~exec
+#debug_left bool JsonParser~exec
+ LDX  chanHandle
+#debug uint chanHandle
+ WRX  JsonParser~chanCode
+#debug_left uint JsonParser~chanCode
+ LEAX pageUrl
+ WRX  JsonParser~pageName
+#debug_left pointer JsonParser.pageName
+ LEAX json
+ WRX  JsonParser~jsonInfo
+#debug_left pointer JsonParser.jsonInfo
+ LEAX JsonParser
+#debug pointer JsonParser ;<debug_call>
+ CAL  fbJsonPageParser_L0
+#srcline 77 ;    IF JsonParser.start THEN
+ LDX  JsonParser~start
+#debug bool JsonParser.start
+ JMC  fbGetJsonAndSetVar_L11
+#srcline 78 ;      parseEnable := 1;                      // zahajit parsovani
+ LD   bool -1      ; true
+ WRX  parseEnable
+#debug_left bool parseEnable
+#srcline 79 ;    END_IF;
+fbGetJsonAndSetVar_L11:
+#srcline 80 ;    IF JsonParser.done AND parseEnable THEN  // vyparsovan jeden radek dokumentu
+ LDX  JsonParser~done
+#debug bool JsonParser.done
+ LDX  parseEnable
+#debug bool parseEnable
+ AND
+ JMC  fbGetJsonAndSetVar_L13
+#srcline 81 ;      // sestavit jmeno promenne
+#srcline 82 ;      IF (varDesc.typ = 255) AND (NOT varDesc.isArray) THEN  // struktura
+ LDX  varDesc~typ
+#debug usint varDesc.typ
+ LD   usint 255
+ EQ
+ LDX  varDesc~isArray
+#debug bool varDesc.isArray
+ NEG
+ AND
+ JMC  fbGetJsonAndSetVar_L15
+#srcline 83 ;        IF LEN(IN := varName) > 0 THEN
+ LEAX varName
+#debug string varName
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbGetJsonAndSetVar_L17
+#srcline 84 ;          tmp := varName + '.' + json.item.name;             // cele jmeno promenne
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEAX varName
+#debug string varName
+ SCON 
+ LEA  _str_fbGetJsonAndSetVar_7
+ SCON 
+ LEAX json
+#debug string json.item.name
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAY tmp
+ WRI  
+ LEAY tmp
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string tmp
+ PDST   ; Level 1
+#srcline 85 ;        ELSE
+ JMP  fbGetJsonAndSetVar_L18
+fbGetJsonAndSetVar_L17:
+#srcline 86 ;          tmp := json.item.name;                             // cele jmeno promenne
+ LD   0   ; null string
+ LEAY tmp
+ WRI  
+ LEAY tmp
+ LD   255
+ DST    ; Level 1
+ LEAX json
+#debug string json.item.name
+ SCON 
+#debug_left string tmp
+ PDST   ; Level 1
+#srcline 87 ;        END_IF;
+fbGetJsonAndSetVar_L18:
+#srcline 88 ;      ELSIF varDesc.isArray THEN                             // pole
+ JMP  fbGetJsonAndSetVar_L16
+fbGetJsonAndSetVar_L15:
+ LDX  varDesc~isArray
+#debug bool varDesc.isArray
+ JMC  fbGetJsonAndSetVar_L19
+#srcline 89 ;        tmp := varName + json.item.name;                     // cele jmeno promenne
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEAX varName
+#debug string varName
+ SCON 
+ LEAX json
+#debug string json.item.name
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAY tmp
+ WRI  
+ LEAY tmp
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string tmp
+ PDST   ; Level 1
+#srcline 90 ;      END_IF;
+ JMP  fbGetJsonAndSetVar_L16
+fbGetJsonAndSetVar_L19:
+fbGetJsonAndSetVar_L16:
+#srcline 92 ;      IF SetVarValueByName( varName := tmp, varValue := json.item.value) THEN
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__SetVarValueByName~varName
+ WRI 
+ LEA  __Instance__SetVarValueByName~varName
+ LD   255
+ DST    ; Level 1
+ LEAY tmp
+#debug string tmp
+ SCON 
+#debug_left string __Instance__SetVarValueByName~varName
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEA  __Instance__SetVarValueByName~varValue
+ WRI 
+ LEA  __Instance__SetVarValueByName~varValue
+ LD   255
+ DST    ; Level 1
+ LEAX json
+ ADD  256  ; + offset 
+#debug string json.item.value
+ SCON 
+#debug_left string __Instance__SetVarValueByName~varValue
+ PDST   ; Level 1
+ PRV
+ LEA  __Instance__SetVarValueByName
+#debug pointer __Instance__SetVarValueByName ;<debug_call>
+ CAL  SetVarValueByName_L0
+ JMC  fbGetJsonAndSetVar_L20
+#srcline 93 ;        numVar := numVar + 1; timTimeout(IN := 0);
+ LDX  numVar
+#debug uint numVar
+ LD   uint 1
+ ADD
+ AND  $FFFF
+ WRX  numVar
+#debug_left uint numVar
+ LD   bool 0       ; false
+ WRX  timTimeout~IN
+#debug_left bool timTimeout~IN
+ LEAX timTimeout
+#debug pointer timTimeout ;<debug_call>
+ CAL  TON_L0
+#srcline 94 ;      END_IF;
+fbGetJsonAndSetVar_L20:
+#srcline 95 ;    END_IF;
+fbGetJsonAndSetVar_L13:
+#srcline 96 ;  UNTIL JsonParser.break END_REPEAT;
+ LDX  JsonParser~break
+#debug bool JsonParser.break
+ JMC  fbGetJsonAndSetVar_L9
+fbGetJsonAndSetVar_L10:
+ NOP  -1
+#srcline 98 ;  IF parseEnable AND JsonParser.exec THEN
+ LDX  parseEnable
+#debug bool parseEnable
+ LDX  JsonParser~exec
+#debug bool JsonParser.exec
+ AND
+ JMC  fbGetJsonAndSetVar_L22
+#srcline 99 ;    IF JsonParser.eof OR JsonParser.err THEN // parsovani ukonceno
+ LDX  JsonParser~eof
+#debug bool JsonParser.eof
+ LDX  JsonParser~err
+#debug bool JsonParser.err
+ OR  
+ JMC  fbGetJsonAndSetVar_L24
+#srcline 100 ;      CloseUniChannel( chanHandle);          // zavrit socket
+ NXT
+ LEAX chanHandle
+ WR   __Instance__CloseUniChannel~chanHandle
+#debug_left pointer __Instance__CloseUniChannel.chanHandle
+ PRV
+ LEA  __Instance__CloseUniChannel
+#debug pointer __Instance__CloseUniChannel ;<debug_call>
+ CAL  CloseUniChannel_L0
+#srcline 101 ;      rqGet := 0; parseEnable := 0;
+ LD   bool 0       ; false
+ WRX  rqGet
+#debug_left bool rqGet
+ LD   bool 0       ; false
+ WRX  parseEnable
+#debug_left bool parseEnable
+#srcline 102 ;      busy := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 103 ;      IF JsonParser.err THEN
+ LDX  JsonParser~err
+#debug bool JsonParser.err
+ JMC  fbGetJsonAndSetVar_L26
+#srcline 104 ;        err := 1;                            // doslo k chybe
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+#srcline 105 ;        errTxt := JsonParser.errTxt;         // zachytit chybu
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAX JsonParser
+ ADD  12  ; + offset 
+#debug string JsonParser.errTxt
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 106 ;      ELSE
+ JMP  fbGetJsonAndSetVar_L27
+fbGetJsonAndSetVar_L26:
+#srcline 107 ;        done := 1;                           // dokonceno ok
+ LD   bool -1      ; true
+ WRX  done
+#debug_left bool done
+#srcline 108 ;      END_IF;
+fbGetJsonAndSetVar_L27:
+#srcline 109 ;    END_IF;
+fbGetJsonAndSetVar_L24:
+#srcline 110 ;  END_IF;
+fbGetJsonAndSetVar_L22:
+#srcline 111 ;  
+#srcline 112 ;  timTimeout(IN := busy, PT := timeout);
+ LDX  busy
+#debug bool busy
+ WRX  timTimeout~IN
+#debug_left bool timTimeout~IN
+ LDX  timeout
+#debug time timeout
+ WRX  timTimeout~PT
+#debug_left time timTimeout~PT
+ LEAX timTimeout
+#debug pointer timTimeout ;<debug_call>
+ CAL  TON_L0
+#srcline 113 ;  IF timTimeout.Q THEN
+ LDX  timTimeout~Q
+#debug bool timTimeout.Q
+ JMC  fbGetJsonAndSetVar_L28
+#srcline 114 ;    JsonParser( exec := 0, chanCode := chanHandle, pageName := pageUrl, jsonInfo := json);
+ LD   bool 0       ; false
+ WRX  JsonParser~exec
+#debug_left bool JsonParser~exec
+ LDX  chanHandle
+#debug uint chanHandle
+ WRX  JsonParser~chanCode
+#debug_left uint JsonParser~chanCode
+ LEAX pageUrl
+ WRX  JsonParser~pageName
+#debug_left pointer JsonParser.pageName
+ LEAX json
+ WRX  JsonParser~jsonInfo
+#debug_left pointer JsonParser.jsonInfo
+ LEAX JsonParser
+#debug pointer JsonParser ;<debug_call>
+ CAL  fbJsonPageParser_L0
+#srcline 115 ;    rqGet := 0; parseEnable := 0; busy := 0;
+ LD   bool 0       ; false
+ WRX  rqGet
+#debug_left bool rqGet
+ LD   bool 0       ; false
+ WRX  parseEnable
+#debug_left bool parseEnable
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 116 ;    IF chanHandle <> 0 THEN CloseUniChannel( chanHandle); END_IF;
+ LDX  chanHandle
+#debug uint chanHandle
+ LD   uint 0
+ EQ
+ NEG
+ JMC  fbGetJsonAndSetVar_L30
+ NXT
+ LEAX chanHandle
+ WR   __Instance__CloseUniChannel~chanHandle
+#debug_left pointer __Instance__CloseUniChannel.chanHandle
+ PRV
+ LEA  __Instance__CloseUniChannel
+#debug pointer __Instance__CloseUniChannel ;<debug_call>
+ CAL  CloseUniChannel_L0
+fbGetJsonAndSetVar_L30:
+#srcline 117 ;    err := 1; errTxt := 'Timeout error';     // nastavit chybu
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbGetJsonAndSetVar_8
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 118 ;  END_IF;
+fbGetJsonAndSetVar_L28:
+#srcline 119 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbGetJsonAndSetVar__InstanceInit__:
+ LINK 0
+ LD   time 120000
+ WRX  timeout
+ LEAX JsonParser
+ CAL  fbJsonPageParser__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOLIBSRC\JSONLIBEX\JSONLIBEX\FBJSONPAGEPARSER2HTTPREQUEST.ST'
+#pou fbJsonPageParser2HttpRequest
+#srcline 1 ;FUNCTION_BLOCK fbJsonPageParser2HttpRequest {HIDDEN}
+
+#struct fbJsonPageParser2HttpRequest__temp__
+  string[81] lNamePass,
+  usint r,
+  uint i,
+  pointer pHelpString,
+  pointer pUint,
+  pointer pUsint,
+  TUniDesc UniDesc,
+  TRemoteEthAdr rea,
+  udint l,
+  uint authPos,
+  uint j,
+  usint P0__st__,
+  string[257] PS0__st__,
+  string[62] PS1__st__,
+  string[257] PSC__st__
+#data byte _str_fbJsonPageParser2HttpRequest_0 = 
+  '@',0
+#data byte _str_fbJsonPageParser2HttpRequest_1 = 
+  'G','E','T',' ',0
+#data byte _str_fbJsonPageParser2HttpRequest_2 = 
+  'P','O','S','T',' ',0
+#data byte _str_fbJsonPageParser2HttpRequest_3 = 
+  'P','U','T',' ',0
+#data byte _str_fbJsonPageParser2HttpRequest_4 = 
+  ' ','H','T','T','P','/','1','.','0',$0D,$0A,'U','s','e','r','-','A','g','e','n',
+  't',':',' ','F','o','x','t','r','o','t','/',0
+#data byte _str_fbJsonPageParser2HttpRequest_5 = 
+  '.',0
+#data byte _str_fbJsonPageParser2HttpRequest_6 = 
+  ' ','(','T','e','c','o','m','a','t',';',' ','N',';',' ','e','n','-','U','S',')',
+  $0D,$0A,'C','a','c','h','e','-','C','o','n','t','r','o','l',':',' ','m','a','x',
+  '-','a','g','e','=','0',$0D,$0A,'C','o','n','t','e','n','t','-','T','y','p','e',
+  ':',' ',0
+#data byte _str_fbJsonPageParser2HttpRequest_7 = 
+  $0D,$0A,'A','c','c','e','p','t',':',' ','*','/','*',$0D,$0A,'H','o','s','t',':',
+  ' ',0
+#data byte _str_fbJsonPageParser2HttpRequest_8 = 
+  ' ','(','T','e','c','o','m','a','t',';',' ','N',';',' ','e','n','-','U','S',')',
+  $0D,$0A,'C','a','c','h','e','-','C','o','n','t','r','o','l',':',' ','m','a','x',
+  '-','a','g','e','=','0',$0D,$0A,'C','o','n','t','e','n','t','-','T','y','p','e',
+  ':',' ','a','p','p','l','i','c','a','t','i','o','n','/','x','-','w','w','w','-',
+  'f','o','r','m','-','u','r','l','e','n','c','o','d','e','d',$0D,$0A,'A','c','c',
+  'e','p','t',':',' ','*','/','*',$0D,$0A,'H','o','s','t',':',' ',0
+#data byte _str_fbJsonPageParser2HttpRequest_9 = 
+  ' ','(','T','e','c','o','m','a','t',';',' ','N',';',' ','e','n','-','U','S',')',
+  $0D,$0A,'C','a','c','h','e','-','C','o','n','t','r','o','l',':',' ','m','a','x',
+  '-','a','g','e','=','0',$0D,$0A,'A','c','c','e','p','t',':',' ','*','/','*',$0D,
+  $0A,'H','o','s','t',':',' ',0
+#data byte _str_fbJsonPageParser2HttpRequest_10 = 
+  $0D,$0A,'A','u','t','h','o','r','i','z','a','t','i','o','n',':',' ','B','a','s',
+  'i','c',' ',0
+#data byte _str_fbJsonPageParser2HttpRequest_11 = 
+  $0D,$0A,'C','o','n','t','e','n','t','-','L','e','n','g','t','h',':',' ',0
+#data byte _str_fbJsonPageParser2HttpRequest_12 = 
+  $0D,$0A,'C','o','n','n','e','c','t','i','o','n',':',' ','c','l','o','s','e',$0D,
+  $0A,$0D,$0A,0
+#data byte _str_fbJsonPageParser2HttpRequest_13 = 
+  $0D,$0A,'C','o','n','n','e','c','t','i','o','n',':',' ','c','l','o','s','e',$0D,
+  $0A,$0D,$0A,0
+#data byte _str_fbJsonPageParser2HttpRequest_14 = 
+  $0A,0
+#data byte _str_fbJsonPageParser2HttpRequest_15 = 
+  'H','T','T','P',0
+#data byte _str_fbJsonPageParser2HttpRequest_16 = 
+  'C','o','n','t','e','n','t','-','L','e','n','g','t','h',':',0
+#data byte _str_fbJsonPageParser2HttpRequest_17 = 
+  $0D,$0A,$0D,$0A,0
+#data byte _str_fbJsonPageParser2HttpRequest_18 = 
+  $0A,$0A,0
+P     61
+fbJsonPageParser2HttpRequest_L0:
+ LINK __SizeOf(fbJsonPageParser2HttpRequest__temp__)
+; Initialize - dynamic variables
+ LD   udint $FFFFFFFF    ; nil
+ WRY  pHelpString
+ LD   udint $FFFFFFFF    ; nil
+ WRY  pUint
+ LD   udint $FFFFFFFF    ; nil
+ WRY  pUsint
+; End initialize - dynamic variables
+; R_EDGE, F_EDGE 
+ LDX  Post
+ LETX __EDGE_R__Post
+ WRX  Post
+ LDX  Put
+ LETX __EDGE_R__Put
+ WRX  Put
+ LDX  Get
+ LETX __EDGE_R__Get
+ WRX  Get
+ LDX  Cancel
+ LETX __EDGE_R__Cancel
+ WRX  Cancel
+#srcline 73 ;  IF GetChanIndex( chanCode) <> -1 THEN
+ NXT
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__GetChanIndex~chanCode
+#debug_left uint __Instance__GetChanIndex~chanCode
+ PRV
+ LEA  __Instance__GetChanIndex
+#debug pointer __Instance__GetChanIndex ;<debug_call>
+ CAL  GetChanIndex_L0
+ LD   int -1
+ EQ
+ NEG
+ JMC  fbJsonPageParser2HttpRequest_L1
+#srcline 74 ;    // kanal zalozen pomoci #module => kontrola nutna
+#srcline 75 ;    UniDesc := GetChanDesc(chanCode := chanCode);
+ NXT
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__GetChanDesc~chanCode
+#debug_left uint __Instance__GetChanDesc~chanCode
+ PRV
+ LEA  __Instance__GetChanDesc
+#debug pointer __Instance__GetChanDesc ;<debug_call>
+ CAL  GetChanDesc_L0
+ LEAY UniDesc
+#debug_left pointer UniDesc
+ LD   26   ;SizeOf() 
+ MOV  %IB0
+#srcline 76 ;    IF (UniDesc.modeChan <> 5) OR (UniDesc.lenUniIn <> 516) OR (UniDesc.lenUniOut < 516) THEN
+ LDY  UniDesc~modeChan
+#debug byte UniDesc.modeChan
+ LD   byte 5
+ EQ
+ NEG
+ LDY  UniDesc~lenUniIn
+#debug uint UniDesc.lenUniIn
+ LD   uint 516
+ EQ
+ NEG
+ OR  
+ LDY  UniDesc~lenUniOut
+#debug uint UniDesc.lenUniOut
+ LD   uint 516
+ LT
+ OR  
+ JMC  fbJsonPageParser2HttpRequest_L3
+#srcline 77 ;      Err   := true;
+ LD   bool -1       ; true
+ WRX  Err
+#debug_left bool Err
+#srcline 78 ;      ErrId := 255;
+ LD   usint 255
+ WRX  ErrId
+#debug_left usint ErrId
+#srcline 79 ;      RETURN;
+ JMP  fbJsonPageParser2HttpRequest_RET
+#srcline 80 ;    END_IF;
+fbJsonPageParser2HttpRequest_L3:
+#srcline 81 ;  END_IF;
+fbJsonPageParser2HttpRequest_L1:
+#srcline 83 ;  Busy := State <> hs_HttpIdle;
+ LDX  State
+#debug usint State
+ LD   udint 0  ; THttpState#hs_HttpIdle
+ EQ
+ NEG
+ WRX  Busy
+#debug_left bool Busy
+#srcline 85 ;  TimeOutTon(IN := Busy & NOT DataReady, PT := T#2m);
+ LDX  Busy
+#debug bool Busy
+ LDX  DataReady
+#debug bool DataReady
+ NEG
+ AND
+ WRX  TimeOutTon~IN
+#debug_left bool TimeOutTon~IN
+ LD   time 120000
+ WRX  TimeOutTon~PT
+#debug_left time TimeOutTon~PT
+ LEAX TimeOutTon
+#debug pointer TimeOutTon ;<debug_call>
+ CAL  TON_L0
+#srcline 87 ;  DataReady := false;
+ LD   bool 0       ; false
+ WRX  DataReady
+#debug_left bool DataReady
+#srcline 89 ;  IF TimeOutTon.Q THEN
+ LDX  TimeOutTon~Q
+#debug bool TimeOutTon.Q
+ JMC  fbJsonPageParser2HttpRequest_L5
+#srcline 90 ;    Err   := true;
+ LD   bool -1       ; true
+ WRX  Err
+#debug_left bool Err
+#srcline 91 ;    ErrId := 1;
+ LD   usint 1
+ WRX  ErrId
+#debug_left usint ErrId
+#srcline 92 ;    State := hs_HttpIdle;
+ LD   udint 0  ; THttpState#hs_HttpIdle
+ WRX  State
+#debug_left usint State
+#srcline 93 ;  END_IF;
+fbJsonPageParser2HttpRequest_L5:
+#srcline 95 ;  IF Cancel THEN
+ LDX  Cancel
+#debug bool Cancel
+ JMC  fbJsonPageParser2HttpRequest_L7
+#srcline 96 ;    State := hs_HttpIdle;
+ LD   udint 0  ; THttpState#hs_HttpIdle
+ WRX  State
+#debug_left usint State
+#srcline 97 ;    Err   := ContLen > 0;
+ LDX  ContLen
+#debug dint ContLen
+ LD   dint 0
+ GTS
+ WRX  Err
+#debug_left bool Err
+#srcline 98 ;  END_IF;
+fbJsonPageParser2HttpRequest_L7:
+#srcline 100 ;  CASE State OF
+ LDX  State
+#debug usint State
+ WRY  P0__st__
+ LD   0
+ LDY  P0__st__
+ EQ  
+ JMC  fbJsonPageParser2HttpRequest_L10
+#srcline 101 ;    hs_HttpIdle   :
+#srcline 102 ;      r := CloseTCPconnection(chanCode := chanCode);
+ NXT
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__CloseTCPconnection~chanCode
+#debug_left uint __Instance__CloseTCPconnection~chanCode
+ PRV
+ LEA  __Instance__CloseTCPconnection
+#debug pointer __Instance__CloseTCPconnection ;<debug_call>
+ CAL  CloseTCPconnection_L0
+ WRY  r
+#debug_left usint r
+#srcline 103 ;      Done := false;
+ LD   bool 0       ; false
+ WRX  Done
+#debug_left bool Done
+#srcline 104 ;      IF Post OR Get OR Put THEN
+ LDX  Post
+#debug bool Post
+ LDX  Get
+#debug bool Get
+ OR  
+ LDX  Put
+#debug bool Put
+ OR  
+ JMC  fbJsonPageParser2HttpRequest_L11
+#srcline 105 ;        sOff := 0;
+ LD   uint 0
+ WRX  sOff
+#debug_left uint sOff
+#srcline 106 ;        rLen := 0;
+ LD   uint 0
+ WRX  rLen
+#debug_left uint rLen
+#srcline 107 ;        WholeLen := 0;
+ LD   dint 0
+ WRX  WholeLen
+#debug_left dint WholeLen
+#srcline 108 ;        Err     := false;
+ LD   bool 0       ; false
+ WRX  Err
+#debug_left bool Err
+#srcline 109 ;        ErrId   := 0;
+ LD   usint 0
+ WRX  ErrId
+#debug_left usint ErrId
+#srcline 110 ;        Result  := 0;
+ LD   int 0
+ WRX  Result
+#debug_left int Result
+#srcline 111 ;        authPos := FIND(IN1 := Host, IN2 := '@');
+ LDX  Host
+#debug string Host
+ LEA  _str_fbJsonPageParser2HttpRequest_0
+ SFND 
+ WRY  authPos
+#debug_left uint authPos
+#srcline 112 ;        IF authPos > 0 THEN
+ LDY  authPos
+#debug uint authPos
+ LD   uint 0
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L13
+#srcline 113 ;          lHost := MID(IN := Host, L := 80, P := authPos+1);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LDX  Host
+#debug string Host
+ LD   80
+ LDY  authPos
+#debug uint authPos
+ LD   uint 1
+ ADD
+ AND  $FFFF
+ SUB  1
+ SMID 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX lHost
+ WRI  
+ LEAX lHost
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string lHost
+ PDST   ; Level 1
+#srcline 114 ;          lNamePass := LEFT(IN := Host, L := authPos-1);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LDX  Host
+#debug string Host
+ LDY  authPos
+#debug uint authPos
+ LD   uint 1
+ SUB
+ AND  $FFFF
+ SLFT 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAY lNamePass
+ WRI  
+ LEAY lNamePass
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string lNamePass
+ PDST   ; Level 1
+#srcline 115 ;        ELSE
+ JMP  fbJsonPageParser2HttpRequest_L14
+fbJsonPageParser2HttpRequest_L13:
+#srcline 116 ;          lHost := Host;
+ LD   0   ; null string
+ LEAX lHost
+ WRI  
+ LEAX lHost
+ LD   80
+ DST    ; Level 1
+ LDX  Host
+#debug string Host
+ SCON 
+#debug_left string lHost
+ PDST   ; Level 1
+#srcline 117 ;        END_IF;
+fbJsonPageParser2HttpRequest_L14:
+#srcline 118 ;        (*
+#srcline 119 ;        pUint := ADR(RecvData);
+#srcline 120 ;        pHelpString := pUint;
+#srcline 121 ;        *)
+#srcline 122 ;        IF Get THEN
+ LDX  Get
+#debug bool Get
+ JMC  fbJsonPageParser2HttpRequest_L15
+#srcline 123 ;          HelpString := 'GET ' + Action;
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2HttpRequest_1
+ SCON 
+ LDX  Action
+#debug string Action
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX HelpString
+ WRI  
+ LEAX HelpString
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string HelpString
+ PDST   ; Level 1
+#srcline 124 ;        ELSIF Post THEN
+ JMP  fbJsonPageParser2HttpRequest_L16
+fbJsonPageParser2HttpRequest_L15:
+ LDX  Post
+#debug bool Post
+ JMC  fbJsonPageParser2HttpRequest_L17
+#srcline 125 ;          HelpString := 'POST ' + Action;
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2HttpRequest_2
+ SCON 
+ LDX  Action
+#debug string Action
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX HelpString
+ WRI  
+ LEAX HelpString
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string HelpString
+ PDST   ; Level 1
+#srcline 126 ;        ELSE
+ JMP  fbJsonPageParser2HttpRequest_L16
+fbJsonPageParser2HttpRequest_L17:
+#srcline 127 ;          HelpString := 'PUT ' + Action;
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2HttpRequest_3
+ SCON 
+ LDX  Action
+#debug string Action
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX HelpString
+ WRI  
+ LEAX HelpString
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string HelpString
+ PDST   ; Level 1
+#srcline 128 ;        END_IF;
+fbJsonPageParser2HttpRequest_L16:
+#srcline 129 ;        lBodyLen := bodyLen;
+ LDX  bodyLen
+#debug uint bodyLen
+ WRX  lBodyLen
+#debug_left uint lBodyLen
+#srcline 130 ;        lPostLen := bodyLen;
+ LDX  bodyLen
+#debug uint bodyLen
+ WRX  lPostLen
+#debug_left uint lPostLen
+#srcline 131 ;        //TODO: Dodelat kontrolu delky vstupnich dat
+#srcline 132 ;        pUint := ADR(RecvData);
+ LDX  RecvData
+#debug pointer RecvData
+ LEAY pUint
+ WRIL 
+#debug_left pointer pUint
+#srcline 133 ;        pUsint := pUint  + MemcpyPtr(length := LEN(helpstring), source := ADR(helpstring), dest := pUint);
+ LEAY pUint
+ LDIL 
+#debug pointer pUint
+ NXT
+ LEAX helpstring
+#debug string helpstring
+ SLEN 
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ LEAX helpstring
+#debug pointer helpstring
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LEAY pUint
+ LDIL 
+#debug pointer pUint
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ PRV
+ LEA  __Instance__MemcpyPtr
+#debug pointer __Instance__MemcpyPtr ;<debug_call>
+ CAL  MemcpyPtr_L0
+ ADD
+ LEAY pUsint
+ WRIL 
+#debug_left pointer pUsint
+#srcline 134 ;        //max len 5+255 = 300
+#srcline 135 ;        helpstring := ' HTTP/1.0$r$nUser-Agent: Foxtrot/' + USINT_TO_STRING(%S40) + '.' + USINT_TO_STRING(%S41);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2HttpRequest_4
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   255
+ DST    ; Level 2
+ LD   %S40
+ SCNV $0830;  IEC_USINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ LEA  _str_fbJsonPageParser2HttpRequest_5
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   255
+ DST    ; Level 2
+ LD   %S41
+ SCNV $0830;  IEC_USINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX helpstring
+ WRI  
+ LEAX helpstring
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string helpstring
+ PDST   ; Level 1
+#srcline 136 ;        pUsint := pUsint + MemcpyPtr(length := LEN(helpstring), source := ADR(helpstring), dest := pUsint);
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ NXT
+ LEAX helpstring
+#debug string helpstring
+ SLEN 
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ LEAX helpstring
+#debug pointer helpstring
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ PRV
+ LEA  __Instance__MemcpyPtr
+#debug pointer __Instance__MemcpyPtr ;<debug_call>
+ CAL  MemcpyPtr_L0
+ ADD
+ LEAY pUsint
+ WRIL 
+#debug_left pointer pUsint
+#srcline 137 ;        //max len 300+33+1+1+1 = 336
+#srcline 139 ;        IF LEN(ContentType) > 0 THEN
+ LDX  ContentType
+#debug string ContentType
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbJsonPageParser2HttpRequest_L18
+#srcline 140 ;          helpstring := ' (Tecomat; N; en-US)$r$nCache-Control: max-age=0$r$nContent-Type: '+ContentType+'$r$nAccept: */*$r$nHost: ';
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2HttpRequest_6
+ SCON 
+ LDX  ContentType
+#debug string ContentType
+ SCON 
+ LEA  _str_fbJsonPageParser2HttpRequest_7
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX helpstring
+ WRI  
+ LEAX helpstring
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string helpstring
+ PDST   ; Level 1
+#srcline 141 ;        ELSE
+ JMP  fbJsonPageParser2HttpRequest_L19
+fbJsonPageParser2HttpRequest_L18:
+#srcline 142 ;          IF lBodyLen > 0 THEN
+ LDX  lBodyLen
+#debug uint lBodyLen
+ LD   uint 0
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L20
+#srcline 143 ;            helpstring := ' (Tecomat; N; en-US)$r$nCache-Control: max-age=0$r$nContent-Type: application/x-www-form-urlencoded$r$nAccept: */*$r$nHost: ';
+ LD   0   ; null string
+ LEAX helpstring
+ WRI  
+ LEAX helpstring
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2HttpRequest_8
+ SCON 
+#debug_left string helpstring
+ PDST   ; Level 1
+#srcline 144 ;          ELSE
+ JMP  fbJsonPageParser2HttpRequest_L21
+fbJsonPageParser2HttpRequest_L20:
+#srcline 145 ;            helpstring := ' (Tecomat; N; en-US)$r$nCache-Control: max-age=0$r$nAccept: */*$r$nHost: ';
+ LD   0   ; null string
+ LEAX helpstring
+ WRI  
+ LEAX helpstring
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2HttpRequest_9
+ SCON 
+#debug_left string helpstring
+ PDST   ; Level 1
+#srcline 146 ;          END_IF;
+fbJsonPageParser2HttpRequest_L21:
+#srcline 147 ;        END_IF;
+fbJsonPageParser2HttpRequest_L19:
+#srcline 149 ;        pUsint := pUsint + MemcpyPtr(length := LEN(helpstring), source := ADR(helpstring), dest := pUsint);
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ NXT
+ LEAX helpstring
+#debug string helpstring
+ SLEN 
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ LEAX helpstring
+#debug pointer helpstring
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ PRV
+ LEA  __Instance__MemcpyPtr
+#debug pointer __Instance__MemcpyPtr ;<debug_call>
+ CAL  MemcpyPtr_L0
+ ADD
+ LEAY pUsint
+ WRIL 
+#debug_left pointer pUsint
+#srcline 150 ;        //max len 336+140 = 476
+#srcline 151 ;        Err := true;
+ LD   bool -1       ; true
+ WRX  Err
+#debug_left bool Err
+#srcline 152 ;        REPEAT
+fbJsonPageParser2HttpRequest_L22:
+ DBG
+#srcline 153 ;          l := LEN(lHost);
+ LEAX lHost
+#debug string lHost
+ SLEN 
+ WRY  l
+#debug_left udint l
+#srcline 154 ;          IF PTR_TO_UDINT(pUsint) - PTR_TO_UDINT(pUint) + l > 512 THEN EXIT; END_IF;
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ LEAY pUint
+ LDIL 
+#debug pointer pUint
+ SUB
+ LDY  l
+#debug udint l
+ ADD
+ LD   udint 512
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L24
+ JMP  fbJsonPageParser2HttpRequest_L23
+fbJsonPageParser2HttpRequest_L24:
+#srcline 155 ;          pUsint := pUsint + MemcpyPtr(length := l, source := ADR(lHost), dest := pUsint);
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ NXT
+ LDY  l
+#debug udint l
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ LEAX lHost
+#debug pointer lHost
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ PRV
+ LEA  __Instance__MemcpyPtr
+#debug pointer __Instance__MemcpyPtr ;<debug_call>
+ CAL  MemcpyPtr_L0
+ ADD
+ LEAY pUsint
+ WRIL 
+#debug_left pointer pUsint
+#srcline 157 ;          IF authPos > 0 THEN
+ LDY  authPos
+#debug uint authPos
+ LD   uint 0
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L26
+#srcline 158 ;            //Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
+#srcline 159 ;            helpstring := '$r$nAuthorization: Basic ' + Base64_encode_string(lNamePass);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2HttpRequest_10
+ SCON 
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__Base64_encode_string~data
+ WRI 
+ LEA  __Instance__Base64_encode_string~data
+ LD   60
+ DST    ; Level 2
+ LEAY lNamePass
+#debug string lNamePass
+ SCON 
+#debug_left string __Instance__Base64_encode_string~data
+ PDST   ; Level 2
+ PRV
+ LEA  __Instance__Base64_encode_string
+#debug pointer __Instance__Base64_encode_string ;<debug_call>
+ CAL  Base64_encode_string_L0
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX helpstring
+ WRI  
+ LEAX helpstring
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string helpstring
+ PDST   ; Level 1
+#srcline 160 ;            l := LEN(helpstring);
+ LEAX helpstring
+#debug string helpstring
+ SLEN 
+ WRY  l
+#debug_left udint l
+#srcline 161 ;            IF PTR_TO_UDINT(pUsint) - PTR_TO_UDINT(pUint) + l > 512 THEN EXIT; END_IF;
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ LEAY pUint
+ LDIL 
+#debug pointer pUint
+ SUB
+ LDY  l
+#debug udint l
+ ADD
+ LD   udint 512
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L28
+ JMP  fbJsonPageParser2HttpRequest_L23
+fbJsonPageParser2HttpRequest_L28:
+#srcline 162 ;            pUsint := pUsint + MemcpyPtr(length := l, source := ADR(helpstring), dest := pUsint);
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ NXT
+ LDY  l
+#debug udint l
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ LEAX helpstring
+#debug pointer helpstring
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ PRV
+ LEA  __Instance__MemcpyPtr
+#debug pointer __Instance__MemcpyPtr ;<debug_call>
+ CAL  MemcpyPtr_L0
+ ADD
+ LEAY pUsint
+ WRIL 
+#debug_left pointer pUsint
+#srcline 163 ;          END_IF;
+fbJsonPageParser2HttpRequest_L26:
+#srcline 165 ;          //max len 476+80 = 556!!!
+#srcline 166 ;          IF lBodyLen > 0 THEN
+ LDX  lBodyLen
+#debug uint lBodyLen
+ LD   uint 0
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L30
+#srcline 167 ;            helpstring := '$r$nContent-Length: ' + UINT_TO_STRING(lBodyLen) + '$r$nConnection: close$r$n$r$n';
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2HttpRequest_11
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   255
+ DST    ; Level 2
+ LDX  lBodyLen
+#debug uint lBodyLen
+ SCNV $0A30;  IEC_UINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ LEA  _str_fbJsonPageParser2HttpRequest_12
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX helpstring
+ WRI  
+ LEAX helpstring
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string helpstring
+ PDST   ; Level 1
+#srcline 168 ;          ELSE
+ JMP  fbJsonPageParser2HttpRequest_L31
+fbJsonPageParser2HttpRequest_L30:
+#srcline 169 ;            helpstring := '$r$nConnection: close$r$n$r$n';
+ LD   0   ; null string
+ LEAX helpstring
+ WRI  
+ LEAX helpstring
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2HttpRequest_13
+ SCON 
+#debug_left string helpstring
+ PDST   ; Level 1
+#srcline 170 ;          END_IF;
+fbJsonPageParser2HttpRequest_L31:
+#srcline 171 ;          l := LEN(helpstring);
+ LEAX helpstring
+#debug string helpstring
+ SLEN 
+ WRY  l
+#debug_left udint l
+#srcline 172 ;          IF PTR_TO_UDINT(pUsint) - PTR_TO_UDINT(pUint) + l > 512 THEN EXIT; END_IF;
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ LEAY pUint
+ LDIL 
+#debug pointer pUint
+ SUB
+ LDY  l
+#debug udint l
+ ADD
+ LD   udint 512
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L32
+ JMP  fbJsonPageParser2HttpRequest_L23
+fbJsonPageParser2HttpRequest_L32:
+#srcline 173 ;          pUsint := pUsint + MemcpyPtr(length := l, source := ADR(helpstring), dest := pUsint);
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ NXT
+ LDY  l
+#debug udint l
+ WR   __Instance__MemcpyPtr~length
+#debug_left udint __Instance__MemcpyPtr~length
+ LEAX helpstring
+#debug pointer helpstring
+ LEA  __Instance__MemcpyPtr~source
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~source
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ LEA  __Instance__MemcpyPtr~dest
+ WRIL 
+#debug_left udint __Instance__MemcpyPtr~dest
+ PRV
+ LEA  __Instance__MemcpyPtr
+#debug pointer __Instance__MemcpyPtr ;<debug_call>
+ CAL  MemcpyPtr_L0
+ ADD
+ LEAY pUsint
+ WRIL 
+#debug_left pointer pUsint
+#srcline 176 ;          //max len 556+44=600!!!
+#srcline 177 ;          (*
+#srcline 178 ;          IF POST THEN //copy data to post
+#srcline 179 ;            l := LEN(data);
+#srcline 180 ;            IF PTR_TO_UDINT(pUsint) - PTR_TO_UDINT(pUint) + l > 512 THEN EXIT; END_IF;
+#srcline 181 ;            pUsint := pUsint + MemcpyPtr(length := LEN(data), source := ADR(data), dest := pUsint);
+#srcline 182 ;            //max len 600+80=680!!!
+#srcline 183 ;          END_IF;
+#srcline 184 ;          *)
+#srcline 185 ;          Err := false;
+ LD   bool 0       ; false
+ WRX  Err
+#debug_left bool Err
+#srcline 186 ;        UNTIL true END_REPEAT;
+ LD   bool -1       ; true
+ JMC  fbJsonPageParser2HttpRequest_L22
+fbJsonPageParser2HttpRequest_L23:
+ NOP  -1
+#srcline 187 ;        IF Err THEN
+ LDX  Err
+#debug bool Err
+ JMC  fbJsonPageParser2HttpRequest_L34
+#srcline 188 ;          ErrId := 3; //delka hlavicka protokolu presahla 512 bytes
+ LD   usint 3
+ WRX  ErrId
+#debug_left usint ErrId
+#srcline 189 ;        ELSE
+ JMP  fbJsonPageParser2HttpRequest_L35
+fbJsonPageParser2HttpRequest_L34:
+#srcline 190 ;          SendTo.lenTx := UDINT_TO_UINT(PTR_TO_UDINT(pUsint) - PTR_TO_UDINT(pUint));
+ LEAY pUsint
+ LDIL 
+#debug pointer pUsint
+ LEAY pUint
+ LDIL 
+#debug pointer pUint
+ SUB
+ AND  $FFFF
+ WRX  SendTo~lenTx
+#debug_left uint SendTo.lenTx
+#srcline 191 ;          State := hs_HttpSetIP;
+ LD   udint 1  ; THttpState#hs_HttpSetIP
+ WRX  State
+#debug_left usint State
+#srcline 192 ;          Busy  := true; //Busy is set in the same cycle when we left idle state!!!
+ LD   bool -1       ; true
+ WRX  Busy
+#debug_left bool Busy
+#srcline 193 ;        END_IF;
+fbJsonPageParser2HttpRequest_L35:
+#srcline 194 ;      END_IF;
+fbJsonPageParser2HttpRequest_L11:
+ JMP  fbJsonPageParser2HttpRequest_L9
+fbJsonPageParser2HttpRequest_L10:
+ LD   1
+ LDY  P0__st__
+ EQ  
+ JMC  fbJsonPageParser2HttpRequest_L36
+#srcline 195 ;    hs_HttpSetIP:
+#srcline 196 ;      IF IPadr = Any_IP THEN
+ LEAX IPadr
+ LEA  Any_IP
+ LD   4   ; SizeOf()
+ BCMP 
+ EQ   0
+ JMC  fbJsonPageParser2HttpRequest_L37
+#srcline 197 ;          Err   := true;
+ LD   bool -1       ; true
+ WRX  Err
+#debug_left bool Err
+#srcline 198 ;          ErrId := 254;
+ LD   usint 254
+ WRX  ErrId
+#debug_left usint ErrId
+#srcline 199 ;          State := hs_HttpIdle;
+ LD   udint 0  ; THttpState#hs_HttpIdle
+ WRX  State
+#debug_left usint State
+#srcline 200 ;      ELSE
+ JMP  fbJsonPageParser2HttpRequest_L38
+fbJsonPageParser2HttpRequest_L37:
+#srcline 201 ;        rea.remoteIP   := IPadr;
+ LEAX IPadr
+#debug pointer IPadr
+ SRC  %IB0
+ LEAY rea~remoteIP
+#debug_left pointer rea.remoteIP
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+#srcline 202 ;        rea.remotePort := port;
+ LDX  port
+#debug uint port
+ WRY  rea~remotePort
+#debug_left uint rea.remotePort
+#srcline 203 ;/////////nem 21.5.2019
+#srcline 204 ;        uniDesc := GetChanDesc( chanCode := chanCode);
+ NXT
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__GetChanDesc~chanCode
+#debug_left uint __Instance__GetChanDesc~chanCode
+ PRV
+ LEA  __Instance__GetChanDesc
+#debug pointer __Instance__GetChanDesc ;<debug_call>
+ CAL  GetChanDesc_L0
+ LEAY uniDesc
+#debug_left pointer uniDesc
+ LD   26   ;SizeOf() 
+ MOV  %IB0
+#srcline 205 ;        IF uniDesc.res = USINT_TO_BYTE( UNI_SSL_CLIENT) THEN
+ LDY  uniDesc~res
+#debug byte uniDesc.res
+ LD   usint 35
+ AND  $FF
+ EQ
+ JMC  fbJsonPageParser2HttpRequest_L39
+#srcline 206 ;          SetUniChanHostName( chanHandle := chanCode, hostName := Host);  // nastavit host name pro SSL socket
+ NXT
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__SetUniChanHostName~chanHandle
+#debug_left uint __Instance__SetUniChanHostName~chanHandle
+ LD   0   ; null string
+ LEA  __Instance__SetUniChanHostName~hostName
+ WRI 
+ LEA  __Instance__SetUniChanHostName~hostName
+ LD   80
+ DST    ; Level 1
+ LDX  Host
+#debug string Host
+ SCON 
+#debug_left string __Instance__SetUniChanHostName~hostName
+ PDST   ; Level 1
+ PRV
+ LEA  __Instance__SetUniChanHostName
+#debug pointer __Instance__SetUniChanHostName ;<debug_call>
+ CAL  SetUniChanHostName_L0
+#srcline 207 ;        END_IF;
+fbJsonPageParser2HttpRequest_L39:
+#srcline 208 ;/////////
+#srcline 209 ;        IF SetRemoteIPaddress(rq := 1, chanCode := chanCode, ethAdr := rea) THEN
+ NXT
+ LD   bool -1      ; true
+ WR   __Instance__SetRemoteIPaddress~rq
+#debug_left bool __Instance__SetRemoteIPaddress~rq
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__SetRemoteIPaddress~chanCode
+#debug_left uint __Instance__SetRemoteIPaddress~chanCode
+ LEAY rea
+ WR   __Instance__SetRemoteIPaddress~ethAdr
+#debug_left pointer __Instance__SetRemoteIPaddress.ethAdr
+ PRV
+ LEA  __Instance__SetRemoteIPaddress
+#debug pointer __Instance__SetRemoteIPaddress ;<debug_call>
+ CAL  SetRemoteIPaddress_L0
+ JMC  fbJsonPageParser2HttpRequest_L41
+#srcline 210 ;          State := hs_HttpConnect;
+ LD   udint 2  ; THttpState#hs_HttpConnect
+ WRX  State
+#debug_left usint State
+#srcline 211 ;        END_IF;
+fbJsonPageParser2HttpRequest_L41:
+#srcline 212 ;      END_IF;
+fbJsonPageParser2HttpRequest_L38:
+ JMP  fbJsonPageParser2HttpRequest_L9
+fbJsonPageParser2HttpRequest_L36:
+ LD   2
+ LDY  P0__st__
+ EQ  
+ JMC  fbJsonPageParser2HttpRequest_L43
+#srcline 213 ;    hs_HttpConnect:
+#srcline 214 ;      r := EstabTCPconnection(chanCode := chanCode);
+ NXT
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__EstabTCPconnection~chanCode
+#debug_left uint __Instance__EstabTCPconnection~chanCode
+ PRV
+ LEA  __Instance__EstabTCPconnection
+#debug pointer __Instance__EstabTCPconnection ;<debug_call>
+ CAL  EstabTCPconnection_L0
+ WRY  r
+#debug_left usint r
+#srcline 215 ;      IF IsEstabTCPconnection(chanCode := chanCode) THEN
+ NXT
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__IsEstabTCPconnection~chanCode
+#debug_left uint __Instance__IsEstabTCPconnection~chanCode
+ PRV
+ LEA  __Instance__IsEstabTCPconnection
+#debug pointer __Instance__IsEstabTCPconnection ;<debug_call>
+ CAL  IsEstabTCPconnection_L0
+ JMC  fbJsonPageParser2HttpRequest_L44
+#srcline 216 ;        State := hs_HttpSend;
+ LD   udint 3  ; THttpState#hs_HttpSend
+ WRX  State
+#debug_left usint State
+#srcline 217 ;      END_IF;
+fbJsonPageParser2HttpRequest_L44:
+ JMP  fbJsonPageParser2HttpRequest_L9
+fbJsonPageParser2HttpRequest_L43:
+ LD   3
+ LDY  P0__st__
+ EQ  
+ JMC  fbJsonPageParser2HttpRequest_L46
+#srcline 218 ;    hs_HttpSend   :
+#srcline 219 ;      SendTo(rq := 1, chanCode := chanCode, data := void(RecvData));
+ LD   bool -1      ; true
+ WRX  SendTo~rq
+#debug_left bool SendTo~rq
+ LDX  chanCode
+#debug uint chanCode
+ WRX  SendTo~chanCode
+#debug_left uint SendTo~chanCode
+ LDX  RecvData
+ WRX  SendTo~data
+#debug_left pointer SendTo.data
+ LEAX SendTo
+#debug pointer SendTo ;<debug_call>
+ CAL  fbSendTo_L0
+#srcline 220 ;      ResRecv    := false;
+ LD   bool 0       ; false
+ WRX  ResRecv
+#debug_left bool ResRecv
+#srcline 221 ;      LenRecv    := false;
+ LD   bool 0       ; false
+ WRX  LenRecv
+#debug_left bool LenRecv
+#srcline 222 ;      HeaderRecv := false;
+ LD   bool 0       ; false
+ WRX  HeaderRecv
+#debug_left bool HeaderRecv
+#srcline 223 ;      ContLen    := -1;
+ LD   dint -1
+ WRX  ContLen
+#debug_left dint ContLen
+#srcline 224 ;      State := hs_HttpSendPost;
+ LD   udint 5  ; THttpState#hs_HttpSendPost
+ WRX  State
+#debug_left usint State
+ JMP  fbJsonPageParser2HttpRequest_L9
+fbJsonPageParser2HttpRequest_L46:
+ LD   5
+ LDY  P0__st__
+ EQ  
+ JMC  fbJsonPageParser2HttpRequest_L47
+#srcline 225 ;    hs_HttpSendPost :
+#srcline 226 ;      IF lBodyLen > 0 THEN
+ LDX  lBodyLen
+#debug uint lBodyLen
+ LD   uint 0
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L48
+#srcline 227 ;        {ASM}
+#srcline 228
+           LDX Data      ;pointer na Data
+#srcline 229
+           LDX lPostLen
+#srcline 230
+           LDX lBodyLen
+#srcline 231
+           SUB
+#srcline 232
+           ADD
+#srcline 233
+           WRX Data      ;pointer na Data[lPostLen-lBodyLen]
+#srcline 234 ;        {END_ASM}
+#srcline 235 ;        SendTo(rq := 1, chanCode := chanCode, data := void(Data), lenTx := MIN(512,lBodyLen));
+ LD   bool -1      ; true
+ WRX  SendTo~rq
+#debug_left bool SendTo~rq
+ LDX  chanCode
+#debug uint chanCode
+ WRX  SendTo~chanCode
+#debug_left uint SendTo~chanCode
+ LDX  Data
+ WRX  SendTo~data
+#debug_left pointer SendTo.data
+ LD   uint 512
+ LDX  lBodyLen
+#debug uint lBodyLen
+ MIN
+ WRX  SendTo~lenTx
+#debug_left uint SendTo~lenTx
+ LEAX SendTo
+#debug pointer SendTo ;<debug_call>
+ CAL  fbSendTo_L0
+#srcline 236 ;        IF SendTo.mesSent THEN
+ LDX  SendTo~mesSent
+#debug bool SendTo.mesSent
+ JMC  fbJsonPageParser2HttpRequest_L50
+#srcline 237 ;          lBodyLen := lBodyLen - MIN(512,lBodyLen);
+ LDX  lBodyLen
+#debug uint lBodyLen
+ LD   uint 512
+ LDX  lBodyLen
+#debug uint lBodyLen
+ MIN
+ SUB
+ AND  $FFFF
+ WRX  lBodyLen
+#debug_left uint lBodyLen
+#srcline 238 ;        END_IF;
+fbJsonPageParser2HttpRequest_L50:
+#srcline 239 ;      ELSE
+ JMP  fbJsonPageParser2HttpRequest_L49
+fbJsonPageParser2HttpRequest_L48:
+#srcline 240 ;        State := hs_HttpReceivingData;
+ LD   udint 4  ; THttpState#hs_HttpReceivingData
+ WRX  State
+#debug_left usint State
+#srcline 241 ;      END_IF;
+fbJsonPageParser2HttpRequest_L49:
+ JMP  fbJsonPageParser2HttpRequest_L9
+fbJsonPageParser2HttpRequest_L47:
+ LD   4
+ LDY  P0__st__
+ EQ  
+ JMC  fbJsonPageParser2HttpRequest_L52
+#srcline 242 ;    hs_HttpReceivingData  :
+#srcline 243 ;      RecvFrom(rq := 1, chanCode := chanCode, lenRx := 512, data := void(RecvData));
+ LD   bool -1      ; true
+ WRX  RecvFrom~rq
+#debug_left bool RecvFrom~rq
+ LDX  chanCode
+#debug uint chanCode
+ WRX  RecvFrom~chanCode
+#debug_left uint RecvFrom~chanCode
+ LD   uint 512
+ WRX  RecvFrom~lenRx
+#debug_left uint RecvFrom~lenRx
+ LDX  RecvData
+ WRX  RecvFrom~data
+#debug_left pointer RecvFrom.data
+ LEAX RecvFrom
+#debug pointer RecvFrom ;<debug_call>
+ CAL  fbRecvFrom_L0
+#srcline 244 ;      IF RecvFrom.mesRec THEN                                                   //byla prijata data
+ LDX  RecvFrom~mesRec
+#debug bool RecvFrom.mesRec
+ JMC  fbJsonPageParser2HttpRequest_L53
+#srcline 245 ;        IF HeaderRecv THEN                                                      //uz byla prijata hlavicka
+ LDX  HeaderRecv
+#debug bool HeaderRecv
+ JMC  fbJsonPageParser2HttpRequest_L55
+#srcline 246 ;          DataLen := RecvFrom.lenData;                                          //delka dat je rovna delce prijateho paketu
+ LDX  RecvFrom~lenData
+#debug uint RecvFrom.lenData
+ WRX  DataLen
+#debug_left uint DataLen
+#srcline 247 ;          ContLen := ContLen - UINT_TO_DINT(DataLen);                           //snizit contlen o prijatou delku
+ LDX  ContLen
+#debug dint ContLen
+ LDX  DataLen
+#debug uint DataLen
+ SUB
+ WRX  ContLen
+#debug_left dint ContLen
+#srcline 248 ;          pUsint  := ADR(RecvData);                                             //nastavit pointer na zacatek dat
+ LDX  RecvData
+#debug pointer RecvData
+ LEAY pUsint
+ WRIL 
+#debug_left pointer pUsint
+#srcline 249 ;        ELSE                                                                    //jeste nebyla prijata hlavicka
+ JMP  fbJsonPageParser2HttpRequest_L56
+fbJsonPageParser2HttpRequest_L55:
+#srcline 250 ;          i := MemcpyEx(length := MIN(TO_UDINT(RecvFrom.lenData), 255-TO_UDINT(sOff)),
+ NXT
+ LDX  RecvFrom~lenData
+#debug uint RecvFrom.lenData
+ LD   udint 255
+ LDX  sOff
+#debug uint sOff
+ SUB
+ MIN
+ WR   __Instance__MemcpyEx~length
+#debug_left udint __Instance__MemcpyEx~length
+#srcline 251 ;               offDest := TO_UDINT(sOff),
+ LDX  sOff
+#debug uint sOff
+ WR   __Instance__MemcpyEx~offDest
+#debug_left udint __Instance__MemcpyEx~offDest
+#srcline 252 ;               source := RecvData[0], dest := void(helpstring));
+ LDX  RecvData
+ WR   __Instance__MemcpyEx~source
+#debug_left pointer __Instance__MemcpyEx.source
+ LEAX helpstring
+ WR   __Instance__MemcpyEx~dest
+#debug_left pointer __Instance__MemcpyEx.dest
+ LD   0
+ WR   __Instance__MemcpyEx~offSource
+ PRV
+ LEA  __Instance__MemcpyEx
+#debug pointer __Instance__MemcpyEx ;<debug_call>
+ CAL  MemcpyEx_L0
+ WRY  i
+#debug_left uint i
+#srcline 254 ;          sOff := sOff + i;
+ LDX  sOff
+#debug uint sOff
+ LDY  i
+#debug uint i
+ ADD
+ AND  $FFFF
+ WRX  sOff
+#debug_left uint sOff
+#srcline 255 ;          rLen := RecvFrom.lenData - i;
+ LDX  RecvFrom~lenData
+#debug uint RecvFrom.lenData
+ LDY  i
+#debug uint i
+ SUB
+ AND  $FFFF
+ WRX  rLen
+#debug_left uint rLen
+#srcline 257 ;          pUsint := ADR(helpstring) + TO_UDINT(sOff);
+ LEAX helpstring
+#debug pointer helpstring
+ LDX  sOff
+#debug uint sOff
+ ADD
+ LEAY pUsint
+ WRIL 
+#debug_left pointer pUsint
+#srcline 258 ;          pUsint^ := 0;
+ LD   usint 0
+ LEAY pUsint
+ LDIL    ; dereference 
+ WRI 
+#debug_left usint pUsint^
+#srcline 260 ;          WHILE true DO
+fbJsonPageParser2HttpRequest_L57:
+ LD   bool -1       ; true
+ JMC  fbJsonPageParser2HttpRequest_L58
+ DBG 
+#srcline 261 ;            i :=  FIND(IN1 := helpstring, IN2 := '$n');
+ LEAX helpstring
+#debug string helpstring
+ LEA  _str_fbJsonPageParser2HttpRequest_14
+ SFND 
+ WRY  i
+#debug_left uint i
+#srcline 262 ;            IF i = 1 OR i = 2 THEN //konec
+ LDY  i
+#debug uint i
+ LD   uint 1
+ EQ
+ LDY  i
+#debug uint i
+ LD   uint 2
+ EQ
+ OR  
+ JMC  fbJsonPageParser2HttpRequest_L59
+#srcline 263 ;              rLen := rLen + sOff - i;
+ LDX  rLen
+#debug uint rLen
+ LDX  sOff
+#debug uint sOff
+ ADD
+ AND  $FFFF
+ LDY  i
+#debug uint i
+ SUB
+ AND  $FFFF
+ WRX  rLen
+#debug_left uint rLen
+#srcline 264 ;              HeaderRecv := true;
+ LD   bool -1       ; true
+ WRX  HeaderRecv
+#debug_left bool HeaderRecv
+#srcline 265 ;              EXIT;
+ JMP  fbJsonPageParser2HttpRequest_L58
+#srcline 266 ;            ELSIF i > 2 THEN  //je tam enter
+ JMP  fbJsonPageParser2HttpRequest_L60
+fbJsonPageParser2HttpRequest_L59:
+ LDY  i
+#debug uint i
+ LD   uint 2
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L61
+#srcline 267 ;              IF NOT ResRecv THEN
+ LDX  ResRecv
+#debug bool ResRecv
+ NEG
+ JMC  fbJsonPageParser2HttpRequest_L62
+#srcline 268 ;                IF FIND(IN1 := helpstring, IN2 := 'HTTP') = 1 THEN      //vyhledani zda je to HTTP hlavicka
+ LEAX helpstring
+#debug string helpstring
+ LEA  _str_fbJsonPageParser2HttpRequest_15
+ SFND 
+ LD   int 1
+ EQ
+ JMC  fbJsonPageParser2HttpRequest_L64
+#srcline 269 ;                  ResRecv := true;                                      //prijat zacatek hlavicky
+ LD   bool -1       ; true
+ WRX  ResRecv
+#debug_left bool ResRecv
+#srcline 270 ;                  pHelpString := ADR(helpstring) + 9;                   //posunout pointer
+ LEAX helpstring
+#debug pointer helpstring
+ LD   udint 9
+ ADD
+ LEAY pHelpString
+ WRIL 
+#debug_left pointer pHelpString
+#srcline 271 ;                  Result := STRING_TO_INT(pHelpString^);                //rozkodovat navratovy kod
+ LEAY pHelpString
+ LDIL    ; dereference 
+#debug string pHelpString^
+ SCNV $300B;  IEC_STRING _TO_ IEC_INT
+ WRX  Result
+#debug_left int Result
+#srcline 272 ;    //            Debug1       := pHelpString^;
+#srcline 273 ;                END_IF;
+fbJsonPageParser2HttpRequest_L64:
+#srcline 274 ;              END_IF;
+fbJsonPageParser2HttpRequest_L62:
+#srcline 275 ;              IF NOT LenRecv THEN                                                   //hledat delku jen kdyz se jeste nenasla 121108
+ LDX  LenRecv
+#debug bool LenRecv
+ NEG
+ JMC  fbJsonPageParser2HttpRequest_L66
+#srcline 276 ;                                                     //012345678901234
+#srcline 277 ;                j := FIND(IN1 := helpstring, IN2 := 'Content-Length:');           //hledat delku tela
+ LEAX helpstring
+#debug string helpstring
+ LEA  _str_fbJsonPageParser2HttpRequest_16
+ SFND 
+ WRY  j
+#debug_left uint j
+#srcline 278 ;                IF j > 0 AND j < i THEN                                            //nasla se delka
+ LDY  j
+#debug uint j
+ LD   uint 0
+ GT
+ LDY  j
+#debug uint j
+ LDY  i
+#debug uint i
+ LT
+ AND
+ JMC  fbJsonPageParser2HttpRequest_L68
+#srcline 279 ;                  LenRecv := true;                                                //nastavit priznak ze byla nalezena
+ LD   bool -1       ; true
+ WRX  LenRecv
+#debug_left bool LenRecv
+#srcline 280 ;                  pHelpString := ADR(helpstring) + UINT_TO_UDINT(j+15);           //posunout pointer
+ LEAX helpstring
+#debug pointer helpstring
+ LDY  j
+#debug uint j
+ LD   uint 15
+ ADD
+ AND  $FFFF
+ ADD
+ LEAY pHelpString
+ WRIL 
+#debug_left pointer pHelpString
+#srcline 281 ;                  ContLen     := STRING_TO_DINT(pHelpString^);                    //zapsat delku
+ LEAY pHelpString
+ LDIL    ; dereference 
+#debug string pHelpString^
+ SCNV $300D;  IEC_STRING _TO_ IEC_DINT
+ WRX  ContLen
+#debug_left dint ContLen
+#srcline 282 ;      //            Debug2       := pHelpString^;
+#srcline 283 ;                END_IF;
+fbJsonPageParser2HttpRequest_L68:
+#srcline 284 ;              END_IF;
+fbJsonPageParser2HttpRequest_L66:
+#srcline 285 ;              IF i = FIND(IN1 := helpstring, IN2 := '$r$n$r$n') THEN //konec
+ LDY  i
+#debug uint i
+ LEAX helpstring
+#debug string helpstring
+ LEA  _str_fbJsonPageParser2HttpRequest_17
+ SFND 
+ EQ
+ JMC  fbJsonPageParser2HttpRequest_L70
+#srcline 286 ;                rLen := rLen - 4 + sOff - i + 1;
+ LDX  rLen
+#debug uint rLen
+ LD   uint 4
+ SUB
+ AND  $FFFF
+ LDX  sOff
+#debug uint sOff
+ ADD
+ AND  $FFFF
+ LDY  i
+#debug uint i
+ SUB
+ AND  $FFFF
+ LD   uint 1
+ ADD
+ AND  $FFFF
+ WRX  rLen
+#debug_left uint rLen
+#srcline 287 ;                HeaderRecv := true;
+ LD   bool -1       ; true
+ WRX  HeaderRecv
+#debug_left bool HeaderRecv
+#srcline 288 ;                EXIT;
+ JMP  fbJsonPageParser2HttpRequest_L58
+#srcline 289 ;              END_IF;
+fbJsonPageParser2HttpRequest_L70:
+#srcline 290 ;              IF i = FIND(IN1 := helpstring, IN2 := '$n$n') THEN //konec
+ LDY  i
+#debug uint i
+ LEAX helpstring
+#debug string helpstring
+ LEA  _str_fbJsonPageParser2HttpRequest_18
+ SFND 
+ EQ
+ JMC  fbJsonPageParser2HttpRequest_L72
+#srcline 291 ;                rLen := rLen - 2 + sOff - i + 1;
+ LDX  rLen
+#debug uint rLen
+ LD   uint 2
+ SUB
+ AND  $FFFF
+ LDX  sOff
+#debug uint sOff
+ ADD
+ AND  $FFFF
+ LDY  i
+#debug uint i
+ SUB
+ AND  $FFFF
+ LD   uint 1
+ ADD
+ AND  $FFFF
+ WRX  rLen
+#debug_left uint rLen
+#srcline 292 ;                HeaderRecv := true;
+ LD   bool -1       ; true
+ WRX  HeaderRecv
+#debug_left bool HeaderRecv
+#srcline 293 ;                EXIT;
+ JMP  fbJsonPageParser2HttpRequest_L58
+#srcline 294 ;              END_IF;
+fbJsonPageParser2HttpRequest_L72:
+#srcline 295 ;              MemcpyEx(length := TO_UDINT(sOff - i + 1), offSource := TO_UDINT(i),
+ NXT
+ LDX  sOff
+#debug uint sOff
+ LDY  i
+#debug uint i
+ SUB
+ LD   udint 1
+ ADD
+ WR   __Instance__MemcpyEx~length
+#debug_left udint __Instance__MemcpyEx~length
+ LDY  i
+#debug uint i
+ WR   __Instance__MemcpyEx~offSource
+#debug_left udint __Instance__MemcpyEx~offSource
+#srcline 296 ;                       source := void(helpstring), dest := void(helpstring));
+ LEAX helpstring
+ WR   __Instance__MemcpyEx~source
+#debug_left pointer __Instance__MemcpyEx.source
+ LEAX helpstring
+ WR   __Instance__MemcpyEx~dest
+#debug_left pointer __Instance__MemcpyEx.dest
+ LD   0
+ WR   __Instance__MemcpyEx~offDest
+ PRV
+ LEA  __Instance__MemcpyEx
+#debug pointer __Instance__MemcpyEx ;<debug_call>
+ CAL  MemcpyEx_L0
+#srcline 297 ;              sOff := sOff - i;
+ LDX  sOff
+#debug uint sOff
+ LDY  i
+#debug uint i
+ SUB
+ AND  $FFFF
+ WRX  sOff
+#debug_left uint sOff
+#srcline 298 ;            ELSE
+ JMP  fbJsonPageParser2HttpRequest_L60
+fbJsonPageParser2HttpRequest_L61:
+#srcline 299 ;              IF sOff = 255 THEN //je to bez enteru a plne - zahodit
+ LDX  sOff
+#debug uint sOff
+ LD   uint 255
+ EQ
+ JMC  fbJsonPageParser2HttpRequest_L74
+#srcline 300 ;                MemcpyEx(length := 1, offSource := 254,
+ NXT
+ LD   udint 1
+ WR   __Instance__MemcpyEx~length
+#debug_left udint __Instance__MemcpyEx~length
+ LD   udint 254
+ WR   __Instance__MemcpyEx~offSource
+#debug_left udint __Instance__MemcpyEx~offSource
+#srcline 301 ;                         source := void(helpstring), dest := void(helpstring));
+ LEAX helpstring
+ WR   __Instance__MemcpyEx~source
+#debug_left pointer __Instance__MemcpyEx.source
+ LEAX helpstring
+ WR   __Instance__MemcpyEx~dest
+#debug_left pointer __Instance__MemcpyEx.dest
+ LD   0
+ WR   __Instance__MemcpyEx~offDest
+ PRV
+ LEA  __Instance__MemcpyEx
+#debug pointer __Instance__MemcpyEx ;<debug_call>
+ CAL  MemcpyEx_L0
+#srcline 302 ;                sOff := 1;
+ LD   uint 1
+ WRX  sOff
+#debug_left uint sOff
+#srcline 303 ;              END_IF;
+fbJsonPageParser2HttpRequest_L74:
+#srcline 304 ;            END_IF;
+fbJsonPageParser2HttpRequest_L60:
+#srcline 306 ;            IF rLen > 0 THEN
+ LDX  rLen
+#debug uint rLen
+ LD   uint 0
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L76
+#srcline 307 ;              i := MemcpyEx(length := MIN(TO_UDINT(rLen), 255-TO_UDINT(sOff)),
+ NXT
+ LDX  rLen
+#debug uint rLen
+ LD   udint 255
+ LDX  sOff
+#debug uint sOff
+ SUB
+ MIN
+ WR   __Instance__MemcpyEx~length
+#debug_left udint __Instance__MemcpyEx~length
+#srcline 308 ;                   offDest := TO_UDINT(sOff),
+ LDX  sOff
+#debug uint sOff
+ WR   __Instance__MemcpyEx~offDest
+#debug_left udint __Instance__MemcpyEx~offDest
+#srcline 309 ;                   offSource := TO_UDINT(RecvFrom.lenData) - TO_UDINT(rLen),
+ LDX  RecvFrom~lenData
+#debug uint RecvFrom.lenData
+ LDX  rLen
+#debug uint rLen
+ SUB
+ WR   __Instance__MemcpyEx~offSource
+#debug_left udint __Instance__MemcpyEx~offSource
+#srcline 310 ;                   source := RecvData[0], dest := void(helpstring));
+ LDX  RecvData
+ WR   __Instance__MemcpyEx~source
+#debug_left pointer __Instance__MemcpyEx.source
+ LEAX helpstring
+ WR   __Instance__MemcpyEx~dest
+#debug_left pointer __Instance__MemcpyEx.dest
+ PRV
+ LEA  __Instance__MemcpyEx
+#debug pointer __Instance__MemcpyEx ;<debug_call>
+ CAL  MemcpyEx_L0
+ WRY  i
+#debug_left uint i
+#srcline 311 ;              sOff := sOff + i;
+ LDX  sOff
+#debug uint sOff
+ LDY  i
+#debug uint i
+ ADD
+ AND  $FFFF
+ WRX  sOff
+#debug_left uint sOff
+#srcline 312 ;              rLen := rLen - i;
+ LDX  rLen
+#debug uint rLen
+ LDY  i
+#debug uint i
+ SUB
+ AND  $FFFF
+ WRX  rLen
+#debug_left uint rLen
+#srcline 313 ;              pUsint := ADR(helpstring) + TO_UDINT(sOff);
+ LEAX helpstring
+#debug pointer helpstring
+ LDX  sOff
+#debug uint sOff
+ ADD
+ LEAY pUsint
+ WRIL 
+#debug_left pointer pUsint
+#srcline 314 ;              pUsint^ := 0;
+ LD   usint 0
+ LEAY pUsint
+ LDIL    ; dereference 
+ WRI 
+#debug_left usint pUsint^
+#srcline 315 ;            ELSIF i = 0 THEN
+ JMP  fbJsonPageParser2HttpRequest_L77
+fbJsonPageParser2HttpRequest_L76:
+ LDY  i
+#debug uint i
+ LD   uint 0
+ EQ
+ JMC  fbJsonPageParser2HttpRequest_L78
+#srcline 316 ;              EXIT;
+ JMP  fbJsonPageParser2HttpRequest_L58
+#srcline 317 ;            END_IF;
+ JMP  fbJsonPageParser2HttpRequest_L77
+fbJsonPageParser2HttpRequest_L78:
+fbJsonPageParser2HttpRequest_L77:
+#srcline 318 ;          END_WHILE;
+ JMP  fbJsonPageParser2HttpRequest_L57
+fbJsonPageParser2HttpRequest_L58:
+ NOP  -1
+#srcline 320 ;          DataLen := 0;
+ LD   uint 0
+ WRX  DataLen
+#debug_left uint DataLen
+#srcline 321 ;          IF HeaderRecv THEN
+ LDX  HeaderRecv
+#debug bool HeaderRecv
+ JMC  fbJsonPageParser2HttpRequest_L79
+#srcline 322 ;            IF rLen > 0 THEN
+ LDX  rLen
+#debug uint rLen
+ LD   uint 0
+ GT
+ JMC  fbJsonPageParser2HttpRequest_L81
+#srcline 323 ;              DataLen := rLen;
+ LDX  rLen
+#debug uint rLen
+ WRX  DataLen
+#debug_left uint DataLen
+#srcline 324 ;              rLen := RecvFrom.lenData - rLen;
+ LDX  RecvFrom~lenData
+#debug uint RecvFrom.lenData
+ LDX  rLen
+#debug uint rLen
+ SUB
+ AND  $FFFF
+ WRX  rLen
+#debug_left uint rLen
+#srcline 325 ;              Memcpy(length := DataLen, source := RecvData[rLen], dest := RecvData[0]);
+ NXT
+ LDX  DataLen
+#debug uint DataLen
+ WR   __Instance__Memcpy~length
+#debug_left uint __Instance__Memcpy~length
+ LDX  RecvData
+ LDX  rLen
+#debug uint rLen
+ RCHK 511   ; Range Check
+ ADD     ; + offset 
+ WR   __Instance__Memcpy~source
+#debug_left pointer __Instance__Memcpy.source
+ LDX  RecvData
+ WR   __Instance__Memcpy~dest
+#debug_left pointer __Instance__Memcpy.dest
+ PRV
+ LEA  __Instance__Memcpy
+#debug pointer __Instance__Memcpy ;<debug_call>
+ CAL  Memcpy_L0
+#srcline 326 ;            END_IF;
+fbJsonPageParser2HttpRequest_L81:
+#srcline 327 ;            WholeLen := ContLen;                                                //zapamatovat si kolik jeste budu prijimat
+ LDX  ContLen
+#debug dint ContLen
+ WRX  WholeLen
+#debug_left dint WholeLen
+#srcline 328 ;            ContLen  := ContLen - TO_DINT(DataLen);                         //odecist delku od celkove delky k prijmuti
+ LDX  ContLen
+#debug dint ContLen
+ LDX  DataLen
+#debug uint DataLen
+ SUB
+ WRX  ContLen
+#debug_left dint ContLen
+#srcline 329 ;          END_IF;
+fbJsonPageParser2HttpRequest_L79:
+#srcline 330 ;        END_IF;
+fbJsonPageParser2HttpRequest_L56:
+#srcline 331 ;        DataReady := DataLen > 0;                                               //vydat priznak ze byla prijata data
+ LDX  DataLen
+#debug uint DataLen
+ LD   uint 0
+ GT
+ WRX  DataReady
+#debug_left bool DataReady
+#srcline 332 ;      ELSE                                                                      //nic neprislo
+ JMP  fbJsonPageParser2HttpRequest_L54
+fbJsonPageParser2HttpRequest_L53:
+#srcline 333 ;        DataLen := 0;
+ LD   uint 0
+ WRX  DataLen
+#debug_left uint DataLen
+#srcline 334 ;      END_IF;
+fbJsonPageParser2HttpRequest_L54:
+#srcline 336 ;      //bDebug := NOT IsEstabTCPconnection(chanCode := chanCode) & ContLen > 0 & NOT DataReady;
+#srcline 338 ;      IF NOT IsEstabTCPconnection(chanCode := chanCode) & NOT DataReady THEN //spojeni se zavrelo a nejsou zadna data
+ NXT
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__IsEstabTCPconnection~chanCode
+#debug_left uint __Instance__IsEstabTCPconnection~chanCode
+ PRV
+ LEA  __Instance__IsEstabTCPconnection
+#debug pointer __Instance__IsEstabTCPconnection ;<debug_call>
+ CAL  IsEstabTCPconnection_L0
+ NEG
+ LDX  DataReady
+#debug bool DataReady
+ NEG
+ AND
+ JMC  fbJsonPageParser2HttpRequest_L83
+#srcline 339 ;        Err    := ContLen > 0;                                               //jeste jsem mel neco prijmout => Error
+ LDX  ContLen
+#debug dint ContLen
+ LD   dint 0
+ GTS
+ WRX  Err
+#debug_left bool Err
+#srcline 340 ;        IF Err THEN
+ LDX  Err
+#debug bool Err
+ JMC  fbJsonPageParser2HttpRequest_L85
+#srcline 341 ;          ErrId := 2;
+ LD   usint 2
+ WRX  ErrId
+#debug_left usint ErrId
+#srcline 342 ;        END_IF;
+fbJsonPageParser2HttpRequest_L85:
+#srcline 343 ;//        ErrId  := BOOL_TO_USINT(Err)*2; //Set 2 if error occured
+#srcline 344 ;        Done   := NOT Err;                                                   //pokud nebyl error je hotovo
+ LDX  Err
+#debug bool Err
+ NEG
+ WRX  Done
+#debug_left bool Done
+#srcline 345 ;        State  := hs_HttpIdle;                                               //klidovy stav
+ LD   udint 0  ; THttpState#hs_HttpIdle
+ WRX  State
+#debug_left usint State
+#srcline 346 ;      END_IF;
+fbJsonPageParser2HttpRequest_L83:
+#srcline 348 ;      IF Close & ContLen = 0 THEN
+ LDX  Close
+#debug bool Close
+ LDX  ContLen
+#debug dint ContLen
+ LD   dint 0
+ EQ
+ AND
+ JMC  fbJsonPageParser2HttpRequest_L87
+#srcline 349 ;        CloseTCPconnection(chanCode := chanCode);
+ NXT
+ LDX  chanCode
+#debug uint chanCode
+ WR   __Instance__CloseTCPconnection~chanCode
+#debug_left uint __Instance__CloseTCPconnection~chanCode
+ PRV
+ LEA  __Instance__CloseTCPconnection
+#debug pointer __Instance__CloseTCPconnection ;<debug_call>
+ CAL  CloseTCPconnection_L0
+#srcline 350 ;      END_IF;
+fbJsonPageParser2HttpRequest_L87:
+ JMP  fbJsonPageParser2HttpRequest_L9
+fbJsonPageParser2HttpRequest_L52:
+fbJsonPageParser2HttpRequest_L9:
+#srcline 354 ;  IF Busy THEN
+ LDX  Busy
+#debug bool Busy
+ JMC  fbJsonPageParser2HttpRequest_L89
+#srcline 355 ;    IF WholeLen > 0 THEN
+ LDX  WholeLen
+#debug dint WholeLen
+ LD   dint 0
+ GTS
+ JMC  fbJsonPageParser2HttpRequest_L91
+#srcline 356 ;      Progress := DINT_TO_SINT(((WholeLen - ContLen) * 100 + WholeLen / 2) / WholeLen);
+ LDX  WholeLen
+#debug dint WholeLen
+ LDX  ContLen
+#debug dint ContLen
+ SUB
+ LD   dint 100
+ MULS
+ LDX  WholeLen
+#debug dint WholeLen
+ LD   dint 2
+ DIVS
+ ADD
+ LDX  WholeLen
+#debug dint WholeLen
+ DIVS
+ EXTB
+ WRX  Progress
+#debug_left sint Progress
+#srcline 357 ;    ELSE
+ JMP  fbJsonPageParser2HttpRequest_L92
+fbJsonPageParser2HttpRequest_L91:
+#srcline 358 ;      Progress := -1;
+ LD   sint -1
+ WRX  Progress
+#debug_left sint Progress
+#srcline 359 ;    END_IF;
+fbJsonPageParser2HttpRequest_L92:
+#srcline 360 ;  END_IF;
+fbJsonPageParser2HttpRequest_L89:
+#srcline 362 ;END_FUNCTION_BLOCK
+fbJsonPageParser2HttpRequest_RET:
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbJsonPageParser2HttpRequest__InstanceInit__:
+ LINK 0
+ LD   uint 80
+ WRX  port
+ LEAX RecvFrom
+ CAL  fbRecvFrom__InstanceInit__
+ LEAX SendTo
+ CAL  fbSendTo__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOLIBSRC\JSONLIBEX\JSONLIBEX\FBJSONPAGEPARSER2.ST'
+#pou fbJsonPageParser2
+#srcline 1 ;FUNCTION_BLOCK fbJsonPageParser2
+
+#struct fbJsonPageParser2__temp__
+  string[256] tmpStr,
+  string[82] PS0__st__,
+  string[82] PSC__st__
+#data byte _str_fbJsonPageParser2_0 = 
+  '',0
+#data byte _str_fbJsonPageParser2_1 = 
+  'D','N','S',' ','r','e','q','u','e','s','t',' ','e','r','r','o','r',' ',':',' ',0
+#data byte _str_fbJsonPageParser2_2 = 
+  'H','T','T','P',' ','r','e','q','u','e','s','t',' ','e','r','r','o','r',' ',':',
+  ' ',0
+#data byte _str_fbJsonPageParser2_3 = 
+  'H','T','T','P',' ','s','e','r','v','e','r',' ','e','r','r','o','r',' ',':',' ',0
+P     61
+fbJsonPageParser2_L0:
+ LINK __SizeOf(fbJsonPageParser2__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+#srcline 62 ;  done := 0; start := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  start
+#debug_left bool start
+#srcline 63 ;  trgExecOn(CLK := exec);
+ LDX  exec
+#debug bool exec
+ WRX  trgExecOn~CLK
+#debug_left bool trgExecOn~CLK
+ LEAX trgExecOn
+#debug pointer trgExecOn ;<debug_call>
+ CAL  R_TRIG_L0
+#srcline 64 ;  IF exec THEN
+ LDX  exec
+#debug bool exec
+ JMC  fbJsonPageParser2_L1
+#srcline 65 ;    post := post AND NOT get;           //pokud je GET nesmi byt POST
+ LDX  post
+#debug bool post
+ LDX  get
+#debug bool get
+ NEG
+ AND
+ WRX  post
+#debug_left bool post
+#srcline 66 ;    put  := put  AND NOT (post OR get); //pokud je GET nebo POST nesmi byt PUT
+ LDX  put
+#debug bool put
+ LDX  post
+#debug bool post
+ LDX  get
+#debug bool get
+ OR  
+ NEG
+ AND
+ WRX  put
+#debug_left bool put
+#srcline 67 ;    get  := NOT (post OR put);          //pokud neni ani POST ani PUT musi byt GET
+ LDX  post
+#debug bool post
+ LDX  put
+#debug bool put
+ OR  
+ NEG
+ WRX  get
+#debug_left bool get
+#srcline 69 ;    IF trgExecOn.Q THEN
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ JMC  fbJsonPageParser2_L3
+#srcline 70 ;      // odstartovat cteni json dokumentu
+#srcline 71 ;      busy := 1; start := 1; err := 0; errTxt := '';
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  start
+#debug_left bool start
+ LD   bool 0       ; false
+ WRX  err
+#debug_left bool err
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2_0
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 72 ;      rqStart := 1; rqShrink := 1; rqFile := 0; rqParse := 0;
+ LD   bool -1      ; true
+ WRX  rqStart
+#debug_left bool rqStart
+ LD   bool -1      ; true
+ WRX  rqShrink
+#debug_left bool rqShrink
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 73 ;      fileSize := 0; restLen := 0; sumaLen := 0;
+ LD   udint 0
+ WRX  fileSize
+#debug_left udint fileSize
+ LD   uint 0
+ WRX  restLen
+#debug_left uint restLen
+ LD   udint 0
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 74 ;      Memset( val := 0, length := sizeof( JsonInfo), dest := void(JsonInfo));
+ NXT
+ LD   udint 0
+ WR   __Instance__Memset~val
+#debug_left udint __Instance__Memset~val
+ LD   910  ; SizeOf()
+ WR   __Instance__Memset~length
+#debug_left uint __Instance__Memset~length
+ LDX  JsonInfo
+ WR   __Instance__Memset~dest
+#debug_left pointer __Instance__Memset.dest
+ PRV
+ LEA  __Instance__Memset
+#debug pointer __Instance__Memset ;<debug_call>
+ CAL  Memset_L0
+#srcline 75 ;      HttpRequest(Post := 0, Get := 0, Put := 0, Close := 1, Cancel := 1, Action := Action, Host := HttpName, Data := void(body), contentType := contentType, RecvData := void( JsonBuffer[0]));
+ LD   bool 0       ; false
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LD   bool 0       ; false
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   bool 0       ; false
+ WRX  HttpRequest~Put
+#debug_left bool HttpRequest~Put
+ LD   bool -1      ; true
+ WRX  HttpRequest~Close
+#debug_left bool HttpRequest~Close
+ LD   bool -1      ; true
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LDX  body
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX contentType
+ WRX  HttpRequest~contentType
+#debug_left pointer HttpRequest.contentType
+ LEAX JsonBuffer
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+#debug pointer HttpRequest ;<debug_call>
+ CAL  fbJsonPageParser2HttpRequest_L0
+#srcline 76 ;    END_IF;
+fbJsonPageParser2_L3:
+#srcline 78 ;    // prevest domainove jmeno na IP adresu (je-li to potreba)
+#srcline 79 ;    SplitUrlAddress( split := trgExecOn.Q, urlAddress := pageName, host := HttpName, action := Action, IPadr := HttpIP, port := HttpPort);
+ LDX  trgExecOn~Q
+#debug bool trgExecOn.Q
+ WRX  SplitUrlAddress~split
+#debug_left bool SplitUrlAddress~split
+ LDX  pageName
+ WRX  SplitUrlAddress~urlAddress
+#debug_left pointer SplitUrlAddress.urlAddress
+ LEAX HttpName
+ WRX  SplitUrlAddress~host
+#debug_left pointer SplitUrlAddress.host
+ LEAX Action
+ WRX  SplitUrlAddress~action
+#debug_left pointer SplitUrlAddress.action
+ LEAX HttpIP
+ WRX  SplitUrlAddress~IPadr
+#debug_left pointer SplitUrlAddress.IPadr
+ LEAX HttpPort
+ WRX  SplitUrlAddress~port
+#debug_left pointer SplitUrlAddress.port
+ LEAX SplitUrlAddress
+#debug pointer SplitUrlAddress ;<debug_call>
+ CAL  fbSplitUrlAddress_L0
+#srcline 80 ;    IF SplitUrlAddress.Err THEN
+ LDX  SplitUrlAddress~Err
+#debug bool SplitUrlAddress.Err
+ JMC  fbJsonPageParser2_L5
+#srcline 81 ;      err := 1; busy := 0; errTxt := 'DNS request error : ' + USINT_TO_STRING(SplitUrlAddress.ErrId);
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2_1
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  SplitUrlAddress~ErrId
+#debug usint SplitUrlAddress.ErrId
+ SCNV $0830;  IEC_USINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 82 ;    ELSIF SplitUrlAddress.Done THEN
+ JMP  fbJsonPageParser2_L6
+fbJsonPageParser2_L5:
+ LDX  SplitUrlAddress~Done
+#debug bool SplitUrlAddress.Done
+ JMC  fbJsonPageParser2_L7
+#srcline 83 ;      rqFile := 1;                                                 // zahajit cteni souboru
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 84 ;    END_IF;
+ JMP  fbJsonPageParser2_L6
+fbJsonPageParser2_L7:
+fbJsonPageParser2_L6:
+#srcline 85 ;    
+#srcline 86 ;    // cist soubor z web stranky
+#srcline 87 ;    IF rqFile THEN
+ LDX  rqFile
+#debug bool rqFile
+ JMC  fbJsonPageParser2_L8
+#srcline 88 ;      HttpRequest(Get := Get, Post := Post, Put := Put, Cancel := 0, bodyLen := bodyLen, chanCode := chanCode, IPadr := HttpIP, port := HttpPort,
+ LDX  Get
+#debug bool Get
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LDX  Post
+#debug bool Post
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LDX  Put
+#debug bool Put
+ WRX  HttpRequest~Put
+#debug_left bool HttpRequest~Put
+ LD   bool 0       ; false
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LDX  bodyLen
+#debug uint bodyLen
+ WRX  HttpRequest~bodyLen
+#debug_left uint HttpRequest~bodyLen
+ LDX  chanCode
+#debug uint chanCode
+ WRX  HttpRequest~chanCode
+#debug_left uint HttpRequest~chanCode
+ LEAX HttpIP
+#debug pointer HttpIP
+ SRC  %IB0
+ LEAX HttpRequest~IPadr
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDX  HttpPort
+#debug uint HttpPort
+ WRX  HttpRequest~port
+#debug_left uint HttpRequest~port
+#srcline 89 ;                  Action := Action, Host := HttpName, Data := void(body), contentType := contentType, RecvData := void(JsonBuffer[restLen]));
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LDX  body
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX contentType
+ WRX  HttpRequest~contentType
+#debug_left pointer HttpRequest.contentType
+ LEAX JsonBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+#debug pointer HttpRequest ;<debug_call>
+ CAL  fbJsonPageParser2HttpRequest_L0
+#srcline 91 ;      IF ((HttpRequest.Result >= 200)AND(HttpRequest.Result <= 205)) AND HttpRequest.DataReady THEN  // prijata dalsi cast xml
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ LD   int 200
+ LTS
+ NEG
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ LD   int 205
+ GTS
+ NEG
+ AND
+ LDX  HttpRequest~DataReady
+#debug bool HttpRequest.DataReady
+ AND
+ JMC  fbJsonPageParser2_L10
+#srcline 92 ;        actLen  := UINT_TO_UDINT(restLen) + UINT_TO_UDINT(HttpRequest.DataLen);  // aktualni velikost xml bufferu
+ LDX  restLen
+#debug uint restLen
+ LDX  HttpRequest~DataLen
+#debug uint HttpRequest.DataLen
+ ADD
+ WRX  actLen
+#debug_left udint actLen
+#srcline 93 ;        sumaLen := sumaLen + UINT_TO_UDINT(HttpRequest.DataLen);                 // celkove jiz nacteno ze souboru
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  HttpRequest~DataLen
+#debug uint HttpRequest.DataLen
+ ADD
+ WRX  sumaLen
+#debug_left udint sumaLen
+#srcline 94 ;        rqFile := 0; rqParse := 1;                                               // prednastavit
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 95 ;        // kdyz actLen < JSON_BUMPER tak nejdriv nacist dalsi data a pak teprve zacit parsovat
+#srcline 96 ;        IF NOT HttpRequest.Done THEN
+ LDX  HttpRequest~Done
+#debug bool HttpRequest.Done
+ NEG
+ JMC  fbJsonPageParser2_L12
+#srcline 97 ;          rqParse := UDINT_TO_UINT( actLen) >= JSON_BUMPER;
+ LDX  actLen
+#debug udint actLen
+ AND  $FFFF
+ LD   uint 256
+ LT
+ NEG
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 98 ;          IF NOT rqParse THEN
+ LDX  rqParse
+#debug bool rqParse
+ NEG
+ JMC  fbJsonPageParser2_L14
+#srcline 99 ;            restLen := UDINT_TO_UINT( actLen); rqFile := 1;          // docist dalsi data do JsonBuffer[]
+ LDX  actLen
+#debug udint actLen
+ AND  $FFFF
+ WRX  restLen
+#debug_left uint restLen
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 100 ;          END_IF;
+fbJsonPageParser2_L14:
+#srcline 101 ;        END_IF;
+fbJsonPageParser2_L12:
+#srcline 102 ;      END_IF;
+fbJsonPageParser2_L10:
+#srcline 103 ;      IF HttpRequest.Err THEN                                        // blok HttpRequest hlasi chybu
+ LDX  HttpRequest~Err
+#debug bool HttpRequest.Err
+ JMC  fbJsonPageParser2_L16
+#srcline 104 ;        busy := 0; err := 1; rqFile := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 105 ;        errTxt := 'HTTP request error : ' + USINT_TO_STRING(HttpRequest.ErrId);
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2_2
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  HttpRequest~ErrId
+#debug usint HttpRequest.ErrId
+ SCNV $0830;  IEC_USINT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 106 ;      END_IF;
+fbJsonPageParser2_L16:
+#srcline 107 ;      IF HttpRequest.Done THEN
+ LDX  HttpRequest~Done
+#debug bool HttpRequest.Done
+ JMC  fbJsonPageParser2_L18
+#srcline 108 ;        // zavolat jeste jednou HTTP request, aby presel do stavu Idle
+#srcline 109 ;        HttpRequest(Get := 0, Post := 0, Put := 0, Cancel := 0, bodyLen := bodyLen, chanCode := chanCode, IPadr := HttpIP, port := HttpPort,
+ LD   bool 0       ; false
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   bool 0       ; false
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LD   bool 0       ; false
+ WRX  HttpRequest~Put
+#debug_left bool HttpRequest~Put
+ LD   bool 0       ; false
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LDX  bodyLen
+#debug uint bodyLen
+ WRX  HttpRequest~bodyLen
+#debug_left uint HttpRequest~bodyLen
+ LDX  chanCode
+#debug uint chanCode
+ WRX  HttpRequest~chanCode
+#debug_left uint HttpRequest~chanCode
+ LEAX HttpIP
+#debug pointer HttpIP
+ SRC  %IB0
+ LEAX HttpRequest~IPadr
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDX  HttpPort
+#debug uint HttpPort
+ WRX  HttpRequest~port
+#debug_left uint HttpRequest~port
+#srcline 110 ;                    Action := Action, Host := HttpName, Data := void(body), contentType := contentType, RecvData := void(JsonBuffer[restLen]));
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LDX  body
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX contentType
+ WRX  HttpRequest~contentType
+#debug_left pointer HttpRequest.contentType
+ LEAX JsonBuffer
+ LDX  restLen
+#debug uint restLen
+ RCHK 768   ; Range Check
+ ADD     ; + offset 
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+#debug pointer HttpRequest ;<debug_call>
+ CAL  fbJsonPageParser2HttpRequest_L0
+#srcline 111 ;        rqFile := 0; busy := 0;
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 112 ;        IF (HttpRequest.Result >= 200)AND(HttpRequest.Result <= 205) THEN  // cely json dokument prijaty OK
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ LD   int 200
+ LTS
+ NEG
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ LD   int 205
+ GTS
+ NEG
+ AND
+ JMC  fbJsonPageParser2_L20
+#srcline 113 ;          rqShrink := 0;                                             // zpracovat buffer az do konce, uz nic dalsiho nebude
+ LD   bool 0       ; false
+ WRX  rqShrink
+#debug_left bool rqShrink
+#srcline 114 ;          fileSize := sumaLen;                                       // velikost prijateho dokumentu
+ LDX  sumaLen
+#debug udint sumaLen
+ WRX  fileSize
+#debug_left udint fileSize
+#srcline 115 ;          actLen := UINT_TO_UDINT(restLen);                          // aktualni velikost xml bufferu (co zbyva zpracovat)
+ LDX  restLen
+#debug uint restLen
+ WRX  actLen
+#debug_left udint actLen
+#srcline 116 ;          IF actLen > 0 THEN
+ LDX  actLen
+#debug udint actLen
+ LD   udint 0
+ GT
+ JMC  fbJsonPageParser2_L22
+#srcline 117 ;            rqParse := 1;                                            // jeste neco zbyva, tak parsovat
+ LD   bool -1      ; true
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 118 ;          ELSE
+ JMP  fbJsonPageParser2_L23
+fbJsonPageParser2_L22:
+#srcline 119 ;            rqParse := NOT JsonInfo.stack.eod;                       // kdyz jeste neni konec json, tak nastavit pozadavek na parsovani
+ LDX  JsonInfo
+ ADD  513  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool JsonInfo.stack.eod
+ NEG
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 120 ;          END_IF;
+fbJsonPageParser2_L23:
+#srcline 121 ;        ELSE                                                         // HTTP server hlasi chybu
+ JMP  fbJsonPageParser2_L21
+fbJsonPageParser2_L20:
+#srcline 122 ;          busy := 0; err := 1; rqFile := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  rqFile
+#debug_left bool rqFile
+#srcline 123 ;          errTxt := 'HTTP server error : ' + INT_TO_STRING(HttpRequest.Result); // for example 302 : redirected page
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbJsonPageParser2_3
+ SCON 
+ LD   0   ; null string
+ WRY  PSC__st__[0]
+ LEAY PSC__st__[0]
+ LD   80
+ DST    ; Level 2
+ LDX  HttpRequest~Result
+#debug int HttpRequest.Result
+ EXTW 
+ SCNV $0B30;  IEC_INT _TO_ IEC_STRING
+ PDST   ; Level 2
+ LEAY PSC__st__[0]
+
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 124 ;        END_IF;
+fbJsonPageParser2_L21:
+#srcline 125 ;      END_IF;
+fbJsonPageParser2_L18:
+#srcline 126 ;    END_IF;
+fbJsonPageParser2_L8:
+#srcline 128 ;    // parsovat dokument
+#srcline 129 ;    IF rqParse THEN
+ LDX  rqParse
+#debug bool rqParse
+ JMC  fbJsonPageParser2_L24
+#srcline 130 ;      // parsovani dat v JSON souboru
+#srcline 131 ;      JsonParser(start := rqStart, shrink :=0 , size :=actLen , sourceJSON := void( jsonBuffer),JsonInfo := JsonInfo );
+ LDX  rqStart
+#debug bool rqStart
+ WRX  JsonParser~start
+#debug_left bool JsonParser~start
+ LD   bool 0       ; false
+ WRX  JsonParser~shrink
+#debug_left bool JsonParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  JsonParser~size
+#debug_left udint JsonParser~size
+ LEAX jsonBuffer
+ WRX  JsonParser~sourceJSON
+#debug_left pointer JsonParser.sourceJSON
+ LDX  JsonInfo
+ WRX  JsonParser~JsonInfo
+#debug_left pointer JsonParser.JsonInfo
+ LEAX JsonParser
+#debug pointer JsonParser ;<debug_call>
+ CAL  fbJsonParserEx_L0
+#srcline 132 ;      rqStart := 0; restLen := JsonParser.restLen;          // nastavit, kolik jeste zbyva zpracovat
+ LD   bool 0       ; false
+ WRX  rqStart
+#debug_left bool rqStart
+ LDX  JsonParser~restLen
+#debug uint JsonParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 133 ;      IF JsonParser.done THEN
+ LDX  JsonParser~done
+#debug bool JsonParser.done
+ JMC  fbJsonPageParser2_L26
+#srcline 134 ;        done := 1; busy := 0;
+ LD   bool -1      ; true
+ WRX  done
+#debug_left bool done
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 135 ;      ELSIF JsonParser.error <> 0 THEN
+ JMP  fbJsonPageParser2_L27
+fbJsonPageParser2_L26:
+ LDX  JsonParser~error
+#debug usint JsonParser.error
+ LD   usint 0
+ EQ
+ NEG
+ JMC  fbJsonPageParser2_L28
+#srcline 136 ;        HttpRequest(Post := 0, Get := 0, Put := 0, Cancel := 1, Action := Action, Host := HttpName, Data := void(body), contentType := contentType, RecvData := void( JsonBuffer[0]));  // ukoncit spolupraci se serverem (od v1.2)
+ LD   bool 0       ; false
+ WRX  HttpRequest~Post
+#debug_left bool HttpRequest~Post
+ LD   bool 0       ; false
+ WRX  HttpRequest~Get
+#debug_left bool HttpRequest~Get
+ LD   bool 0       ; false
+ WRX  HttpRequest~Put
+#debug_left bool HttpRequest~Put
+ LD   bool -1      ; true
+ WRX  HttpRequest~Cancel
+#debug_left bool HttpRequest~Cancel
+ LEAX Action
+ WRX  HttpRequest~Action
+#debug_left pointer HttpRequest.Action
+ LEAX HttpName
+ WRX  HttpRequest~Host
+#debug_left pointer HttpRequest.Host
+ LDX  body
+ WRX  HttpRequest~Data
+#debug_left pointer HttpRequest.Data
+ LEAX contentType
+ WRX  HttpRequest~contentType
+#debug_left pointer HttpRequest.contentType
+ LEAX JsonBuffer
+ WRX  HttpRequest~RecvData
+#debug_left pointer HttpRequest.RecvData
+ LEAX HttpRequest
+#debug pointer HttpRequest ;<debug_call>
+ CAL  fbJsonPageParser2HttpRequest_L0
+#srcline 137 ;        err := 1; busy := 0; rqParse := 0;
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 138 ;        errTxt := JsonInfo.stack.errTxt;
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LDX  JsonInfo
+ ADD  515  ; + offset 
+#debug string JsonInfo.stack.errTxt
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 139 ;      END_IF;
+ JMP  fbJsonPageParser2_L27
+fbJsonPageParser2_L28:
+fbJsonPageParser2_L27:
+#srcline 141 ;      IF rqShrink THEN
+ LDX  rqShrink
+#debug bool rqShrink
+ JMC  fbJsonPageParser2_L29
+#srcline 142 ;        IF JsonParser.restLen <= JSON_BUMPER THEN
+ LDX  JsonParser~restLen
+#debug uint JsonParser.restLen
+ LD   uint 256
+ GT
+ NEG
+ JMC  fbJsonPageParser2_L31
+#srcline 143 ;          // shrink buffer s xml dokumentem
+#srcline 144 ;          JsonParser( start := rqStart, shrink := 1, size := actLen, sourceJSON := void( jsonBuffer), JsonInfo := JsonInfo);
+ LDX  rqStart
+#debug bool rqStart
+ WRX  JsonParser~start
+#debug_left bool JsonParser~start
+ LD   bool -1      ; true
+ WRX  JsonParser~shrink
+#debug_left bool JsonParser~shrink
+ LDX  actLen
+#debug udint actLen
+ WRX  JsonParser~size
+#debug_left udint JsonParser~size
+ LEAX jsonBuffer
+ WRX  JsonParser~sourceJSON
+#debug_left pointer JsonParser.sourceJSON
+ LDX  JsonInfo
+ WRX  JsonParser~JsonInfo
+#debug_left pointer JsonParser.JsonInfo
+ LEAX JsonParser
+#debug pointer JsonParser ;<debug_call>
+ CAL  fbJsonParserEx_L0
+#srcline 145 ;          restLen :=JsonParser.restLen;       // nastavit, kolik jeste zbyva zpracovat
+ LDX  JsonParser~restLen
+#debug uint JsonParser.restLen
+ WRX  restLen
+#debug_left uint restLen
+#srcline 146 ;          rqFile := 1; rqParse := 0;          // nacist dalsi cast dokumentu
+ LD   bool -1      ; true
+ WRX  rqFile
+#debug_left bool rqFile
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+#srcline 147 ;          busy := 1;                          // signalizovat ukonceni parsovani
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+#srcline 148 ;        END_IF;
+fbJsonPageParser2_L31:
+#srcline 149 ;      END_IF;
+fbJsonPageParser2_L29:
+#srcline 150 ;      IF JsonParser.eod THEN
+ LDX  JsonParser~eod
+#debug bool JsonParser.eod
+ JMC  fbJsonPageParser2_L33
+#srcline 151 ;        rqParse := 0; busy := 0; done := 0;   // konec dokumentu
+ LD   bool 0       ; false
+ WRX  rqParse
+#debug_left bool rqParse
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+#srcline 152 ;      END_IF;
+fbJsonPageParser2_L33:
+#srcline 153 ;    END_IF;
+fbJsonPageParser2_L24:
+#srcline 154 ;    eof := JsonInfo.stack.eod;        // nastavit priznak konec souboru
+ LDX  JsonInfo
+ ADD  513  ; + offset 
+ MUL  8   ; -> bool pointer 
+ LDIB 
+#debug bool JsonInfo.stack.eod
+ WRX  eof
+#debug_left bool eof
+#srcline 155 ;    processed := sumaLen - UINT_TO_UDINT(restLen);
+ LDX  sumaLen
+#debug udint sumaLen
+ LDX  restLen
+#debug uint restLen
+ SUB
+ WRX  processed
+#debug_left udint processed
+#srcline 156 ;  ELSE
+ JMP  fbJsonPageParser2_L2
+fbJsonPageParser2_L1:
+#srcline 157 ;    busy := 0; eof := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  eof
+#debug_left bool eof
+#srcline 158 ;  END_IF;
+fbJsonPageParser2_L2:
+#srcline 160 ;  break := eof OR err OR busy OR NOT exec;    // prerusit zpracovani
+ LDX  eof
+#debug bool eof
+ LDX  err
+#debug bool err
+ OR  
+ LDX  busy
+#debug bool busy
+ OR  
+ LDX  exec
+#debug bool exec
+ NEG
+ OR  
+ WRX  break
+#debug_left bool break
+#srcline 162 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbJsonPageParser2__InstanceInit__:
+ LINK 0
+ LEAX JsonParser
+ CAL  fbJsonParserEx__InstanceInit__
+ LEAX SplitUrlAddress
+ CAL  fbSplitUrlAddress__InstanceInit__
+ LEAX HttpRequest
+ CAL  fbJsonPageParser2HttpRequest__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+#srcfile 'D:\TECOLIBSRC\JSONLIBEX\JSONLIBEX\FBPOSTDATAANDSETVAR.ST'
+#pou fbPostDataAndSetVar
+#srcline 1 ;FUNCTION_BLOCK fbPostDataAndSetVar
+
+#struct fbPostDataAndSetVar__temp__
+  usint protocol,
+  uint port,
+  string[256] tmp,
+  string[257] PS0__st__,
+  string[257] PS1__st__
+#data byte _str_fbPostDataAndSetVar_0 = 
+  'h','t','t','p','s',':',0
+#data byte _str_fbPostDataAndSetVar_1 = 
+  'P','o','s','t','D','a','t','a','A','n','d','S','e','t','V','a','r','_',0
+#data byte _str_fbPostDataAndSetVar_2 = 
+  '[',0
+#data byte _str_fbPostDataAndSetVar_3 = 
+  ']',0
+#data byte _str_fbPostDataAndSetVar_4 = 
+  '_',0
+#data byte _str_fbPostDataAndSetVar_5 = 
+  '.','l','o','g',0
+#data byte _str_fbPostDataAndSetVar_6 = 
+  '',0
+#data byte _str_fbPostDataAndSetVar_7 = 
+  '.',0
+#data byte _str_fbPostDataAndSetVar_8 = 
+  'T','i','m','e','o','u','t',' ','e','r','r','o','r',0
+P     61
+fbPostDataAndSetVar_L0:
+ LINK __SizeOf(fbPostDataAndSetVar__temp__)
+; Initialize - dynamic variables
+; End initialize - dynamic variables
+; R_EDGE, F_EDGE 
+ LDX  exec
+ LETX __EDGE_R__exec
+ WRX  exec
+#srcline 40 ;  done := 0;
+ LD   bool 0       ; false
+ WRX  done
+#debug_left bool done
+#srcline 41 ;  IF NOT rqPost THEN
+ LDX  rqPost
+#debug bool rqPost
+ NEG
+ JMC  fbPostDataAndSetVar_L1
+#srcline 42 ;    rqPost := exec;                           // send POST data & parse json from response & SET variables
+ LDX  exec
+#debug bool exec
+ WRX  rqPost
+#debug_left bool rqPost
+#srcline 43 ;  END_IF;
+fbPostDataAndSetVar_L1:
+#srcline 45 ;  IF rqPost AND (chanHandle = 0) THEN         // otevrit socket pro komunikaci
+ LDX  rqPost
+#debug bool rqPost
+ LDX  chanHandle
+#debug uint chanHandle
+ LD   uint 0
+ EQ
+ AND
+ JMC  fbPostDataAndSetVar_L3
+#srcline 46 ;    IF FIND(IN1 := pageUrl, IN2 := 'https:') = 1 THEN
+ LEAX pageUrl
+#debug string pageUrl
+ LEA  _str_fbPostDataAndSetVar_0
+ SFND 
+ LD   int 1
+ EQ
+ JMC  fbPostDataAndSetVar_L5
+#srcline 47 ;      protocol := UNI_SSL_CLIENT; port := 443;
+ LD   usint 35
+ WRY  protocol
+#debug_left usint protocol
+ LD   uint 443
+ WRY  port
+#debug_left uint port
+#srcline 48 ;    ELSE
+ JMP  fbPostDataAndSetVar_L6
+fbPostDataAndSetVar_L5:
+#srcline 49 ;      protocol := UNI_TCP_CLIENT; port := 80;
+ LD   usint 33
+ WRY  protocol
+#debug_left usint protocol
+ LD   uint 80
+ WRY  port
+#debug_left uint port
+#srcline 50 ;    END_IF;
+fbPostDataAndSetVar_L6:
+#srcline 51 ;    chanHandle := OpenUniChannel( chanCode := ANY_uni, myPort := 0, hisIP := ANY_IP, hisPort := port, protocol := protocol);
+ NXT
+ LD   uint 224
+ WR   __Instance__OpenUniChannel~chanCode
+#debug_left uint __Instance__OpenUniChannel~chanCode
+ LD   uint 0
+ WR   __Instance__OpenUniChannel~myPort
+#debug_left uint __Instance__OpenUniChannel~myPort
+ LEA  ANY_IP
+#debug pointer ANY_IP
+ SRC  %IB0
+ LEA  __Instance__OpenUniChannel~hisIP
+#debug_left pointer __Instance__OpenUniChannel~hisIP
+ LD   4   ;SizeOf() 
+ MOV  %IB0
+ LDY  port
+#debug uint port
+ WR   __Instance__OpenUniChannel~hisPort
+#debug_left uint __Instance__OpenUniChannel~hisPort
+ LDY  protocol
+#debug usint protocol
+ WR   __Instance__OpenUniChannel~protocol
+#debug_left usint __Instance__OpenUniChannel~protocol
+ PRV
+ LEA  __Instance__OpenUniChannel
+#debug pointer __Instance__OpenUniChannel ;<debug_call>
+ CAL  OpenUniChannel_L0
+ WRX  chanHandle
+#debug_left uint chanHandle
+#srcline 53 ;    IF (logSizeKB <> 0) AND (chanHandle <> 0) THEN
+ LDX  logSizeKB
+#debug usint logSizeKB
+ LD   usint 0
+ EQ
+ NEG
+ LDX  chanHandle
+#debug uint chanHandle
+ LD   uint 0
+ EQ
+ NEG
+ AND
+ JMC  fbPostDataAndSetVar_L7
+#srcline 54 ;      tmp := 'PostDataAndSetVar_' + REPLACE_2CHARS( '[', ']', '_', varName) + '.log';  // nazev logu
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEA  _str_fbPostDataAndSetVar_1
+ SCON 
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__REPLACE_2CHARS~C1
+ WRI 
+ LEA  __Instance__REPLACE_2CHARS~C1
+ LD   1
+ DST    ; Level 2
+ LEA  _str_fbPostDataAndSetVar_2
+ SCON 
+#debug_left string __Instance__REPLACE_2CHARS~C1
+ PDST   ; Level 2
+ LD   0   ; null string
+ LEA  __Instance__REPLACE_2CHARS~C2
+ WRI 
+ LEA  __Instance__REPLACE_2CHARS~C2
+ LD   1
+ DST    ; Level 2
+ LEA  _str_fbPostDataAndSetVar_3
+ SCON 
+#debug_left string __Instance__REPLACE_2CHARS~C2
+ PDST   ; Level 2
+ LD   0   ; null string
+ LEA  __Instance__REPLACE_2CHARS~C3
+ WRI 
+ LEA  __Instance__REPLACE_2CHARS~C3
+ LD   1
+ DST    ; Level 2
+ LEA  _str_fbPostDataAndSetVar_4
+ SCON 
+#debug_left string __Instance__REPLACE_2CHARS~C3
+ PDST   ; Level 2
+ LD   0   ; null string
+ LEA  __Instance__REPLACE_2CHARS~input
+ WRI 
+ LEA  __Instance__REPLACE_2CHARS~input
+ LD   255
+ DST    ; Level 2
+ LEAX varName
+#debug string varName
+ SCON 
+#debug_left string __Instance__REPLACE_2CHARS~input
+ PDST   ; Level 2
+ PRV
+ LEA  __Instance__REPLACE_2CHARS
+#debug pointer __Instance__REPLACE_2CHARS ;<debug_call>
+ CAL  REPLACE_2CHARS_L0
+
+ SCON 
+ LEA  _str_fbPostDataAndSetVar_5
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAY tmp
+ WRI  
+ LEAY tmp
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string tmp
+ PDST   ; Level 1
+#srcline 55 ;      SetUniLog( chanHandle := chanHandle, logMode := ONE_TIME_LOG + TEXT_LOG_ONLY, logSizeKB := TO_UDINT(logSizeKB), logName := tmp);
+ NXT
+ LDX  chanHandle
+#debug uint chanHandle
+ WR   __Instance__SetUniLog~chanHandle
+#debug_left uint __Instance__SetUniLog~chanHandle
+ LD   uint 0
+ LD   uint 4096
+ ADD
+ AND  $FFFF
+ WR   __Instance__SetUniLog~logMode
+#debug_left uint __Instance__SetUniLog~logMode
+ LDX  logSizeKB
+#debug usint logSizeKB
+ WR   __Instance__SetUniLog~logSizeKB
+#debug_left udint __Instance__SetUniLog~logSizeKB
+ LD   0   ; null string
+ LEA  __Instance__SetUniLog~logName
+ WRI 
+ LEA  __Instance__SetUniLog~logName
+ LD   80
+ DST    ; Level 1
+ LEAY tmp
+#debug string tmp
+ SCON 
+#debug_left string __Instance__SetUniLog~logName
+ PDST   ; Level 1
+ PRV
+ LEA  __Instance__SetUniLog
+#debug pointer __Instance__SetUniLog ;<debug_call>
+ CAL  SetUniLog_L0
+#srcline 56 ;    END_IF;
+fbPostDataAndSetVar_L7:
+#srcline 58 ;    busy := 1; err := 0; errTxt := ''; numVar := 0;
+ LD   bool -1      ; true
+ WRX  busy
+#debug_left bool busy
+ LD   bool 0       ; false
+ WRX  err
+#debug_left bool err
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbPostDataAndSetVar_6
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+ LD   uint 0
+ WRX  numVar
+#debug_left uint numVar
+#srcline 60 ;    // ziskat popis promenne ... GetVarDescByName ( char *varName, char *varDesc)
+#srcline 61 ;    {asm}
+#srcline 62
+      LEAX  varDesc
+#srcline 63
+      LEAX  varName
+#srcline 64
+      LD    4
+#srcline 65
+      SYS   87
+#srcline 66 ;    {end_asm}
+#srcline 67 ;  END_IF;
+fbPostDataAndSetVar_L3:
+#srcline 69 ;  REPEAT
+fbPostDataAndSetVar_L9:
+ DBG
+#srcline 70 ;    JsonParser2( exec := rqPost, post := 1, chanCode := chanHandle, pageName := pageUrl,
+ LDX  rqPost
+#debug bool rqPost
+ WRX  JsonParser2~exec
+#debug_left bool JsonParser2~exec
+ LD   bool -1      ; true
+ WRX  JsonParser2~post
+#debug_left bool JsonParser2~post
+ LDX  chanHandle
+#debug uint chanHandle
+ WRX  JsonParser2~chanCode
+#debug_left uint JsonParser2~chanCode
+ LEAX pageUrl
+ WRX  JsonParser2~pageName
+#debug_left pointer JsonParser2.pageName
+#srcline 71 ;                 contentType := contentType, bodyLen := bodyLen, body := body, jsonInfo := json);
+ LD   0   ; null string
+ LEAX JsonParser2~contentType
+ WRI 
+ LEAX JsonParser2~contentType
+ LD   80
+ DST    ; Level 1
+ LEAX contentType
+#debug string contentType
+ SCON 
+#debug_left string JsonParser2~contentType
+ PDST   ; Level 1
+ LDX  bodyLen
+#debug uint bodyLen
+ WRX  JsonParser2~bodyLen
+#debug_left uint JsonParser2~bodyLen
+ LDX  body
+ WRX  JsonParser2~body
+#debug_left pointer JsonParser2.body
+ LEAX json
+ WRX  JsonParser2~jsonInfo
+#debug_left pointer JsonParser2.jsonInfo
+ LEAX JsonParser2
+#debug pointer JsonParser2 ;<debug_call>
+ CAL  fbJsonPageParser2_L0
+#srcline 73 ;    IF JsonParser2.start THEN
+ LDX  JsonParser2~start
+#debug bool JsonParser2.start
+ JMC  fbPostDataAndSetVar_L11
+#srcline 74 ;      parseEnable := 1;                      // zahajit parsovani
+ LD   bool -1      ; true
+ WRX  parseEnable
+#debug_left bool parseEnable
+#srcline 75 ;    END_IF;
+fbPostDataAndSetVar_L11:
+#srcline 76 ;    IF JsonParser2.done AND parseEnable THEN  // vyparsovan jeden radek dokumentu
+ LDX  JsonParser2~done
+#debug bool JsonParser2.done
+ LDX  parseEnable
+#debug bool parseEnable
+ AND
+ JMC  fbPostDataAndSetVar_L13
+#srcline 77 ;      // sestavit jmeno promenne
+#srcline 78 ;      IF (varDesc.typ = 255) AND (NOT varDesc.isArray) THEN  // struktura
+ LDX  varDesc~typ
+#debug usint varDesc.typ
+ LD   usint 255
+ EQ
+ LDX  varDesc~isArray
+#debug bool varDesc.isArray
+ NEG
+ AND
+ JMC  fbPostDataAndSetVar_L15
+#srcline 79 ;        IF LEN(IN := varName) > 0 THEN
+ LEAX varName
+#debug string varName
+ SLEN 
+ LD   int 0
+ GTS
+ JMC  fbPostDataAndSetVar_L17
+#srcline 80 ;          tmp := varName + '.' + json.item.name;             // cele jmeno promenne
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEAX varName
+#debug string varName
+ SCON 
+ LEA  _str_fbPostDataAndSetVar_7
+ SCON 
+ LEAX json
+#debug string json.item.name
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAY tmp
+ WRI  
+ LEAY tmp
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string tmp
+ PDST   ; Level 1
+#srcline 81 ;        ELSE
+ JMP  fbPostDataAndSetVar_L18
+fbPostDataAndSetVar_L17:
+#srcline 82 ;          tmp := json.item.name;                             // cele jmeno promenne
+ LD   0   ; null string
+ LEAY tmp
+ WRI  
+ LEAY tmp
+ LD   255
+ DST    ; Level 1
+ LEAX json
+#debug string json.item.name
+ SCON 
+#debug_left string tmp
+ PDST   ; Level 1
+#srcline 83 ;        END_IF;
+fbPostDataAndSetVar_L18:
+#srcline 84 ;      ELSIF varDesc.isArray THEN                             // pole
+ JMP  fbPostDataAndSetVar_L16
+fbPostDataAndSetVar_L15:
+ LDX  varDesc~isArray
+#debug bool varDesc.isArray
+ JMC  fbPostDataAndSetVar_L19
+#srcline 85 ;        tmp := varName + json.item.name;                     // cele jmeno promenne
+ LD   0   ; null string
+ WRY  PS0__st__[0]
+ LEAY PS0__st__[0]
+ LD   255
+ DST    ; Level 1
+ LEAX varName
+#debug string varName
+ SCON 
+ LEAX json
+#debug string json.item.name
+ SCON 
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEAY tmp
+ WRI  
+ LEAY tmp
+ LD   255
+ DST    ; Level 1
+ LEAY PS0__st__[0]
+ SCON 
+#debug_left string tmp
+ PDST   ; Level 1
+#srcline 86 ;      END_IF;
+ JMP  fbPostDataAndSetVar_L16
+fbPostDataAndSetVar_L19:
+fbPostDataAndSetVar_L16:
+#srcline 88 ;      IF SetVarValueByName( varName := tmp, varValue := json.item.value) THEN
+ NXT
+ LD   0   ; null string
+ LEA  __Instance__SetVarValueByName~varName
+ WRI 
+ LEA  __Instance__SetVarValueByName~varName
+ LD   255
+ DST    ; Level 1
+ LEAY tmp
+#debug string tmp
+ SCON 
+#debug_left string __Instance__SetVarValueByName~varName
+ PDST   ; Level 1
+ LD   0   ; null string
+ LEA  __Instance__SetVarValueByName~varValue
+ WRI 
+ LEA  __Instance__SetVarValueByName~varValue
+ LD   255
+ DST    ; Level 1
+ LEAX json
+ ADD  256  ; + offset 
+#debug string json.item.value
+ SCON 
+#debug_left string __Instance__SetVarValueByName~varValue
+ PDST   ; Level 1
+ PRV
+ LEA  __Instance__SetVarValueByName
+#debug pointer __Instance__SetVarValueByName ;<debug_call>
+ CAL  SetVarValueByName_L0
+ JMC  fbPostDataAndSetVar_L20
+#srcline 89 ;        numVar := numVar + 1; timTimeout(IN := 0);
+ LDX  numVar
+#debug uint numVar
+ LD   uint 1
+ ADD
+ AND  $FFFF
+ WRX  numVar
+#debug_left uint numVar
+ LD   bool 0       ; false
+ WRX  timTimeout~IN
+#debug_left bool timTimeout~IN
+ LEAX timTimeout
+#debug pointer timTimeout ;<debug_call>
+ CAL  TON_L0
+#srcline 90 ;      END_IF;
+fbPostDataAndSetVar_L20:
+#srcline 91 ;    END_IF;
+fbPostDataAndSetVar_L13:
+#srcline 92 ;  UNTIL JsonParser2.break END_REPEAT;
+ LDX  JsonParser2~break
+#debug bool JsonParser2.break
+ JMC  fbPostDataAndSetVar_L9
+fbPostDataAndSetVar_L10:
+ NOP  -1
+#srcline 94 ;  IF parseEnable AND JsonParser2.exec THEN
+ LDX  parseEnable
+#debug bool parseEnable
+ LDX  JsonParser2~exec
+#debug bool JsonParser2.exec
+ AND
+ JMC  fbPostDataAndSetVar_L22
+#srcline 95 ;    IF JsonParser2.eof OR JsonParser2.err THEN // parsovani ukonceno
+ LDX  JsonParser2~eof
+#debug bool JsonParser2.eof
+ LDX  JsonParser2~err
+#debug bool JsonParser2.err
+ OR  
+ JMC  fbPostDataAndSetVar_L24
+#srcline 96 ;      CloseUniChannel( chanHandle);            // zavrit socket
+ NXT
+ LEAX chanHandle
+ WR   __Instance__CloseUniChannel~chanHandle
+#debug_left pointer __Instance__CloseUniChannel.chanHandle
+ PRV
+ LEA  __Instance__CloseUniChannel
+#debug pointer __Instance__CloseUniChannel ;<debug_call>
+ CAL  CloseUniChannel_L0
+#srcline 97 ;      rqPost := 0; parseEnable := 0;
+ LD   bool 0       ; false
+ WRX  rqPost
+#debug_left bool rqPost
+ LD   bool 0       ; false
+ WRX  parseEnable
+#debug_left bool parseEnable
+#srcline 98 ;      busy := 0;
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 99 ;      IF JsonParser2.err THEN
+ LDX  JsonParser2~err
+#debug bool JsonParser2.err
+ JMC  fbPostDataAndSetVar_L26
+#srcline 100 ;        err := 1;                              // doslo k chybe
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+#srcline 101 ;        errTxt := JsonParser2.errTxt;          // zachytit chybu
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEAX JsonParser2
+ ADD  99  ; + offset 
+#debug string JsonParser2.errTxt
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 102 ;      ELSE
+ JMP  fbPostDataAndSetVar_L27
+fbPostDataAndSetVar_L26:
+#srcline 103 ;        done := 1;                             // dokonceno ok
+ LD   bool -1      ; true
+ WRX  done
+#debug_left bool done
+#srcline 104 ;      END_IF;
+fbPostDataAndSetVar_L27:
+#srcline 105 ;    END_IF;
+fbPostDataAndSetVar_L24:
+#srcline 106 ;  END_IF;
+fbPostDataAndSetVar_L22:
+#srcline 108 ;  timTimeout(IN := busy, PT := timeout);
+ LDX  busy
+#debug bool busy
+ WRX  timTimeout~IN
+#debug_left bool timTimeout~IN
+ LDX  timeout
+#debug time timeout
+ WRX  timTimeout~PT
+#debug_left time timTimeout~PT
+ LEAX timTimeout
+#debug pointer timTimeout ;<debug_call>
+ CAL  TON_L0
+#srcline 109 ;  IF timTimeout.Q THEN
+ LDX  timTimeout~Q
+#debug bool timTimeout.Q
+ JMC  fbPostDataAndSetVar_L28
+#srcline 110 ;    JsonParser2( exec := 0, chanCode := chanHandle, pageName := pageUrl, jsonInfo := json, body := body);
+ LD   bool 0       ; false
+ WRX  JsonParser2~exec
+#debug_left bool JsonParser2~exec
+ LDX  chanHandle
+#debug uint chanHandle
+ WRX  JsonParser2~chanCode
+#debug_left uint JsonParser2~chanCode
+ LEAX pageUrl
+ WRX  JsonParser2~pageName
+#debug_left pointer JsonParser2.pageName
+ LEAX json
+ WRX  JsonParser2~jsonInfo
+#debug_left pointer JsonParser2.jsonInfo
+ LDX  body
+ WRX  JsonParser2~body
+#debug_left pointer JsonParser2.body
+ LEAX JsonParser2
+#debug pointer JsonParser2 ;<debug_call>
+ CAL  fbJsonPageParser2_L0
+#srcline 111 ;    rqPost := 0; parseEnable := 0; busy := 0;
+ LD   bool 0       ; false
+ WRX  rqPost
+#debug_left bool rqPost
+ LD   bool 0       ; false
+ WRX  parseEnable
+#debug_left bool parseEnable
+ LD   bool 0       ; false
+ WRX  busy
+#debug_left bool busy
+#srcline 112 ;    IF chanHandle <> 0 THEN CloseUniChannel( chanHandle); END_IF;
+ LDX  chanHandle
+#debug uint chanHandle
+ LD   uint 0
+ EQ
+ NEG
+ JMC  fbPostDataAndSetVar_L30
+ NXT
+ LEAX chanHandle
+ WR   __Instance__CloseUniChannel~chanHandle
+#debug_left pointer __Instance__CloseUniChannel.chanHandle
+ PRV
+ LEA  __Instance__CloseUniChannel
+#debug pointer __Instance__CloseUniChannel ;<debug_call>
+ CAL  CloseUniChannel_L0
+fbPostDataAndSetVar_L30:
+#srcline 113 ;    err := 1; errTxt := 'Timeout error';     // nastavit chybu
+ LD   bool -1      ; true
+ WRX  err
+#debug_left bool err
+ LD   0   ; null string
+ LEAX errTxt
+ WRI  
+ LEAX errTxt
+ LD   80
+ DST    ; Level 1
+ LEA  _str_fbPostDataAndSetVar_8
+ SCON 
+#debug_left string errTxt
+ PDST   ; Level 1
+#srcline 114 ;  END_IF;
+fbPostDataAndSetVar_L28:
+#srcline 115 ;END_FUNCTION_BLOCK
+ ULNK
+RET
+E     61
+
+; Initialize - variables
+P     61
+fbPostDataAndSetVar__InstanceInit__:
+ LINK 0
+ LD   time 120000
+ WRX  timeout
+ LEAX JsonParser2
+ CAL  fbJsonPageParser2__InstanceInit__
+ ULNK
+RET
+E     61
+; End initialize - variables
+#endpou 
+
+
+
+ 
+
+#srcfile ''
+|Z  Áÿ #

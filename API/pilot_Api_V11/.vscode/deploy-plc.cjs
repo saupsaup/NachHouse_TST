@@ -11,27 +11,46 @@ const bin = settings['mosaic.mosaicBin'].replace(/\\+$/, '');
 const mak = settings['mosaic.makPathWin'];
 const source = path.join(root, 'prgMain.ST');
 const wsModule = process.env.NH_WS_MODULE || '/Users/pambm3/NachHouse_APP/ROOMS_BROWSER_V0.5.73/node_modules/ws';
-const keychainService = `NachHouse PLC ${host} deployment`;
+const ftpKeychainService = `NachHouse FTP ${host} deployment`;
+const plcKeychainService = `NachHouse PLC ${host} deployment`;
 const W = require(wsModule);
-let plcCredentials;
+let ftpCredentials;
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const quote = s => '"' + s + '"';
 const psQuote = s => "'" + s.replace(/'/g, "''") + "'";
 const digest = b => crypto.createHash('sha256').update(b).digest('hex');
-function credentials() {
-  if (process.env.NH_PLC_USER && process.env.NH_PLC_PASSWORD) return {user:process.env.NH_PLC_USER, password:process.env.NH_PLC_PASSWORD};
-  const r=spawnSync('security',['find-generic-password','-s',keychainService,'-w'],{encoding:'utf8'});
-  if (r.status!==0 || !r.stdout.trim()) throw Error(`Missing PLC password in macOS Keychain: ${keychainService}`);
-  return {user:'a', password:r.stdout.trim()};
+function ftpLogin() {
+  if (process.env.NH_FTP_USER && process.env.NH_FTP_PASSWORD) return {user:process.env.NH_FTP_USER, password:process.env.NH_FTP_PASSWORD};
+  const r=spawnSync('security',['find-generic-password','-s',ftpKeychainService,'-w'],{encoding:'utf8'});
+  if (r.status!==0 || !r.stdout.trim()) throw Error(`Missing FTP password in macOS Keychain: ${ftpKeychainService}`);
+  return {user:'nhftp', password:r.stdout.trim()};
+}
+async function webLogin() {
+  const r=spawnSync('security',['find-generic-password','-s',plcKeychainService,'-w'],{encoding:'utf8'});
+  if(r.status!==0 || !r.stdout.trim()) throw Error(`Missing PLC password in macOS Keychain: ${plcKeychainService}`);
+  const password=r.stdout.trim();let cookie='';
+  async function request(path,options={}) {
+    const response=await fetch(`http://${host}${path}`,{redirect:'manual',headers:{...options.headers,...(cookie?{Cookie:cookie}:{})},...options});
+    const setCookie=response.headers.get('set-cookie');if(setCookie)cookie=setCookie.split(';')[0];return response;
+  }
+  await request('/NACHHOUSE/');const nonce=cookie.split('=')[1];
+  if(!nonce) throw Error('Missing PLC web login nonce');
+  const pass=crypto.createHash('sha1').update(nonce+password).digest('hex');
+  const response=await request('/SYSWWW/LOGIN.XML',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({USER:'a',PASS:pass})});
+  if(![200,302].includes(response.status))throw Error(`PLC web login failed: ${response.status}`);
 }
 function windows(exe, args, credentials = false) {
   let ps = "$ErrorActionPreference='Stop'; ";
   if (credentials) for (const key of ['PLC_USR','PLC_PSW','PLC_PUB_USR','PLC_PUB_PSW']) {
-    ps += `$env:${key}=${psQuote(key.endsWith('USR') ? plcCredentials.user : plcCredentials.password)}; `;
+    ps += `$env:${key}=${psQuote(key.endsWith('USR') ? ftpCredentials.user : ftpCredentials.password)}; `;
   }
   ps += '& ' + psQuote(bin + '\\' + exe) + ' ' + args.map(psQuote).join(' ') + '; exit $LASTEXITCODE';
   const encoded = Buffer.from(ps, 'utf16le').toString('base64');
-  const r = spawnSync('prlctl', ['exec', vm, 'cmd', '/c', 'powershell.exe -NoProfile -EncodedCommand ' + encoded], {encoding:'utf8', timeout:120000, maxBuffer:8*1024*1024});
+  // Web packages contain the complete browser UI and can take several minutes
+  // to cross the VM boundary and PLC file service.
+  // The Mosaic compiler must run in the signed-in Windows session: that is
+  // where Parallels exposes the N: project share.
+  const r = spawnSync('prlctl', ['exec', vm, '--current-user', 'cmd', '/c', 'powershell.exe -NoProfile -EncodedCommand ' + encoded], {encoding:'utf8', timeout:600000, maxBuffer:8*1024*1024});
   if (r.error) throw r.error;
   const output = (r.stdout || '') + (r.stderr || '');
   console.log(output.trim());
@@ -56,20 +75,16 @@ function readState(activate = false, expected) {
     } catch(e){finish(e);}});
   });
 }
-async function remotePackage() {
-  let cookie='';
-  async function request(p,opts={}) {
-    const r=await fetch(`http://${host}${p}`,{...opts,redirect:'manual',headers:{...opts.headers,...(cookie?{Cookie:cookie}:{})},signal:AbortSignal.timeout(15000)});
-    const c=r.headers.get('set-cookie');if(c)cookie=c.split(';')[0];
-    return r;
-  }
-  await request('/UPLOAD/');
-  const nonce=cookie.split('=')[1];if(!nonce)throw Error('Missing PLC login nonce');
-  const pass=crypto.createHash('sha1').update(nonce+plcCredentials.password).digest('hex');
-  const login=await request('/SYSWWW/LOGIN.XML',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams({USER:plcCredentials.user,PASS:pass})});
-  if(![200,302].includes(login.status))throw Error('PLC login failed');
-  const r=await request('/UPLOAD/NEW_PACK.TTR');if(r.status!==200)throw Error('Cannot read uploaded package: '+r.status);
-  return Buffer.from(await r.arrayBuffer());
+function ftp(args, encoding='buffer') {
+  const r=spawnSync('curl',['--connect-timeout','10','--max-time','120','--silent','--show-error','--fail','--user',`${ftpCredentials.user}:${ftpCredentials.password}`,...args],{encoding,maxBuffer:16*1024*1024});
+  if(r.error||r.status!==0) throw Error(`FTP transfer failed${r.stderr?`: ${String(r.stderr).trim()}`:''}`);
+  return r.stdout;
+}
+function ftpPackage() {
+  return Buffer.from(ftp([`ftp://${host}/WWW/UPLOAD/NEW_PACK.TTR`]));
+}
+function ftpUploadPackage(local) {
+  ftp(['--upload-file',local,`ftp://${host}/WWW/UPLOAD/NEW_PACK.TTR`]);
 }
 function sourceBuild() {
   const text=fs.readFileSync(source,'utf8');
@@ -89,8 +104,8 @@ async function compileAndUpload(old) {
   const winPackage=packageMatch[1];
   const local=path.join(root,path.win32.basename(winPackage));
   const bytes=fs.readFileSync(local);
-  windows('plc.exe',[settings['mosaic.plcHost'],'upload-file','--src',winPackage,'--dest','//WWW/UPLOAD/NEW_PACK.TTR'],true);
-  const remote=await remotePackage();
+  ftpUploadPackage(local);
+  const remote=ftpPackage();
   if(remote.length!==bytes.length||digest(remote)!==digest(bytes))throw Error('Uploaded package differs; activation stopped');
   console.log('SHA-256 verified:',digest(bytes));
   return next;
@@ -113,11 +128,12 @@ async function activateAndVerify(old,next) {
   throw Error('New build/RUN not confirmed. Inspect PLC; do not blindly repeat activation.');
 }
 async function main() {
+  await webLogin();
   if(process.argv.includes('--check')) {console.log('Configuration:',host,vm,mak);console.log(await readState());return;}
   const uploadOnly=process.argv.includes('--upload');
   const activateOnly=process.argv.includes('--activate');
   if(uploadOnly&&activateOnly)throw Error('Choose either --upload or --activate');
-  plcCredentials=credentials();
+  ftpCredentials=ftpLogin();
   const lock=path.join(__dirname,'.deploy.lock');
   const fd=fs.openSync(lock,'wx');
   try {
@@ -126,8 +142,14 @@ async function main() {
     if(activateOnly) {
       const next=sourceBuild().build;
       if(next<=old.NHDEPLOYBUILD)throw Error('Local NhDeployBuild must be newer than PLC before activation');
-      const remote=await remotePackage();
+      const remote=ftpPackage();
       if(!remote.length)throw Error('NEW_PACK.TTR is empty');
+      const packages=fs.readdirSync(root).filter(name=>name.toUpperCase().endsWith('.TTR'))
+        .map(name=>({name,time:fs.statSync(path.join(root,name)).mtimeMs})).sort((a,b)=>b.time-a.time);
+      if(!packages.length)throw Error('No local TTR is available for verification');
+      const local=fs.readFileSync(path.join(root,packages[0].name));
+      if(remote.length!==local.length||digest(remote)!==digest(local))throw Error('Uploaded package differs from the newest local TTR; activation stopped');
+      console.log('SHA-256 verified:',digest(local));
       console.log(`Activate uploaded TTR: ${old.NHDEPLOYBUILD} -> ${next}`);
       await activateAndVerify(old,next);
     } else {

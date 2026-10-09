@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MAP version="3" name="V13" project="V13" content="public" >
+ <TYPES>
+  <RECORD name="NH_CFG_ALL" size="4" pou="struct" >
+    <ITEM name="RoomID" type="INT" addr="0" size="2" descr="Ukážkové ID miestnosti v spolocnej casti. ; Sample room ID in the shared section." />
+    <ITEM name="CategoryID" type="INT" addr="2" size="2" descr="Ukážkové ID kategórie v spolocnej casti. ; Sample category ID in the shared section." />
+  </RECORD>
+  <RECORD name="NH_REC_ALL" size="3" pou="struct" >
+    <ITEM name="Ok" type="BOOL" addr="0" bit="0" size="1" descr="Príznak platnosti záznamu. ; Record-validity flag." />
+    <ITEM name="ref" type="BOOL" addr="0" bit="1" size="1" />
+    <ITEM name="waiting" type="BOOL" addr="0" bit="2" size="1" descr="Príznak, že záznam caká na aktualizáciu. ; Record-waiting-for-update flag." />
+    <ITEM name="ID" type="INT" addr="1" size="2" descr="Identifikátor záznamu. ; Record identifier." />
+  </RECORD>
+  <RECORD name="NH_ROOM_MEM" size="29" pou="struct" >
+    <ITEM name="rec" type="NH_REC_ALL" addr="0" size="3" descr="Hlavicka záznamu a spolocné identifikacné údaje. ; Record header and shared identification data." />
+    <ITEM name="all" type="NH_CFG_ALL" addr="3" size="4" />
+    <ITEM name="Temperature" type="REAL" addr="7" size="4" descr="Testovacie merania a príznaky stavu miestnosti. ; Test measurements and room-state flags." />
+    <ITEM name="Humidity" type="REAL" addr="11" size="4" />
+    <ITEM name="Presence" type="BOOL" addr="15" bit="0" size="1" />
+    <ITEM name="DayPhase" type="UINT" addr="16" size="2" />
+    <ITEM name="CategoryMask" type="DWORD" addr="18" size="4" descr="Maska kategórií, úroven alarmu a dalšie príznaky stavu. ; Category mask, alarm level, and additional Boolean state flags." />
+    <ITEM name="AlarmLevel" type="USINT" addr="22" size="1" />
+    <ITEM name="Online" type="BOOL" addr="23" bit="0" size="1" />
+    <ITEM name="Twilight" type="BOOL" addr="23" bit="1" size="1" />
+    <ARRAY size="1" lo="0" hi="7" > 
+      <ITEM name="grp" type="BOOL" addr="24" bit="0" size="1" />
+      </ARRAY> 
+    <ARRAY size="1" lo="1" hi="3" > 
+      <ITEM name="scan" type="BOOL" addr="25" bit="0" size="1" />
+      </ARRAY> 
+    <ARRAY size="3" lo="1" hi="3" > 
+      <ITEM name="lvl" type="USINT" addr="26" size="1" />
+      </ARRAY> 
+  </RECORD>
+  <RECORD name="NH_ROOM_CFG" size="192" pou="struct" >
+    <ITEM name="Name" type="STRING" addr="0" size="33" descr="Názov a testovacie celé císla so znamienkom aj bez neho. ; Name and signed/unsigned integer test values." />
+    <ITEM name="_Dint" type="DINT" addr="33" size="4" />
+    <ITEM name="_Sint" type="SINT" addr="37" size="1" />
+    <ITEM name="_Usint" type="USINT" addr="38" size="1" />
+    <ITEM name="_Uint" type="UINT" addr="39" size="2" descr="16-bitové a desatinné testovacie císla a krátky retazec. ; 16-bit and floating-point test values plus a short string." />
+    <ITEM name="_Real" type="REAL" addr="41" size="4" />
+    <ITEM name="_LReal" type="LREAL" addr="45" size="8" />
+    <ITEM name="_String" type="STRING" addr="53" size="31" />
+    <ITEM name="_StringCZSK" type="STRING" addr="84" size="81" value="&apos;SVKBegin_šctžýáíé_SVKEnd&apos;" descr="Retazec s diakritikou overuje prevod medzi CP1250 a UTF-8. ; A diacritic-bearing string tests conversion between CP1250 and UTF-8." />
+    <ITEM name="_BYTE" type="BYTE" addr="165" size="1" descr="Bajtové a dátumové/casové testovacie typy. ; Byte-sized and date/time test types." />
+    <ITEM name="_WORD" type="WORD" addr="166" size="2" />
+    <ITEM name="_TIME" type="TIME" addr="168" size="4" />
+    <ITEM name="_DATE" type="DATE" addr="172" size="8" />
+    <ITEM name="_TIME_OF_DAY" type="TIME_OF_DAY" addr="180" size="4" descr="Testovacie hodnoty casu dna a dátumového casu. ; Test values for time-of-day and date-time types." />
+    <ITEM name="_DATE_AND_TIME" type="DATE_AND_TIME" addr="184" size="8" />
+  </RECORD>
+  <RECORD name="NH_ROOM" size="221" pou="struct" >
+    <ITEM name="mem" type="NH_ROOM_MEM" addr="0" size="29" descr="Vnorená štruktúra prevádzkového stavu miestnosti. ; Nested room operating-state structure." />
+    <ITEM name="cfg" type="NH_ROOM_CFG" addr="29" size="192" descr="Vnorená štruktúra konfigurácie miestnosti. ; Nested room-configuration structure." />
+  </RECORD>
+ </TYPES>
+ <DATA>
+  <ITEM name="ROOM" type="NH_ROOM" location="%M" addr="15088" size="221" puball="1" />
+ </DATA>
+</MAP>

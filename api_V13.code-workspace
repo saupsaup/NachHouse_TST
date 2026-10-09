@@ -1,0 +1,37 @@
+{
+	"folders": [
+		{
+			"name": "API/V13",
+			"path": "API/V13"
+		},
+//		{
+//			"name": "API/api_V12",
+//			"path": "API/api_V12"
+//		},
+
+		{
+			"name": "HELP",
+			"path": "../HELP"
+		}
+	],
+  "settings": {
+    //"mosaic.plcHost": "192.168.33.200:61682",
+    //"mosaic.makPathWin": "N:\\LIBS\\Clean_DISK\\NhCleanDisk\\NhCleanDisk.mak",
+    "favorites.groups": [
+      "Default"
+    ],
+    "favorites.currentGroup": "Default",
+    "favorites.resources": [],
+    "favorites.sortOrder": "MANUAL",
+    "workbench.colorCustomizations": {
+      "titleBar.activeBackground": "#03357f",
+      "titleBar.activeForeground": "#040404",
+      "titleBar.inactiveBackground": "#6A477E99",
+      "titleBar.inactiveForeground": "#040303",
+      "statusBar.background": "#6A477E",
+      "statusBar.foreground": "#0c0b0b",
+      "statusBar.noFolderBackground": "#6A477E"
+    },
+    "window.title": "API/API_V13 — ${activeEditorShort}${separator}${appName}"
+  }
+}

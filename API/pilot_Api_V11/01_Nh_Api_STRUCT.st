@@ -132,11 +132,19 @@ END_TYPE
 
 VAR_GLOBAL
    NhApiInfo       {PUBLIC_API} : NH_API_INFO;                // Minimal global transaction control. SK: Minimalne globalne riadenie transakcie.
-   NhApiTX         {PUBLIC_API} : ARRAY[0..511] OF DWORD;     // Stable PLC-to-clients frame. SK: Stabilny ramec PLC smerom ku klientom.
-   NhApiRX         {PUBLIC_API} : ARRAY[0..63] OF DWORD;      // Shared owner-to-PLC request frame. SK: Spolocny ramec poziadavky vlastnika smerom do PLC.
+   NhApiTX                      : ARRAY[0..511] OF DWORD;     // Internal frame published as one binary WWW file. SK: Interny ramec publikovany ako jeden binarny WWW subor.
+   NhApiRX                      : ARRAY[0..63] OF DWORD;      // Internal owner-to-PLC request frame decoded from Base64 transport.
    NhApiTest       {PUBLIC_API} : NH_API_TEST_CONTROL;        // Direct PLC-originated test control. SK: Priame riadenie testov vyvolanych PLC.
    NhLoadTest      {PUBLIC_API} : NH_LOAD_TEST_STATUS;        // LOAD_800 status and measurements. SK: Stav a merania LOAD_800.
-   NhLoadDevices   {PUBLIC_API} : ARRAY[1..800] OF DWORD;     // Compact model state: high byte kind, low bits value. SK: Kompaktny modelovy stav: horny bajt typ, dolne bity hodnota.
+   NhLoadDevices                : ARRAY[1..800] OF DWORD;     // Internal load-test model; never publish array elements through PLCComS diffs.
+
+   // JSON RAM transport test: only NhTxRevision is the client-ready signal.
+   NhTxRevision     {PUBLIC_API} : UDINT := 0;
+   NhJsonTestCommand{PUBLIC_API} : USINT := 0; // 1=stream one record/cycle, 2=burst all records/one cycle.
+   NhJsonTestStatus {PUBLIC_API} : USINT := 0; // 0=idle, 1=streaming, 2=bursting, 3=ready, 255=error.
+   NhJsonTestBytes  {PUBLIC_API} : UDINT := 0;
+   NhJsonTestRecords{PUBLIC_API} : UINT := 0;
+   NhJsonTestMaxCycle100us {PUBLIC_API} : UINT := 0;
 
    NhRoomsConfig                : ARRAY[1..40] OF NH_ROOM_CONFIG; // Authoritative PLC room configuration. SK: Autoritativna PLC konfiguracia miestnosti.
    NhRoomsState                 : ARRAY[1..40] OF NH_ROOM_STATE;  // Authoritative PLC room state. SK: Autoritativny PLC stav miestnosti.

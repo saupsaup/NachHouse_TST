@@ -22,6 +22,14 @@
 
 #uselib "LocalLib\StdLib_V22_20180619.mlb"
 #uselib "LocalLib\SysLib_V53_20260227.mlb"
+#uselib "LocalLib\ToStringLib_V13_20110203.mlb"
+#uselib "LocalLib\TimeLib_V17_20251106.mlb"
+#uselib "LocalLib\FileLib_V36_20251203.mlb"
+#uselib "LocalLib\ComLib_V43_20260604.mlb"
+#uselib "LocalLib\EncryptLib_V15_20260115.mlb"
+#uselib "LocalLib\DataBoxLib_V18_20250410.mlb"
+#uselib "LocalLib\ConvertLib_V27_20260527.mlb"
+#uselib "LocalLib\InternetLib_V72_20260126.mlb"
 #endlibs
 
 ;**************************************
@@ -33,5 +41,9 @@
 #usefile "01_Nh_Api_STRUCT.st"
 #usefile "02_Nh_Api_UTILS.st"
 #usefile "03_Nh_Api_ENGINE.st"
+#usefile "04_Nh_Connect.st"
+#usefile "05_Nh_FileTransport.st"
+#usefile "06_Nh_RxTextTransport.st"
+#usefile "07_Nh_JsonRamTest.st"
 #usefile "prgMain.ST"
 #usefile "pilot_Api_V11.mcf", 'auto'

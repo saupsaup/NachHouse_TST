@@ -1,0 +1,93 @@
+TYPE
+
+NH_CFG_ALL : STRUCT
+  RoomID     : INT;
+  CategoryID : INT;
+END_STRUCT;
+
+NH_REC_ALL : STRUCT
+  Ok : BOOL;
+  ID : INT;
+END_STRUCT;
+
+NH_ROOM_MEM : STRUCT
+  rec          : NH_REC_ALL;
+  all          : NH_CFG_ALL;
+  Temperature  : REAL;
+  Humidity     : REAL;
+  Presence     : BOOL;
+  DayPhase     : UINT;
+  CategoryMask : DWORD;
+  AlarmLevel   : USINT;
+  Online       : BOOL;
+  Twilight     : BOOL;
+END_STRUCT;
+
+NH_ROOM_CFG : STRUCT
+  Name           : STRING[32];
+  _Dint          : DINT;
+  _Sint          : SINT;
+  _Usint         : USINT;
+  _Uint          : UINT;
+  _Real          : REAL;
+  _LReal         : LREAL;
+  _String        : STRING[30];
+  _StringCZSK    : STRING[80];
+  _BYTE          : BYTE;
+  _WORD          : WORD;
+  _TIME          : TIME;
+  _DATE          : DATE;
+  _TIME_OF_DAY   : TOD;
+  _DATE_AND_TIME : DT;
+END_STRUCT;
+
+NH_ROOM : STRUCT
+  mem : NH_ROOM_MEM;
+  cfg : NH_ROOM_CFG;
+END_STRUCT;
+
+NH_USERS_MEM : STRUCT
+  rec        : NH_REC_ALL;
+  all        : NH_CFG_ALL;
+  Connected  : BOOL;
+  LastError  : STRING[80];
+  LastUpdate : UDINT;
+END_STRUCT;
+
+NH_USERS_CFG : STRUCT
+  Name       : STRING[32];
+  LoginHome  : BOOL;
+  DshSet     : BOOL;
+  OwnDSH     : BOOL;
+  OwnQCK     : BOOL;
+  UsrRight   : USINT;
+  ZonList    : array [1..16] of BOOL;
+  sbj        : USINT;
+  lng        : USINT;
+  fav        : array [0..7] of USINT;
+  keyPas     : STRING[6];
+  IPnbr      : USINT;
+  IP         : array [1..3] of STRING[15];
+  mail       : STRING[50];
+  TOKENAPPLE : STRING[90];
+  TOKENUNI   : STRING[100];
+  gsm        : STRING[15];
+  skin       : USINT;
+  msg        : array [0..7] of BOOL;
+  Brw        : array [0..30] of USINT;
+END_STRUCT;
+
+NH_USER : STRUCT
+  mem : NH_USERS_MEM;
+  cfg : NH_USERS_CFG;
+END_STRUCT;
+
+END_TYPE
+
+
+VAR_GLOBAL
+
+yRooms AT %MB10096 : array [1..10] of NH_ROOM;
+yUsers AT %MB12256 : array [1..10] of NH_USER;
+
+END_VAR

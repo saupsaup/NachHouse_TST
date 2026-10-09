@@ -1,9 +1,19 @@
 TYPE
 
+(* povodna testovacia struktura
+*)
+NH_JSON_TEST_ROOM : STRUCT
+  RoomId        : UDINT;
+  LightLevel    : UINT;
+  Temperature10 : INT;
+  Online        : BOOL;
+END_STRUCT;
+
 END_TYPE
 
 
 VAR_GLOBAL
 
+NhJsonTestRooms AT %MB34921 : array [1..300] of NH_JSON_TEST_ROOM;
 
 END_VAR

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MAP version="3" name="API_V12" project="API_V12" content="public" >
+ <TYPES>
+  <RECORD name="NH_CFG_ALL" size="4" pou="struct" >
+    <ITEM name="RoomID" type="INT" addr="0" size="2" value="12" />
+    <ITEM name="CategoryID" type="INT" addr="2" size="2" value="23" />
+  </RECORD>
+  <RECORD name="NH_REC_ALL" size="3" pou="struct" >
+    <ITEM name="Ok" type="BOOL" addr="0" bit="0" size="1" value="TRUE" />
+    <ITEM name="ID" type="INT" addr="1" size="2" />
+  </RECORD>
+  <RECORD name="NH_ROOM_MEM" size="24" pou="struct" >
+    <ITEM name="rec" type="NH_REC_ALL" addr="0" size="3" />
+    <ITEM name="all" type="NH_CFG_ALL" addr="3" size="4" />
+    <ITEM name="Temperature" type="REAL" addr="7" size="4" />
+    <ITEM name="Humidity" type="REAL" addr="11" size="4" />
+    <ITEM name="Presence" type="BOOL" addr="15" bit="0" size="1" />
+    <ITEM name="DayPhase" type="UINT" addr="16" size="2" />
+    <ITEM name="CategoryMask" type="DWORD" addr="18" size="4" />
+    <ITEM name="AlarmLevel" type="USINT" addr="22" size="1" />
+    <ITEM name="Online" type="BOOL" addr="23" bit="0" size="1" />
+    <ITEM name="Twilight" type="BOOL" addr="23" bit="1" size="1" />
+  </RECORD>
+  <RECORD name="NH_ROOM_CFG" size="192" pou="struct" >
+    <ITEM name="Name" type="STRING" addr="0" size="33" />
+    <ITEM name="_Dint" type="DINT" addr="33" size="4" />
+    <ITEM name="_Sint" type="SINT" addr="37" size="1" />
+    <ITEM name="_Usint" type="USINT" addr="38" size="1" />
+    <ITEM name="_Uint" type="UINT" addr="39" size="2" />
+    <ITEM name="_Real" type="REAL" addr="41" size="4" />
+    <ITEM name="_LReal" type="LREAL" addr="45" size="8" />
+    <ITEM name="_String" type="STRING" addr="53" size="31" />
+    <ITEM name="_StringCZSK" type="STRING" addr="84" size="81" value="&apos;SVKBEGIN_+¾šèžýáíé_SVKEND&apos;" />
+    <ITEM name="_BYTE" type="BYTE" addr="165" size="1" />
+    <ITEM name="_WORD" type="WORD" addr="166" size="2" />
+    <ITEM name="_TIME" type="TIME" addr="168" size="4" />
+    <ITEM name="_DATE" type="DATE" addr="172" size="8" />
+    <ITEM name="_TIME_OF_DAY" type="TIME_OF_DAY" addr="180" size="4" />
+    <ITEM name="_DATE_AND_TIME" type="DATE_AND_TIME" addr="184" size="8" />
+  </RECORD>
+  <RECORD name="NH_ROOM" size="216" pou="struct" puball="1" >
+    <ITEM name="mem" type="NH_ROOM_MEM" addr="0" size="24" />
+    <ITEM name="cfg" type="NH_ROOM_CFG" addr="24" size="192" />
+  </RECORD>
+  <RECORD name="NH_USERS_MEM" size="93" pou="struct" >
+    <ITEM name="rec" type="NH_REC_ALL" addr="0" size="3" />
+    <ITEM name="all" type="NH_CFG_ALL" addr="3" size="4" />
+    <ITEM name="Connected" type="BOOL" addr="7" bit="0" size="1" />
+    <ITEM name="LastError" type="STRING" addr="8" size="81" />
+    <ITEM name="LastUpdate" type="UDINT" addr="89" size="4" />
+  </RECORD>
+  <RECORD name="NH_USERS_CFG" size="395" pou="struct" >
+    <ITEM name="Name" type="STRING" addr="0" size="33" />
+    <ITEM name="LoginHome" type="BOOL" addr="33" bit="0" size="1" value="TRUE" />
+    <ITEM name="DshSet" type="BOOL" addr="33" bit="1" size="1" value="FALSE" />
+    <ITEM name="OwnDSH" type="BOOL" addr="33" bit="2" size="1" value="TRUE" />
+    <ITEM name="OwnQCK" type="BOOL" addr="33" bit="3" size="1" value="TRUE" />
+    <ITEM name="UsrRight" type="USINT" addr="34" size="1" value="1" />
+    <ARRAY size="2" lo="1" hi="16" > 
+      <ITEM name="ZonList" type="BOOL" addr="35" bit="0" size="1" value="[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]" />
+      </ARRAY> 
+    <ITEM name="sbj" type="USINT" addr="37" size="1" value="1" />
+    <ITEM name="lng" type="USINT" addr="38" size="1" />
+    <ARRAY size="8" lo="0" hi="7" > 
+      <ITEM name="fav" type="USINT" addr="39" size="1" />
+      </ARRAY> 
+    <ITEM name="keyPas" type="STRING" addr="47" size="7" />
+    <ITEM name="IPnbr" type="USINT" addr="54" size="1" value="1" />
+    <ARRAY size="48" lo="1" hi="3" > 
+      <ITEM name="IP" type="STRING" addr="55" size="16" />
+      </ARRAY> 
+    <ITEM name="mail" type="STRING" addr="103" size="51" />
+    <ITEM name="TOKENAPPLE" type="STRING" addr="154" size="91" />
+    <ITEM name="TOKENUNI" type="STRING" addr="245" size="101" />
+    <ITEM name="gsm" type="STRING" addr="346" size="16" />
+    <ITEM name="skin" type="USINT" addr="362" size="1" />
+    <ARRAY size="1" lo="0" hi="7" > 
+      <ITEM name="msg" type="BOOL" addr="363" bit="0" size="1" />
+      </ARRAY> 
+    <ARRAY size="31" lo="0" hi="30" > 
+      <ITEM name="Brw" type="USINT" addr="364" size="1" value="[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]" />
+      </ARRAY> 
+  </RECORD>
+  <RECORD name="NH_USER" size="488" pou="struct" puball="1" >
+    <ITEM name="mem" type="NH_USERS_MEM" addr="0" size="93" />
+    <ITEM name="cfg" type="NH_USERS_CFG" addr="93" size="395" />
+  </RECORD>
+ </TYPES>
+ <DATA>
+  <ARRAY size="2160" lo="1" hi="10" > 
+    <ITEM name="yRooms" type="NH_ROOM" location="%M" addr="10096" size="216" puball="1" />
+    </ARRAY> 
+  <ARRAY size="4880" lo="1" hi="10" > 
+    <ITEM name="yUsers" type="NH_USER" location="%M" addr="12256" size="488" puball="1" />
+    </ARRAY> 
+ </DATA>
+</MAP>

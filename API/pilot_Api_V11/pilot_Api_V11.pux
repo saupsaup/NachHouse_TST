@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<MAP version="3" name="pilot_Api_V11" project="pilot_Api_V11" content="public" >
+ <TYPES>
+  <RECORD name="NH_JSON_TEST_ROOM" size="9" pou="struct" puball="1" descr="povodna testovacia struktura" >
+    <ITEM name="RoomId" type="UDINT" addr="0" size="4" />
+    <ITEM name="LightLevel" type="UINT" addr="4" size="2" />
+    <ITEM name="Temperature10" type="INT" addr="6" size="2" />
+    <ITEM name="Online" type="BOOL" addr="8" bit="0" size="1" />
+  </RECORD>
+ </TYPES>
+ <DATA>
+  <ARRAY size="2700" lo="1" hi="300" > 
+    <ITEM name="NhJsonTestRooms" type="NH_JSON_TEST_ROOM" location="%M" addr="34921" size="9" puball="1" />
+    </ARRAY> 
+ </DATA>
+</MAP>

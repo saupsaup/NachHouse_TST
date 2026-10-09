@@ -2,7 +2,7 @@ VAR_GLOBAL
    // Test PLC deployment only. Upload and verify this file before requesting activation.
    NhDeployRequest {PUBLIC_API} : BOOL := FALSE;
    NhDeployResult  {PUBLIC_API} : USINT := 0; // 0=none, 1=call returned TRUE, 2=API busy, 3=call returned FALSE (not final outcome)
-   NhDeployBuild   {PUBLIC_API} : UDINT := 2026100221;
+   NhDeployBuild   {PUBLIC_API} : UDINT := 2026100251;
 END_VAR
 
 PROGRAM prgMain
@@ -14,12 +14,32 @@ PROGRAM prgMain
    VAR
       deployStarted : BOOL := FALSE;
       deployAccepted : BOOL;
+      fileTransportOk : BOOL;
+      jsonTestOk : BOOL;
+      NhConnect : fbNhConnectPilot;
    END_VAR
    VAR_TEMP
    END_VAR
 
    NhApiInitialize();
+   NhRxTextTransportCycle();
    NhApiCycle();
+   fileTransportOk := NhFileTransportCycle();
+   jsonTestOk := NhJsonTestCycle();
+
+   NhConnect(
+      Enable := NhConnectEnable,
+      SendTest := NhConnectSendTest,
+      ServerUrl := NhConnectUrl,
+      OptionalHeader := NhConnectHeader,
+      Connected => NhConnectConnected,
+      Received => NhConnectReceived,
+      Error => NhConnectError,
+      RxLength => NhConnectRxLength,
+      SentBytes => NhConnectSentBytes,
+      ReceivedBytes => NhConnectReceivedBytes,
+      LastError => NhConnectLastError
+   );
 
    // Never deploy on the first cycle or repeat a request automatically.
    IF NOT deployStarted THEN
